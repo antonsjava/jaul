@@ -83,10 +83,42 @@ This class helps with string substitution. It provide basic text ti text substit
 
 ```java
   String text = "The Mickey is mouse ";
-		text = Replace.all(text, "mouse", "the Mouse");
+  text = Replace.all(text, "mouse", "the Mouse");
+```
+
+## Base64
+
+Simple base64 encoder
+
+```java
+  byte[] data = ...
+  String text = Base64.encode(data);
+  byte[] newdata Base64.decode(text);
 ```
 
 
+## Split
+
+Splits strings and text files. 
+
+Strings are split by specifying one or more substring delimiters. Exact match 
+is used (no regexp, ..) and all divided parts are returned (no ignoring 
+empty parts, ...). 
+
+It returns all substring delimited by delimiter including empty one and also 
+first and last id delimiter is on begin or end of provided string.
+
+Following code
+```java
+  List<String> list = Split.string(", the text,, is separated, by comma,").bySubstringToList(",");
+```
+return "", " the text", "", " is separated", " by comma", ""
+
+
+Text files are split to lines.
+```java
+  List<String> list = Split.file("input.dat", "utf-8").byLinesToList();
+```
 
 ## Maven usage
 
