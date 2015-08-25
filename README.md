@@ -93,7 +93,7 @@ Simple base64 encoder
 ```java
   byte[] data = ...
   String text = Base64.encode(data);
-  byte[] newdata Base64.decode(text);
+  byte[] newdata = Base64.decode(text);
 ```
 
 

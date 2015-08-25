@@ -107,6 +107,8 @@ public class StringSplitter {
     private static class EmptyIterator implements Iterator<String> {
         public boolean hasNext() {return false; }
         public String next() { throw new NoSuchElementException("Empty iterator"); }
+        public void remove() { throw new UnsupportedOperationException(); }
+        
     }
 
     private class SubstringIterator implements Iterator<String> {
@@ -139,6 +141,8 @@ public class StringSplitter {
                 return rv;
             }
         }
+
+        public void remove() { throw new UnsupportedOperationException(); }
     }
 
     private class SubstringsIterator implements Iterator<String> {
@@ -193,5 +197,7 @@ public class StringSplitter {
                 return rv;
             }
         }
+
+        public void remove() { throw new UnsupportedOperationException(); }
     }
 }
