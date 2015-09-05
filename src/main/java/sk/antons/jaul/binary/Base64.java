@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package sk.antons.jaul;
+package sk.antons.jaul.binary;
 
 /**
  * Simple base64 encoder. 

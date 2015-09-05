@@ -96,6 +96,17 @@ Simple base64 encoder
   byte[] newdata = Base64.decode(text);
 ```
 
+## Hex
+
+Simple Hex encoder
+
+```java
+  byte[] data = ...
+  String text = Hex.encode(data);
+  byte[] newdata = Hex.decode(text);
+```
+
+
 
 ## Split
 
@@ -119,6 +130,60 @@ Text files are split to lines.
 ```java
   List<String> list = Split.file("input.dat", "utf-8").byLinesToList();
 ```
+
+## Xml
+
+Simple xml DOM Document creator. Throws an runtime exception if there is problem with 
+document creation.
+
+```java
+  Document doc = null;
+  doc = Xml.document("<root><elem>value</elem></root>");
+  doc = Xml.documentFromFile("/tmp/simple.xml");
+```
+
+## EW
+
+Xml document Element wrapper. Helps to traverse XML. It hides 'Node' API and manipulates 
+only with element structures.
+
+```java
+  Document doc = Xml.documentFromFile("/tmp/simple.xml");
+		EW ew = EW.elem(doc.getDocumentElement());
+  EW echema = ew.firstElementByTagName("schema");
+		if(schema != null) jalw.info("schema namespace: {}", schema.attr("targetNamespace"))`
+  List<EW> elemets = schema.elementsByTagName("element");
+```
+EW provides methods for searching elements by tag name and name space value. This implementation
+takes names and name space names as they are written in XML document. (Do not accept inherited name space)
+
+For example this element
+```java
+		<xs:schema 
+		    xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+						xmlns:tns="services.mzv.portal" 
+						elementFormDefault="unqualified" 
+						targetNamespace="services.mzv.portal" 
+						version="1.0">
+```
+That element can be find by tag 'schema' or by name space 'xs' and tag 'schema'
+Attribute xmlns:tns="services.mzv.portal" can be accesed by 
+```java
+  EW echema = ....;
+  String value = schema.attr("xmlns:xs");
+  String value = schema.attr("xmlns", "xs");
+  String value = schema.attr("xs");
+```
+Attribute version="1.0" can be accesed by 
+```java
+  EW echema = ....;
+  String value = schema.attr("version");
+```
+It is not possible to access it by name space form even there is default name space defined. 
+
+This API is used mostly for parsing simple application configuration files, ehere you can 
+access elements and attributes by simple names only and allows you to ignore namespace prefixes.
+
 
 ## Maven usage
 
