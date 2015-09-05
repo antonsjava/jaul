@@ -149,9 +149,9 @@ only with element structures.
 
 ```java
   Document doc = Xml.documentFromFile("/tmp/simple.xml");
-		EW ew = EW.elem(doc.getDocumentElement());
+  EW ew = EW.elem(doc.getDocumentElement());
   EW echema = ew.firstElementByTagName("schema");
-		if(schema != null) jalw.info("schema namespace: {}", schema.attr("targetNamespace"))`
+  if(schema != null) jalw.info("schema namespace: {}", schema.attr("targetNamespace"))`
   List<EW> elemets = schema.elementsByTagName("element");
 ```
 EW provides methods for searching elements by tag name and name space value. This implementation
@@ -159,12 +159,12 @@ takes names and name space names as they are written in XML document. (Do not ac
 
 For example this element
 ```java
-		<xs:schema 
-		    xmlns:xs="http://www.w3.org/2001/XMLSchema" 
-						xmlns:tns="services.mzv.portal" 
-						elementFormDefault="unqualified" 
-						targetNamespace="services.mzv.portal" 
-						version="1.0">
+  <xs:schema 
+      xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+      xmlns:tns="services.mzv.portal" 
+      elementFormDefault="unqualified" 
+      targetNamespace="services.mzv.portal" 
+      version="1.0">
 ```
 That element can be find by tag 'schema' or by name space 'xs' and tag 'schema'
 Attribute xmlns:tns="services.mzv.portal" can be accesed by 
