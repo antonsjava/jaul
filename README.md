@@ -185,6 +185,115 @@ This API is used mostly for parsing simple application configuration files, eher
 access elements and attributes by simple names only and allows you to ignore namespace prefixes.
 
 
+For exampla for config file like 
+```xml
+<?xml version='1.0' encoding='UTF-8'?>
+<zippy>
+  <zip file="c:\bak\zippy\zips\project-doc-2012.zip" removeMissing="true">
+   <source file="c:\project-doc\2012" type="docs"/>
+  </zip>
+  <zip file="c:\bak\zippy\zips\project-doc-2013.zip" removeMissing="true">
+   <source file="c:\project-doc\2013" type="docs"/>
+  </zip>
+  <zip file="c:\bak\zippy\zips\project-doc-2014.zip" removeMissing="true">
+   <source file="c:\project-doc\2014" type="docs"/>
+  </zip>
+  <zip file="c:\bak\zippy\zips\project-doc-2015.zip" removeMissing="true">
+   <source file="c:\project-doc\2015" type="docs"/>
+  </zip>
+  <zip file="c:\bak\zippy\zips\project-doc-active.zip" removeMissing="true">
+   <source file="c:\project-doc\_active" type="docs"/>
+  </zip>
+  <type name="docs">
+    <!--exclude size="+100m"/-->
+  </type>
+</zippy>
+```
+You can use code like this
+```java
+ Document doc = Xml.documentFromFile(filename);
+ if(doc == null) { ... }
+
+ EW zippyE = EW.elem(doc.getDocumentElement());
+ if(!"zippy".equals(zippyE.tag())) { ... }
+ for(EW element : zippyE.childrenByTagName("type")) {
+     String name = element.attr("name");
+     for(EW elem : element.childrenByTagName("include")) {
+         String file = elem.attr("name");
+         String size = elem.attr("size");
+         String time = elem.attr("time");
+         ...
+     }
+     for(EW elem : element.childrenByTagName("exclude")) {
+         String file = elem.attr("name");
+         String size = elem.attr("size");
+         String time = elem.attr("time");
+         ...
+     }
+ }
+ for(EW element : zippyE.childrenByTagName("zip")) {
+     String file = element.attr("file");
+     String remove = element.attr("removeMissing");
+     String verbose = element.attr("verbose");
+     for(EW elem : element.childrenByTagName("source")) {
+         String fname = elem.attr("file");
+         String type = elem.attr("type");
+         String sverbose = elem.attr("verbose");
+         String prefix = elem.attr("prefix");
+         for(EW ielem : elem.childrenByTagName("include")) {
+             String ename = ielem.attr("name");
+             String size = ielem.attr("size");
+             String time = ielem.attr("time");
+             ...
+         }
+         for(EW ielem : elem.childrenByTagName("exclude")) {
+             String ename = ielem.attr("name");
+             String size = ielem.attr("size");
+             String time = ielem.attr("time");
+             ...
+         }
+         for(EW telem : elem.childrenByTagName("type")) {
+             String tname = telem.attr("name");
+             ...
+         }
+     }
+ }
+```
+
+## TransitiveProperties
+
+If you like to use Properties for configuration and you miss transitive value computation
+like this
+```
+  host=http://localhost:8080
+		main.url=${host}/index.jsp
+		ws.hello.endpoint=${host}/ws/hello
+```
+Where "${host}" is replaced by value of property "host". so real properties looks like
+```
+  host=http://localhost:8080
+		main.url=http://localhost:8080/index.jsp
+		ws.hello.endpoint=http://localhost:8080/ws/hello
+```
+
+If you have read only properties (ussually once initiated from file), it is possible 
+to compute transitive values and replace it in properties - than simply used changed 
+values. 
+
+```java
+  Properties props = ....l;
+  TransitiveProperties.makeClosure(props);
+```
+
+If your properties are changing or it is not possible to change them you can wrap 
+existing instance. Wrapped instance then dynamically compute property values. 
+
+```java
+  Properties props = ....l;
+  props = TransitiveProperties.wrap(props);
+```
+
+
 ## Maven usage
 
 ```

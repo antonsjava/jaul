@@ -328,6 +328,18 @@ public class EW {
     public EW firstElementByTagNameNS(String ns, String tag) {
         return traverseFirst(element, ns, tag);
     }
+
+    /**
+     * Tag name of encapsulated element. element.getNodeName() without name 
+     * space prefix.
+     * @return tag name of encapsulated element
+     */
+    public String tag() {
+        String value = element.getNodeName();
+        int pos = value.lastIndexOf(":");
+        if(pos > -1) return value.substring(pos+1);
+        return value;
+    }
     
 
     public String toString() {
