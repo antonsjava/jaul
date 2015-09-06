@@ -266,18 +266,18 @@ If you like to use Properties for configuration and you miss transitive value co
 like this
 ```
   host=http://localhost:8080
-		main.url=${host}/index.jsp
-		ws.hello.endpoint=${host}/ws/hello
+  main.url=${host}/index.jsp
+  ws.hello.endpoint=${host}/ws/hello
 ```
 Where "${host}" is replaced by value of property "host". so real properties looks like
 ```
   host=http://localhost:8080
-		main.url=http://localhost:8080/index.jsp
-		ws.hello.endpoint=http://localhost:8080/ws/hello
+  main.url=http://localhost:8080/index.jsp
+  ws.hello.endpoint=http://localhost:8080/ws/hello
 ```
 
 If you have read only properties (ussually once initiated from file), it is possible 
-to compute transitive values and replace it in properties - than simply used changed 
+to compute transitive values and replace it in properties - than simply use changed 
 values. 
 
 ```java
