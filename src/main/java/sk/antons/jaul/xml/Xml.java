@@ -42,6 +42,12 @@ public class Xml {
         if(stream == null) return null;
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            dbf.setValidating(false);
+            dbf.setNamespaceAware(true);
+            dbf.setFeature("http://xml.org/sax/features/namespaces", false);
+            dbf.setFeature("http://xml.org/sax/features/validation", false);
+            dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
+            dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
             DocumentBuilder db = dbf.newDocumentBuilder();
             InputSource is = new InputSource(stream);
             return db.parse(is);
@@ -59,6 +65,12 @@ public class Xml {
         if(xml == null) return null;
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            dbf.setValidating(false);
+            dbf.setNamespaceAware(true);
+            dbf.setFeature("http://xml.org/sax/features/namespaces", false);
+            dbf.setFeature("http://xml.org/sax/features/validation", false);
+            dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
+            dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
             DocumentBuilder db = dbf.newDocumentBuilder();
             InputSource is = new InputSource(new StringReader(xml));
             return db.parse(is);
