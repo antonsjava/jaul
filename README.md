@@ -3,7 +3,8 @@
 
 Jaul stands for just another utility library. There is many of such libraries.
 This one is my and I put it here so I can use it in my projects. Feel free to 
-use it too if you like it. 
+use it too if you like it. It is small sibrary, so it is not a problem to add 
+it to any project, even you want to use only one class.
 
 It provides set of individual classes with very simple functionality. They are 
 used mostly to avoid unboxing nullpointers and some little string processing 
@@ -292,6 +293,21 @@ existing instance. Wrapped instance then dynamically compute property values.
   Properties props = ....l;
   props = TransitiveProperties.wrap(props);
 ```
+
+## TextFile
+
+Reading text file into string
+
+```java
+ String content = TextFile.read("/tmp/file.txt", "utf-8");
+```
+Save string to text file
+
+```java
+ Stirng content = ...
+ TextFile.save("/tmp/file.txt", "utf-8", content);
+```
+
 
 
 ## Maven usage
