@@ -21,6 +21,7 @@ import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
@@ -32,18 +33,18 @@ import sk.antons.jaul.Is;
  * @author antons
  */
 public class TextFile {
-
+    
     /**
      * Reads text file into string. 
-     * @param filename - name of the file to be read
+     * @param is - input stream with texts file data
      * @param charset = charset name
      * @return String from file
      */
-    public static String read(String filename, String charset) {
-        if(Is.empty(filename)) return null;
+    public static String read(InputStream is, String charset) {
+        if(is == null) return null;
         if(Is.empty(charset)) charset = "utf-8";
         try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(filename), charset));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is, charset));
             StringBuilder sb = new StringBuilder();
             
             String line = reader.readLine();
@@ -56,6 +57,22 @@ public class TextFile {
             reader.close();
             
             return sb.toString();
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Unable to read file data with charset '"+charset+"'", e);
+        }
+    }
+
+    /**
+     * Reads text file into string. 
+     * @param filename - name of the file to be read
+     * @param charset = charset name
+     * @return String from file
+     */
+    public static String read(String filename, String charset) {
+        if(Is.empty(filename)) return null;
+        if(Is.empty(charset)) charset = "utf-8";
+        try {
+            return read(new FileInputStream(filename), charset);
         } catch (IOException e) {
             throw new IllegalArgumentException("Unable to read file '"+filename+"' with charset '"+charset+"'", e);
         }
