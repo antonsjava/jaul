@@ -380,5 +380,29 @@ public class EW {
             
         }
     }
+    
+
+    /**
+     * return text content of first descendant of this node filtered by tag name
+     * @param tag - tag name of selected children
+     * @return selected element
+     */
+    public String firstElementByTagNameTextContent(String tag) {
+        EW ew = traverseFirst(element, null, tag);
+        if(ew == null) return null;
+        return ew.elem().getTextContent();
+    }
+
+    /**
+     * return text content of first descendant of this node filtered by tag name
+     * @param ns - namespace prefix of tag name
+     * @param tag - tag name of selected children
+     * @return selected element
+     */
+    public String firstElementByTagNameNSTextContent(String ns, String tag) {
+        EW ew = traverseFirst(element, ns, tag);
+        if(ew == null) return null;
+        return ew.elem().getTextContent();
+    }
 
 }
