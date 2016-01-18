@@ -19,6 +19,7 @@ package sk.antons.jaul;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import sk.antons.jaul.util.FromString;
 
 /**
  * Helper class for manipulating nulls in case collections, arrays and primitives.
@@ -249,5 +250,25 @@ public class Get {
     public static String trim(String value) {
         if(value == null) return null;
         return value.trim();
+    }
+
+    /**
+     * returns StringParser instance
+     * @param value - value to be parsed
+     * @return 
+     */
+    public static FromString from(String value) {
+        return new FromString(value);
+    }
+
+    /**
+     * returns StringParser instance
+     * @param value - value to be parsed
+     * @param defaultEmpty - return default value in case of empty string
+     * @param defaultBad - return default value in case of bad string
+     * @return 
+     */
+    public static FromString from(String value, boolean defaultEmpty, boolean defaultBad) {
+        return new FromString(value, defaultEmpty, defaultBad);
     }
 }
