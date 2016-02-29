@@ -180,12 +180,16 @@ public class EW {
     
     private static EW toFirst(NodeList nl, String ns, String tag) {
         if(nl != null) {
+            if(ns != null) ns = ns + ":";
+            String tag2 = null;
+            if(tag != null) tag2 = ":" + tag;
             for(int i = 0; i < nl.getLength(); i++) {
                 Node n = nl.item(i);
                 if(n == null) continue;
                 if(!(n instanceof Element)) continue;
-                if((ns != null) && (!ns.equals(n.getBaseURI()))) continue;
-                if((tag != null) && (!tag.equals(n.getNodeName()))) continue;
+                String fullname = n.getNodeName();
+                if((ns != null) && (!fullname.startsWith(ns))) continue;
+                if((tag != null) && (!(tag.equals(fullname) || (fullname.endsWith(tag2))))) continue;
                 return EW.elem((Element)n);
             }
         }
