@@ -71,6 +71,15 @@ public class StringSplitter {
         return toList(bySubstring(substring));
     }
 
+    private static boolean areSubstringsValid(String[] substrings) {
+        if(substrings == null) return false;
+        for(String substring : substrings) {
+            if(substring == null) return false;
+            if("".equals(substring)) return false;
+        }
+        return true;
+    }
+
     /**
      * Splits string by provided delimiters. You can specify more different 
      * delimiters. They all are used to separate provided text.
@@ -80,7 +89,7 @@ public class StringSplitter {
     public Iterator<String> bySubstrings(String... substring) {
         if(text == null) return new EmptyIterator();
         if(substring == null) return new EmptyIterator();
-        if("".equals(substring)) return new EmptyIterator();
+        if(!areSubstringsValid(substring)) return new EmptyIterator();
         return new SubstringsIterator(substring);
     }
     

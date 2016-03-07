@@ -1,0 +1,13 @@
+<root preset="1">
+	<node order="1">
+		<node order="1_1">xx1</node>
+		<node order="1_2">xx2</node>
+		<name name="first"/>
+	</node>
+	<node order="2">
+		<yy:node order="2_1">yy1</yy:node>
+		<yy:node order="2_2">yy2</yy:node>
+		<xx:name name="second"/>
+	</node>
+	<qq:name name="third"/>
+</root>

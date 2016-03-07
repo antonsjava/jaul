@@ -103,6 +103,7 @@ public class Unicode {
             else if(c == '\t') sb.append("\\t");
             else if(c == '\f') sb.append("\\f");
             else if(c == '\'') sb.append("\\\'");
+            else if(c == '\\') sb.append("\\\\");
             else if(c == '"') sb.append("\\\"");
             else if((c > 31) && (c < 127)) sb.append(c);
             else {

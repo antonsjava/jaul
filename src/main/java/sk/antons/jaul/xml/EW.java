@@ -80,7 +80,7 @@ public class EW {
         return element;
     }
     
-    public String attr(String ns, String name) {
+    private String attr(String ns, String name) {
         if(name == null) return null;
         for(Attr a : attributes()) {
             if((ns != null) && (!ns.equals(a.ns))) continue;
@@ -107,6 +107,15 @@ public class EW {
      */
     public String attrNS(String ns, String name) {
         return attr(ns, name);
+    }
+
+    /**
+     * Reads text content of current node.
+     * @return elem().getTextContent()
+     */
+    public String text() {
+        if(element == null) return null;
+        return element.getTextContent();
     }
     
     /**

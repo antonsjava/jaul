@@ -133,6 +133,16 @@ public class Get {
     }
 
     /**
+     * Size of the provided string.
+     * @param value - provided data
+     * @return size of the provided data or 0 is data is null
+     */ 
+    public static int size(String value) {
+        if(value == null) return 0;
+        return value.length();
+    }
+
+    /**
      * Size of the provided collection.
      * @param value - provided data
      * @return size of the provided data or 0 is data is null

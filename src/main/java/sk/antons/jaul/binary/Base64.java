@@ -98,6 +98,7 @@ public class Base64 {
      */
     public static byte[] decode(String value) {
         if(value == null) return null;
+        if("".equals(value)) return new byte[0];
 
         int pos = value.indexOf('\n');
         if(pos > -1) {
@@ -111,6 +112,7 @@ public class Base64 {
             sb.append(value.substring(lastpos).trim());
             value = sb.toString();
         }
+
         
         value = value.trim();
         
@@ -119,15 +121,18 @@ public class Base64 {
         if (length % 4 != 0) throw new IllegalArgumentException("The input string is not valid base64 string. Length must be devided by four");
         
         int lastQuaternionsize = 0;
+        int lastQuaternionbytesize = 0;    ;
         if (value.charAt(length-2) == '=') {
             lastQuaternionsize = 2;
+            lastQuaternionbytesize = 1;
             quaternionNum--;
         } else if (value.charAt(length-1) == '=') {
             lastQuaternionsize = 3;
+            lastQuaternionbytesize = 2;
             quaternionNum--;
         }
         
-        byte[] buff = new byte[3*quaternionNum + lastQuaternionsize];
+        byte[] buff = new byte[3*quaternionNum + lastQuaternionbytesize];
 
         int sIndex = 0;
         int bIndex = 0;
