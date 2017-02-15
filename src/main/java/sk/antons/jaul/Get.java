@@ -17,8 +17,10 @@
 package sk.antons.jaul;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import sk.antons.jaul.util.FromDate;
 import sk.antons.jaul.util.FromString;
 
 /**
@@ -51,6 +53,27 @@ public class Get {
     }
 
 
+
+    /**
+     * Safe string value .
+     * @param value - value to be returned
+     * @return provided value or "" if provided value is null.
+     */
+    public static String safeString(String value) {
+        if(value == null) return "";
+        return value;
+    }
+
+    /**
+     * Safe string value .
+     * @param value - value to be returned
+     * @param def - value to be returned if first parameter is null
+     * @return provided value or def if provided value is null.
+     */
+    public static String safeString(String value, String def) {
+        if(value == null) return def;
+        return value;
+    }
 
     /**
      * Safe unboxing.
@@ -260,6 +283,25 @@ public class Get {
     public static String trim(String value) {
         if(value == null) return null;
         return value.trim();
+    }
+    
+    /**
+     * returns date converter
+     * @param value - value to be converted
+     * @return 
+     */
+    public static FromDate from(Date value) {
+        return new FromDate(value, null);
+    }
+    
+    /**
+     * returns date converter
+     * @param value - value to be converted
+     * @param nullResult  - value to be used if value is null
+     * @return 
+     */
+    public static FromDate from(Date value, String nullResult) {
+        return new FromDate(value, nullResult);
     }
 
     /**

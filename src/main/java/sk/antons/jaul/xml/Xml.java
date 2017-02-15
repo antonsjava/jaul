@@ -20,11 +20,18 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.io.StringWriter;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import sk.antons.jaul.Is;
+import sk.antons.jaul.util.TextFile;
 
 /**
  * Helper class for creating xml document. Simplify document creation and maps 
@@ -206,5 +213,76 @@ public class Xml {
 
     }
 
+    /**
+     * Converts XML document to string
+     * @param doc - document to be converted
+     * @param encoding - encoding (used only in declaration pragma)
+     * @param indent - if resulting xml should be indented
+     * @param declaration - if declaration pragma should be included
+     * @return xml text generated from document 
+     */
+    public static String documentToString(Document doc, String encoding, boolean indent, boolean declaration) {
+        if(doc == null) {
+            return null;
+        }
+
+        try {
+            StringWriter sw = new StringWriter();
+            TransformerFactory tf = TransformerFactory.newInstance();
+            Transformer transformer = tf.newTransformer();
+            if(declaration) {
+                transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+            } else {
+                transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+            }
+            if(encoding != null) transformer.setOutputProperty(OutputKeys.ENCODING, encoding);
+            if(indent) transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+
+            transformer.transform(new DOMSource(doc), new StreamResult(sw));
+            return sw.toString();
+        } catch(Exception ex) {
+            throw new IllegalStateException("Error converting to String", ex);
+        }
+    }
+    
+
+    /**
+     * Converts XML document to string and save it to file.
+     * @param doc - document to be converted
+     * @param file - file to be generated
+     * @param encoding - encoding (used only in declaration pragma)
+     * @param indent - if resulting xml should be indented
+     * @param declaration - if declaration pragma should be included
+     */
+    public static void documentToFile(Document doc, File file, String encoding, boolean indent, boolean declaration) {
+        if(doc == null) return;
+        try {
+            if(encoding == null) encoding = "UTF-8";
+            String xml = documentToString(doc, encoding, indent, declaration);
+            TextFile.save(file.getAbsolutePath(), encoding, xml);
+        } catch(Exception ex) {
+            throw new IllegalStateException("Error converting to String of save to file ", ex);
+        }
+    }
+
+    /**
+     * Converts XML document to string and save it to file.
+     * @param doc - document to be converted
+     * @param file - file to be generated
+     * @param encoding - encoding (used only in declaration pragma)
+     * @param indent - if resulting xml should be indented
+     * @param declaration - if declaration pragma should be included
+     */
+    public static void documentToFile(Document doc, String file, String encoding, boolean indent, boolean declaration) {
+        if(doc == null) return;
+        try {
+            if(encoding == null) encoding = "UTF-8";
+            String xml = documentToString(doc, encoding, indent, declaration);
+            TextFile.save(file, encoding, xml);
+        } catch(Exception ex) {
+            throw new IllegalStateException("Error converting to String of save to file ", ex);
+        }
+    }
     
 }

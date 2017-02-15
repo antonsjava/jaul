@@ -1,0 +1,15 @@
+
+Export-Package: \
+ sk.antons.jaul; version="1.1.0"; provider=antons, \
+ sk.antons.jaul.binary; version="1.1.0"; provider=antons, \
+ sk.antons.jaul.util; version="1.1.0"; provider=antons, \
+ sk.antons.jaul.xml; version="1.1.0"; provider=antons
+
+Import-Package: \
+ javax.xml.parsers; resolution:=optional, \
+ javax.xml.transform; resolution:=optional, \
+ javax.xml.transform.dom; resolution:=optional, \
+ javax.xml.transform.stream; resolution:=optional, \
+ org.w3c.dom; resolution:=optional, \
+ org.xml.sax; resolution:=optional
+
