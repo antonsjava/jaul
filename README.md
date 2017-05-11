@@ -322,6 +322,7 @@ Save string to text file
 
 ## OSGI usage (Karaf)
 
+```
    bundle:install mvn:com.github.antonsjava/jaul/1.1
    bundle:start com.github.antonsjava.jaul/1.1.0
 ```
