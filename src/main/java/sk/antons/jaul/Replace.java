@@ -34,7 +34,7 @@ public class Replace {
     public static String all(String where, String what, String byWhat) {
         if(where == null) return where;
         if(what == null) return where;
-        if(byWhat == null) return byWhat = "";
+        if(byWhat == null) byWhat = "";
         int last = 0;
         int pos = where.indexOf(what, last);
         if(pos < 0) return where;
