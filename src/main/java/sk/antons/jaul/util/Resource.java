@@ -23,11 +23,11 @@ import java.net.URL;
 /**
  * Helper class for resolving resources from classpath, filesystem of generic urls.
  * Reqource is identified by url property ans possible values are 
- * <ul>
- * <li>'classpath:...' - in this case resource ... is loaded from classpath</li>
- * <li>'...' - in this case resource ... is loaded from file system (name of the resource not contains ':' character)</li>
- * <li>otherwise is url taken as parameter for URL class and resolved in this way</li>
- * </ul>
+ * &lt;ul&gt;
+ * &lt;li&gt;'classpath:...' - in this case resource ... is loaded from classpath.
+ * &lt;li&gt;'...' - in this case resource ... is loaded from file system (name of the resource not contains ':' character)
+ * &lt;li&gt;otherwise is url taken as parameter for URL class and resolved in this way
+ * &lt;/ul&gt;
  * @author antons
  */
 public class Resource {
@@ -41,12 +41,21 @@ public class Resource {
         this.url = url;
     }
 
+	/**
+	 * Instantiate Resource class.
+	 * @param url - url for the new instance
+	 * @return new instance
+	 */
+	public static Resource url(String url) {
+		return new Resource(url);
+	}
+
     /**
      * Returns input stream for given url.
      * @param cl - class loader used in case of url in format classpath:...
      * @return input stream of resource 
      */
-    public InputStream inputStreeam(ClassLoader cl) {
+    public InputStream inputStream(ClassLoader cl) {
         try {
             if(url.startsWith("classpath:")) {
                 return cl.getResourceAsStream(url.substring(10));
@@ -66,7 +75,7 @@ public class Resource {
      * Returns input stream for given url. (for classpath:... urls Context classloader is used);
      * @return input stream of resource 
      */
-    public InputStream inputStreeam() {
-        return inputStreeam(Thread.currentThread().getContextClassLoader());
+    public InputStream inputStream() {
+        return inputStream(Thread.currentThread().getContextClassLoader());
     }
 }
