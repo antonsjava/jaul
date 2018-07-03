@@ -38,6 +38,7 @@ import java.util.NoSuchElementException;
  */
 public class TextFileSplitter {
     private final BufferedReader reader;
+    boolean closereader = true;
 
     /**
      * Creates instance of TextFileSplitter.
@@ -75,6 +76,7 @@ public class TextFileSplitter {
     public TextFileSplitter(InputStream is, String charset) {
         try {
             reader = new BufferedReader(new InputStreamReader(is, charset));
+            closereader = false;
         } catch (Exception e) {
             throw new IllegalArgumentException("Unable to read is with charset '"+charset+"'", e);
         }
@@ -129,7 +131,7 @@ public class TextFileSplitter {
             } catch (Exception e) {
                 throw new IllegalArgumentException("Unable to read next line", e);
             }
-            if(line == null) {
+            if((line == null) && closereader) {
                 try {
                     TextFileSplitter.this.reader.close();
                 } catch (Exception e) {
