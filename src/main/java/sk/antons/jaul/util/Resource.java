@@ -59,7 +59,7 @@ public class Resource {
         try {
             if(url.startsWith("classpath:")) {
                 return cl.getResourceAsStream(url.substring(10));
-            } else if(url.indexOf(':') > -1) {
+            } else if(url.indexOf(':') < 0) {
                 File f = new File(url);
                 return new FileInputStream(f);
             } else {
