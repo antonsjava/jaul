@@ -84,6 +84,17 @@ public class Get {
         if(value == null) return 0;
         return value;
     }
+    
+    /**
+     * Safe unboxing.
+     * @param value - value to be unboxed
+     * @param defaultValue default value if value is null
+     * @return unboxed value or defaultValue if provided value is null.
+     */
+    public static int safeInt(Integer value, int defaultValue) {
+        if(value == null) return defaultValue;
+        return value;
+    }
 
     /**
      * Safe unboxing.
@@ -92,6 +103,17 @@ public class Get {
      */
     public static byte safeByte(Byte value) {
         if(value == null) return 0;
+        return value;
+    }
+    
+    /**
+     * Safe unboxing.
+     * @param value - value to be unboxed
+     * @param defaultValue default value if value is null
+     * @return unboxed value or defaultValue if provided value is null.
+     */
+    public static byte safeByte(Byte value, byte defaultValue) {
+        if(value == null) return defaultValue;
         return value;
     }
 
@@ -104,6 +126,17 @@ public class Get {
         if(value == null) return 0;
         return value;
     }
+    
+    /**
+     * Safe unboxing.
+     * @param value - value to be unboxed
+     * @param defaultValue default value if value is null
+     * @return unboxed value or defaultValue if provided value is null.
+     */
+    public static short safeShort(Short value, short defaultValue) {
+        if(value == null) return defaultValue;
+        return value;
+    }
 
     /**
      * Safe unboxing.
@@ -112,6 +145,17 @@ public class Get {
      */
     public static long safeLong(Long value) {
         if(value == null) return 0;
+        return value;
+    }
+    
+    /**
+     * Safe unboxing.
+     * @param value - value to be unboxed
+     * @param defaultValue default value if value is null
+     * @return unboxed value or defaultValue if provided value is null.
+     */
+    public static long safeLong(Long value, long defaultValue) {
+        if(value == null) return defaultValue;
         return value;
     }
 
@@ -124,6 +168,17 @@ public class Get {
         if(value == null) return 0;
         return value;
     }
+    
+    /**
+     * Safe unboxing.
+     * @param value - value to be unboxed
+     * @param defaultValue default value if value is null
+     * @return unboxed value or defaultValue if provided value is null.
+     */
+    public static float safeFloat(Float value, float defaultValue) {
+        if(value == null) return defaultValue;
+        return value;
+    }
 
     /**
      * Safe unboxing.
@@ -132,6 +187,17 @@ public class Get {
      */
     public static double safeDouble(Double value) {
         if(value == null) return 0;
+        return value;
+    }
+    
+    /**
+     * Safe unboxing.
+     * @param value - value to be unboxed
+     * @param defaultValue default value if value is null
+     * @return unboxed value or defaultValue if provided value is null.
+     */
+    public static double safeDouble(Double value, double defaultValue) {
+        if(value == null) return defaultValue;
         return value;
     }
 
@@ -148,10 +214,32 @@ public class Get {
     /**
      * Safe unboxing.
      * @param value - value to be unboxed
+     * @param defaultValue default value if value is null
+     * @return unboxed value or defaultValue if provided value is null.
+     */
+    public static boolean safeBool(Boolean value, boolean defaultValue) {
+        if(value == null) return defaultValue;
+        return value;
+    }
+    
+    /**
+     * Safe unboxing.
+     * @param value - value to be unboxed
      * @return unboxed value or 0 if provided value is null.
      */
     public static char safeChar(Character value) {
         if(value == null) return 0;
+        return value;
+    }
+    
+    /**
+     * Safe unboxing.
+     * @param value - value to be unboxed
+     * @param defaultValue default value if value is null
+     * @return unboxed value or defaultValue if provided value is null.
+     */
+    public static char safeChar(Character value, char defaultValue) {
+        if(value == null) return defaultValue;
         return value;
     }
 
