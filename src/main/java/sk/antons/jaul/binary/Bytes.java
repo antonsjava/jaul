@@ -16,6 +16,7 @@
 
 package sk.antons.jaul.binary;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -85,6 +86,20 @@ public class Bytes {
             return rv;
         } catch(Exception e) {
             throw new IllegalArgumentException("Unable to transfer bytes", e);
+        }
+    }
+    
+    /**
+     * Converts bytes to stream
+     * @param bytes - bytes to be transfered
+     */
+    public static InputStream asStream(byte[] bytes) {
+        try {
+            if(bytes == null) bytes = new byte[0]; ;
+            ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+            return bais;
+        } catch(Exception e) {
+            throw new IllegalArgumentException("Unable to converts bytes to stream", e);
         }
     }
 
