@@ -4,7 +4,7 @@
 
     <groupId>com.github.antonsjava</groupId>
     <artifactId>jaul</artifactId>
-    <version>1.7</version>
+    <version>1.8</version>
     <packaging>bundle</packaging>
 
     <name>Jaul</name>
@@ -66,8 +66,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.1</version>
                 <configuration>
-                    <source>1.5</source>
-                    <target>1.5</target>
+                    <source>1.6</source>
+                    <target>1.6</target>
                 </configuration>
 			</plugin>
         <plugin>
