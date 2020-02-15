@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package sk.antons.jaul.util;
+package sk.antons.jaul.pojo;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;

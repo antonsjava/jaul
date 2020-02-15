@@ -308,6 +308,59 @@ Save string to text file
  TextFile.save("/tmp/file.txt", "utf-8", content);
 ```
 
+## POJO utils
+
+In term of POJO class I mean data class with attributes and public accessor to them.
+There are some simple utilities usable mostly during development. 
+
+Some times you need crate mock instance of data class. (For example someone wants to have example of json representation) 
+Messer class create such dummy instance for you.
+
+```java
+ Address address = Pojo.messer().junk(Address.class);
+ log.debug("json: {}", objectMapper.writeValueAsString(address));
+```
+prints something like 
+```
+ json: {"street": "Street", "city":"City", "country": {"code":"Code", "name":"Name"}}
+```
+
+Sometimes you need to see content of data class instance and toString() is not implemented 
+as you need.
+Dumper class create such property by property dump of instance for you. (Not too effective
+don't use them as regular toString() implementation)
+
+```java
+ Address address = ...
+ log.debug("example: {}", Pojo.dumper().dump(address));
+```
+prints something like 
+```
+ example: instance of class foo.bar.Address hash: 1775488894
+.street: Street
+.city: City
+.country.code: Code
+.country.name: Name
+...
+```
+
+Sometimes you need to compare content of two data class instances.
+Differ class create such property by property diff of instances for you. 
+
+```java
+ Address address = Pojo.messer().junk(Address.class);
+ long id = repository.save(address);
+ Address address2 = repository.load(Address.class, id);
+ log.debug("changes: {}", Pojo.differ().diff(address, address2));
+```
+prints something like 
+```
+ changes: Changes[
+ change /id -- '1' vs '2332'
+ change /country/id -- '1' vs '33'
+ ]
+```
+
 
 
 ## Maven usage
@@ -316,15 +369,15 @@ Save string to text file
    <dependency>
       <groupId>com.github.antonsjava</groupId>
       <artifactId>jaul</artifactId>
-      <version>1.0</version>
+      <version>1.9</version>
    </dependency>
 ```
 
 ## OSGI usage (Karaf)
 
 ```
-   bundle:install mvn:com.github.antonsjava/jaul/1.1
-   bundle:start com.github.antonsjava.jaul/1.1.0
+   bundle:install mvn:com.github.antonsjava/jaul/1.9
+   bundle:start com.github.antonsjava.jaul/1.9.0
 ```
 
 
