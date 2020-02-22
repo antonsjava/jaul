@@ -45,6 +45,16 @@ public class Dumper {
         return sb.toString();
     }
 
+    public String jsonPretty(Object value, String indent) {
+        JsonString json = JsonString.instance().indent(indent);
+        json(json, null, value, new ArrayList());
+        return json.toString();
+    }
+    public String json(Object value) {
+        JsonString json = JsonString.instance();
+        json(json, null, value, new ArrayList());
+        return json.toString();
+    }
 
     private void dumpMedssage(StringBuilder sb, String path, String message) {
         sb.append(path).append(": ").append(message).append('\n');
@@ -161,8 +171,8 @@ public class Dumper {
     private FieldCopmarator comp = FieldCopmarator.instance(); 
     private void dumpObject(StringBuilder sb, String path, Class clazz, Object o, List stack) {
         List<Field> fields = allFields(clazz);
-        Collections.sort(fields, comp);
         if(fields == null) return;
+        Collections.sort(fields, comp);
         for(Field field : fields) {
             if(Modifier.isStatic(field.getModifiers())) continue;
             Object oo = value(clazz, o, field);
@@ -256,6 +266,107 @@ public class Dumper {
 
         public static FieldCopmarator instance() { return new FieldCopmarator(); }
     
+    }
+
+
+    private void jsonMessage(JsonString json, String name, String value) {
+        if(name == null) json.value(value);
+        else json.attr(name, value);
+    }
+    private void json(JsonString json, String name, Object o, List stack) {
+        if(o == null) return;
+		
+		if(stack.contains(o)) {
+            json.objectStart().objectEnd();
+            return;
+        }
+		stack.add(o);
+
+        Class clazz = o.getClass();
+        
+        if(isSimpleClass(clazz)) {
+            String s = o.toString();
+            jsonMessage(json, name, s);
+			stack.remove(stack.size()-1);
+            return;
+        }
+        
+        if(name != null) json.attrName(name);
+
+        if(clazz.isArray()) {
+            jsonArray(json, name, clazz, o, stack);
+			stack.remove(stack.size()-1);
+            return;
+        }
+        
+        if(Collection.class.isAssignableFrom(clazz)) {
+            jsonCollection(json, name, clazz, o, stack);
+			stack.remove(stack.size()-1);
+            return;
+        }
+        
+        if(Map.class.isAssignableFrom(clazz)) {
+            jsonMap(json, name, clazz, o, stack);
+			stack.remove(stack.size()-1);
+            return;
+        }
+
+        jsonObject(json, name, clazz, o, stack);
+		stack.remove(stack.size()-1);
+    }
+
+    private void jsonArray(JsonString json, String name, Class clazz, Object o, List stack) {
+        if(clazz.isArray()) {
+            json.arrayStart();
+            int size = arraySize(clazz, o);
+            for(int i = 0; i < size; i++) {
+                Object oo = arrayItem(clazz, o, i);
+                json(json, null, oo, stack);
+            }
+            json.arrayEnd();
+        }
+    }
+    
+    private void jsonCollection(JsonString json, String name, Class clazz, Object o, List stack) {
+        if(Collection.class.isAssignableFrom(clazz)) {
+            Collection list = (Collection)o;
+            int size = list.size();
+            int i = 0;
+            json.arrayStart();
+            Iterator iter = list.iterator();
+            while(iter.hasNext()) {
+                Object oo = iter.next();
+                json(json, null, oo, stack);
+                i++;
+            }
+            json.arrayEnd();
+        }
+    }
+    
+    
+    private void jsonMap(JsonString json, String name, Class clazz, Object o, List stack) {
+        if(Map.class.isAssignableFrom(clazz)) {
+            Map map = (Map)o;
+            int size = map.size();
+            json.objectStart();
+            for(Object key : map.keySet()) {
+                json(json, ""+key, map.get(key), stack);
+            }
+            json.objectEnd();
+        }
+    }
+    private void jsonObject(JsonString json, String name, Class clazz, Object o, List stack) {
+        List<Field> fields = allFields(clazz);
+        if(fields == null) return;
+        Collections.sort(fields, comp);
+        json.objectStart();
+        for(Field field : fields) {
+            if(Modifier.isStatic(field.getModifiers())) continue;
+            Object oo = value(clazz, o, field);
+            if(oo == null) continue;
+            json(json, field.getName(), oo, stack);
+        }
+        json.objectEnd();
     }
 
 //    public static void main(String[] argv) {
