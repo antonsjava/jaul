@@ -26,16 +26,16 @@ package sk.antons.jaul.pojo;
  *   private String value1;
  *   private String value2;
  * 
- *   public void toJsonString(JsonString json) {
- *     json.objectStart();
+ *   public void toJsonString(JsonString json, boolean makeObject) {
+ *     if(makeObject) json.objectStart();
  *     json.attr("value1", value1);
  *     json.attr("value2", value2);
- *     json.objectEnd();
+ *     if(makeObject) json.objectEnd();
  *   }
  * 
  *   public String toString() {
  *     JsonString json = JsonString.instance().indent("  ");
- *     toJsonString(json);
+ *     toJsonString(json, true);
  *     return json.toString();
  *   }
  * } 
@@ -45,6 +45,6 @@ package sk.antons.jaul.pojo;
  */
 public interface ToJsonString {
 
-    void toJsonString(JsonString json);
+    void toJsonString(JsonString json, boolean makeObject);
 
 }

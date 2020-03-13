@@ -199,7 +199,7 @@ public class JsonString {
         
         if(ToJsonString.class.isAssignableFrom(clazz)) {
             ToJsonString jsso = (ToJsonString)o;
-            jsso.toJsonString(this);
+            jsso.toJsonString(this, true);
             return;
         }
 
