@@ -133,12 +133,112 @@ public class Dumper {
     
     private void dumpArray(StringBuilder sb, String path, Class clazz, Object o, List stack) {
         if(clazz.isArray()) {
-            int size = arraySize(clazz, o);
-            dumpMedssage(sb, path+".size", ""+size);
-            for(int i = 0; i < size; i++) {
-                Object oo = arrayItem(clazz, o, i);
-                dump(sb, path+"["+i+"]", oo, stack);
+            Class cl = clazz.getComponentType();
+            if(byte.class.equals(cl)) {
+                byte[] arr = (byte[])o;
+                StringBuilder tmbbuff = new StringBuilder();
+                tmbbuff.append("[");
+                for(int i = 0; i < 5; i++) {
+                    if(arr.length <= i) break;
+                    if(i > 0) tmbbuff.append(", ");
+                    tmbbuff.append(arr[i]);
+                }
+                if(arr.length > 5) tmbbuff.append(", ..." + arr.length);
+                tmbbuff.append("]");
+                dumpMedssage(sb, path, tmbbuff.toString());
+            } else if(int.class.equals(cl)) {
+                int[] arr = (int[])o;
+                StringBuilder tmbbuff = new StringBuilder();
+                tmbbuff.append("[");
+                for(int i = 0; i < 5; i++) {
+                    if(arr.length <= i) break;
+                    if(i > 0) tmbbuff.append(", ");
+                    tmbbuff.append(arr[i]);
+                }
+                if(arr.length > 5) tmbbuff.append(", ..." + arr.length);
+                tmbbuff.append("]");
+                dumpMedssage(sb, path, tmbbuff.toString());
+            } else if(long.class.equals(cl)) {
+                long[] arr = (long[])o;
+                StringBuilder tmbbuff = new StringBuilder();
+                tmbbuff.append("[");
+                for(int i = 0; i < 5; i++) {
+                    if(arr.length <= i) break;
+                    if(i > 0) tmbbuff.append(", ");
+                    tmbbuff.append(arr[i]);
+                }
+                if(arr.length > 5) tmbbuff.append(", ..." + arr.length);
+                tmbbuff.append("]");
+                dumpMedssage(sb, path, tmbbuff.toString());
+            } else if(char.class.equals(cl)) {
+                char[] arr = (char[])o;
+                StringBuilder tmbbuff = new StringBuilder();
+                tmbbuff.append("[");
+                for(int i = 0; i < 5; i++) {
+                    if(arr.length <= i) break;
+                    if(i > 0) tmbbuff.append(", ");
+                    tmbbuff.append(arr[i]);
+                }
+                if(arr.length > 5) tmbbuff.append(", ..." + arr.length);
+                tmbbuff.append("]");
+                dumpMedssage(sb, path, tmbbuff.toString());
+            } else if(short.class.equals(cl)) {
+                short[] arr = (short[])o;
+                StringBuilder tmbbuff = new StringBuilder();
+                tmbbuff.append("[");
+                for(int i = 0; i < 5; i++) {
+                    if(arr.length <= i) break;
+                    if(i > 0) tmbbuff.append(", ");
+                    tmbbuff.append(arr[i]);
+                }
+                if(arr.length > 5) tmbbuff.append(", ..." + arr.length);
+                tmbbuff.append("]");
+                dumpMedssage(sb, path, tmbbuff.toString());
+            } else if(float.class.equals(cl)) {
+                float[] arr = (float[])o;
+                StringBuilder tmbbuff = new StringBuilder();
+                tmbbuff.append("[");
+                for(int i = 0; i < 5; i++) {
+                    if(arr.length <= i) break;
+                    if(i > 0) tmbbuff.append(", ");
+                    tmbbuff.append(arr[i]);
+                }
+                if(arr.length > 5) tmbbuff.append(", ..." + arr.length);
+                tmbbuff.append("]");
+                dumpMedssage(sb, path, tmbbuff.toString());
+            } else if(double.class.equals(cl)) {
+                double[] arr = (double[])o;
+                StringBuilder tmbbuff = new StringBuilder();
+                tmbbuff.append("[");
+                for(int i = 0; i < 5; i++) {
+                    if(arr.length <= i) break;
+                    if(i > 0) tmbbuff.append(", ");
+                    tmbbuff.append(arr[i]);
+                }
+                if(arr.length > 5) tmbbuff.append(", ..." + arr.length);
+                tmbbuff.append("]");
+                dumpMedssage(sb, path, tmbbuff.toString());
+            } else if(boolean.class.equals(cl)) {
+                boolean[] arr = (boolean[])o;
+                StringBuilder tmbbuff = new StringBuilder();
+                tmbbuff.append("[");
+                for(int i = 0; i < 5; i++) {
+                    if(arr.length <= i) break;
+                    if(i > 0) tmbbuff.append(", ");
+                    tmbbuff.append(arr[i]);
+                }
+                if(arr.length > 5) tmbbuff.append(", ..." + arr.length);
+                tmbbuff.append("]");
+                dumpMedssage(sb, path, tmbbuff.toString());
+            } else {
+                int size = arraySize(clazz, o);
+                dumpMedssage(sb, path+".size", ""+size);
+                for(int i = 0; i < size; i++) {
+                    Object oo = arrayItem(clazz, o, i);
+                    dump(sb, path+"["+i+"]", oo, stack);
+                }
             }
+
         }
     }
     
@@ -156,6 +256,7 @@ public class Dumper {
             }
         }
     }
+
     
     
     private void dumpMap(StringBuilder sb, String path, Class clazz, Object o, List stack) {
@@ -183,6 +284,15 @@ public class Dumper {
     }
 
     private int arraySize(Class clazz, Object o) {
+        Class cl = clazz.getComponentType();
+        if(byte.class.equals(cl)) return ((byte[])o).length;
+        if(char.class.equals(cl)) return ((char[])o).length;
+        if(int.class.equals(cl)) return ((int[])o).length;
+        if(short.class.equals(cl)) return ((short[])o).length;
+        if(long.class.equals(cl)) return ((long[])o).length;
+        if(float.class.equals(cl)) return ((float[])o).length;
+        if(double.class.equals(cl)) return ((double[])o).length;
+        if(boolean.class.equals(cl)) return ((boolean[])o).length;
         return ((Object[])o).length;
     }
 

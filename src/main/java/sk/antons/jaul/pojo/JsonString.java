@@ -177,7 +177,7 @@ public class JsonString {
                 return;
             }
             arrayStart();
-            int size = ((Object[])o).length;
+            int size = arraySize(clazz, o);
             for(int i = 0; i < size; i++) {
                 value(Array.get(o, i));
             }
@@ -204,6 +204,19 @@ public class JsonString {
         }
 
         sb.append('"').append(escape(o.toString())).append('"');
+    }
+    
+    private int arraySize(Class clazz, Object o) {
+        Class cl = clazz.getComponentType();
+        if(byte.class.equals(cl)) return ((byte[])o).length;
+        if(char.class.equals(cl)) return ((char[])o).length;
+        if(int.class.equals(cl)) return ((int[])o).length;
+        if(short.class.equals(cl)) return ((short[])o).length;
+        if(long.class.equals(cl)) return ((long[])o).length;
+        if(float.class.equals(cl)) return ((float[])o).length;
+        if(double.class.equals(cl)) return ((double[])o).length;
+        if(boolean.class.equals(cl)) return ((boolean[])o).length;
+        return ((Object[])o).length;
     }
 
     private boolean isNonStringClass(Class clazz) {

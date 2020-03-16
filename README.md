@@ -25,7 +25,7 @@ There are several types of utilities
    <dependency>
       <groupId>com.github.antonsjava</groupId>
       <artifactId>jaul</artifactId>
-      <version>1.10</version>
+      <version>[last version](https://mvnrepository.com/artifact/com.github.antonsjava/jaul)</version>
    </dependency>
 ```
 
