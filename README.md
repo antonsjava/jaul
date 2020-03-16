@@ -25,9 +25,10 @@ There are several types of utilities
    <dependency>
       <groupId>com.github.antonsjava</groupId>
       <artifactId>jaul</artifactId>
-      <version>[last version](https://mvnrepository.com/artifact/com.github.antonsjava/jaul)</version>
+      <version>LASTVERSION</version>
    </dependency>
 ```
+You can find LASTVERSION [here](https://mvnrepository.com/artifact/com.github.antonsjava/jaul)
 
 ## OSGI usage (Karaf)
 
