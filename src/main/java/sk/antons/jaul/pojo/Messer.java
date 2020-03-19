@@ -20,13 +20,17 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import javafx.scene.chart.PieChart;
 
 /**
  * Generates dummy instances of data objects. It is usable for 
@@ -226,6 +230,9 @@ public class Messer {
         
         if(clazz.equals(LocalDateTime.class)) return LocalDateTime.now();
         if(clazz.equals(LocalDate.class)) return LocalDate.now();
+        if(clazz.equals(Date.class)) return new Date();
+        if(clazz.equals(BigDecimal.class)) return BigDecimal.ONE;
+        if(clazz.equals(BigInteger.class)) return BigInteger.ONE;
         
         return null;
     } 

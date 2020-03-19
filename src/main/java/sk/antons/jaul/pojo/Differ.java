@@ -20,6 +20,8 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -237,6 +239,8 @@ public class Differ {
         if(clazz.equals(LocalDateTime.class)) return true;
         if(clazz.equals(LocalDate.class)) return true;
         if(clazz.equals(Date.class)) return true;
+        if(clazz.equals(BigDecimal.class)) return true;
+        if(clazz.equals(BigInteger.class)) return true;
         
         return false;
     }
