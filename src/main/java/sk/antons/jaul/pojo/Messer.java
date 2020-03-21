@@ -30,7 +30,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import javafx.scene.chart.PieChart;
 
 /**
  * Generates dummy instances of data objects. It is usable for 
