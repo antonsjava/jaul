@@ -217,9 +217,9 @@ public class Messer {
         if(clazz.equals(char.class)) return 'c';
         
         if(clazz.equals(Integer.class)) return 1;
-        if(clazz.equals(Long.class)) return 1;
-        if(clazz.equals(Byte.class)) return 1;
-        if(clazz.equals(Short.class)) return 1;
+        if(clazz.equals(Long.class)) return (long)1;
+        if(clazz.equals(Byte.class)) return (byte)1;
+        if(clazz.equals(Short.class)) return (short)1;
         if(clazz.equals(Double.class)) return 1.0;
         if(clazz.equals(Float.class)) return 1.0;
         if(clazz.equals(Boolean.class)) return true;
