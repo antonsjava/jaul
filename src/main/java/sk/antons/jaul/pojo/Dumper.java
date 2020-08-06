@@ -32,6 +32,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import org.w3c.dom.Element;
+import sk.antons.jaul.xml.Xml;
 
 /**
  * Generates dump of POJO instance.
@@ -74,7 +76,9 @@ public class Dumper {
         Class clazz = o.getClass();
         
         if(isSimpleClass(clazz)) {
-            String s = o.toString();
+            String s = null;
+            if(Element.class.isAssignableFrom(clazz)) s = Xml.elementToString((Element)o, "utf-8", false, false);
+            else s = o.toString();
             if(s != null) s = s.replace('\n', ' ');
             dumpMedssage(sb, path, s);
 			stack.remove(stack.size()-1);
@@ -131,6 +135,7 @@ public class Dumper {
         if(clazz.equals(Date.class)) return true;
         if(clazz.equals(BigDecimal.class)) return true;
         if(clazz.equals(BigInteger.class)) return true;
+        if(Element.class.isAssignableFrom(clazz)) return true;
         
         return false;
     }
@@ -399,7 +404,9 @@ public class Dumper {
         Class clazz = o.getClass();
         
         if(isSimpleClass(clazz)) {
-            String s = o.toString();
+            String s = null;
+            if(Element.class.isAssignableFrom(clazz)) s = Xml.elementToString((Element)o, "utf-8", false, false);
+            else s = o.toString();
             jsonMessage(json, name, s);
 			stack.remove(stack.size()-1);
             return;

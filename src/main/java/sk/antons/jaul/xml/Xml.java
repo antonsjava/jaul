@@ -29,6 +29,9 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import sk.antons.jaul.Is;
 import sk.antons.jaul.util.TextFile;
@@ -231,9 +234,42 @@ public class Xml {
             TransformerFactory tf = TransformerFactory.newInstance();
             Transformer transformer = tf.newTransformer();
             if(declaration) {
-                transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-            } else {
                 transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+            } else {
+                transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+            }
+            if(encoding != null) transformer.setOutputProperty(OutputKeys.ENCODING, encoding);
+            if(indent) transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+
+            transformer.transform(new DOMSource(doc), new StreamResult(sw));
+            return sw.toString();
+        } catch(Exception ex) {
+            throw new IllegalStateException("Error converting to String", ex);
+        }
+    }
+    
+    /**
+     * Converts Element to string
+     * @param element - document to be converted
+     * @param encoding - encoding (used only in declaration pragma)
+     * @param indent - if resulting xml should be indented
+     * @param declaration - if declaration pragma should be included
+     * @return xml text generated from document 
+     */
+    public static String elementToString(Element doc, String encoding, boolean indent, boolean declaration) {
+        if(doc == null) {
+            return null;
+        }
+
+        try {
+            StringWriter sw = new StringWriter();
+            TransformerFactory tf = TransformerFactory.newInstance();
+            Transformer transformer = tf.newTransformer();
+            if(declaration) {
+                transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+            } else {
+                transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
             }
             if(encoding != null) transformer.setOutputProperty(OutputKeys.ENCODING, encoding);
             if(indent) transformer.setOutputProperty(OutputKeys.INDENT, "yes");
@@ -282,6 +318,33 @@ public class Xml {
             TextFile.save(file, encoding, xml);
         } catch(Exception ex) {
             throw new IllegalStateException("Error converting to String of save to file ", ex);
+        }
+    }
+
+    /**
+     * Removes unnecessary whitespace nodes from doc tree.
+     * Usefull for printing oneline xmls.
+     * @param node 
+     */
+    public static void trimWhiteSpaces(Node node) {
+        if(node == null) return;
+        if(node.getNodeType() != Node.ELEMENT_NODE) return;
+        NodeList children = node.getChildNodes();
+        if(children == null) return;
+        if((children.getLength() < 1)) return;
+        if((children.getLength() < 2) && (children.item(0).getNodeType() == Node.TEXT_NODE)) return;
+        for(int i = children.getLength()-1; i >= 0; i--) {
+            Node child = children.item(i);
+            if(child.getNodeType() == Node.TEXT_NODE) {
+                String text = child.getTextContent();
+                if(!Is.empty(text)) text = text.trim();
+                if(Is.empty(text)) {
+                    node.removeChild(child);
+                } else {
+                }
+            } else {
+                trimWhiteSpaces(child);
+            }
         }
     }
     
