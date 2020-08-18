@@ -53,12 +53,7 @@ public class Xml {
         if(stream == null) return null;
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            dbf.setValidating(false);
             dbf.setNamespaceAware(true);
-            dbf.setFeature("http://xml.org/sax/features/namespaces", false);
-            dbf.setFeature("http://xml.org/sax/features/validation", false);
-            dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
-            dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
             DocumentBuilder db = dbf.newDocumentBuilder();
             InputSource is = new InputSource(stream);
             return db.parse(is);
@@ -76,12 +71,7 @@ public class Xml {
         if(xml == null) return null;
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            dbf.setValidating(false);
             dbf.setNamespaceAware(true);
-            dbf.setFeature("http://xml.org/sax/features/namespaces", false);
-            dbf.setFeature("http://xml.org/sax/features/validation", false);
-            dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
-            dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
             DocumentBuilder db = dbf.newDocumentBuilder();
             InputSource is = new InputSource(new StringReader(xml));
             return db.parse(is);
@@ -257,8 +247,8 @@ public class Xml {
      * @param declaration - if declaration pragma should be included
      * @return xml text generated from document 
      */
-    public static String elementToString(Element doc, String encoding, boolean indent, boolean declaration) {
-        if(doc == null) {
+    public static String elementToString(Element element, String encoding, boolean indent, boolean declaration) {
+        if(element == null) {
             return null;
         }
 
@@ -275,7 +265,7 @@ public class Xml {
             if(indent) transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             transformer.setOutputProperty(OutputKeys.METHOD, "xml");
 
-            transformer.transform(new DOMSource(doc), new StreamResult(sw));
+            transformer.transform(new DOMSource(element), new StreamResult(sw));
             return sw.toString();
         } catch(Exception ex) {
             throw new IllegalStateException("Error converting to String", ex);

@@ -24,6 +24,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import sk.antons.jaul.Is;
 
 /**
  * Simple Element wrapper class. simplify traversing of xml dom by elements. 
@@ -416,6 +417,45 @@ public class EW {
         EW ew = firstChildByTagNameNS(ns, tag);
         if(ew == null) return null;
         return ew.elem().getTextContent();
+    }
+
+    /**
+     * Finds first element defined by path.
+     * @param path path defined by eleement names
+     * @return element or null 
+     */
+    public EW firstByPath(String... path) {
+        EW root = this;
+        if(Is.empty(path)) return null;
+        for(String name : path) {
+            root = root.firstChildByTagName(name);
+            if(root == null) return null;
+        }
+        return root;
+    }
+    
+    /**
+     * Finds all elements defined by path.
+     * @param path path defined by eleement names
+     * @return list of elements 
+     */
+    public List<EW> allByPath(String... path) {
+        List<EW> list = new ArrayList<EW>();
+        if(Is.empty(path)) return list;
+        allByPath(list, path, 0);
+        return list;
+    }
+    
+    private void allByPath(List<EW> list, String[] path, int index) {
+        List<EW> chlist = childrenByTagName(path[index]);
+        if(Is.empty(chlist)) return;
+        if(index == path.length-1) {
+            list.addAll(chlist);
+        } else {
+            for(EW ew : chlist) {
+                ew.allByPath(list, path, index+1);
+            }
+        }
     }
 
 }
