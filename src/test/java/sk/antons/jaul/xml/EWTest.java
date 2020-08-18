@@ -30,7 +30,7 @@ public class EWTest {
     @Test
 	public void tagOnly() throws Exception {
         String file = "src/test/resources/xml-test.xml";
-        Document doc = Xml.documentFromFile(file);
+        Document doc = Xml.documentFromFile(file, false);
         Assert.assertNotNull("doc", doc);
         EW root = EW.elem(doc.getDocumentElement());
         Assert.assertTrue("root", "root".equals(root.tag()));
@@ -78,7 +78,7 @@ public class EWTest {
     @Test
 	public void tagWithNs() throws Exception {
         String file = "src/test/resources/xml-test.xml";
-        Document doc = Xml.documentFromFile(file);
+        Document doc = Xml.documentFromFile(file, false);
         Assert.assertNotNull("doc", doc);
         EW root = EW.elem(doc.getDocumentElement());
         Assert.assertTrue("root", "root".equals(root.tag()));
@@ -109,7 +109,7 @@ public class EWTest {
     @Test
 	public void text() throws Exception {
         String file = "src/test/resources/xml-test.xml";
-        Document doc = Xml.documentFromFile(file);
+        Document doc = Xml.documentFromFile(file, false);
         Assert.assertNotNull("doc", doc);
         EW root = EW.elem(doc.getDocumentElement());
         Assert.assertTrue("root", "root".equals(root.tag()));
@@ -128,7 +128,7 @@ public class EWTest {
     @Test
 	public void attr() throws Exception {
         String file = "src/test/resources/xml-test.xml";
-        Document doc = Xml.documentFromFile(file);
+        Document doc = Xml.documentFromFile(file, false);
         Assert.assertNotNull("doc", doc);
         EW root = EW.elem(doc.getDocumentElement());
     
@@ -141,7 +141,7 @@ public class EWTest {
     @Test
 	public void firstTagOnly() throws Exception {
         String file = "src/test/resources/xml-test.xml";
-        Document doc = Xml.documentFromFile(file);
+        Document doc = Xml.documentFromFile(file, false);
         Assert.assertNotNull("doc", doc);
         EW root = EW.elem(doc.getDocumentElement());
         Assert.assertTrue("root", "root".equals(root.tag()));

@@ -49,11 +49,11 @@ public class Xml {
      * @param stream - with xml data
      * @return parsed xml document
      */
-    public static Document document(InputStream stream) {
+    public static Document document(InputStream stream, boolean namespaceAware) {
         if(stream == null) return null;
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            dbf.setNamespaceAware(true);
+            dbf.setNamespaceAware(namespaceAware);
             DocumentBuilder db = dbf.newDocumentBuilder();
             InputSource is = new InputSource(stream);
             return db.parse(is);
@@ -62,16 +62,20 @@ public class Xml {
         }
     }
     
+    public static Document document(InputStream stream) {
+        return document(stream, true);
+    }
+    
     /**
      * Parse xml from input string
      * @param xml - string with xml data
      * @return parsed xml document
      */
-    public static Document document(String xml) {
+    public static Document document(String xml, boolean namespaceAware) {
         if(xml == null) return null;
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            dbf.setNamespaceAware(true);
+            dbf.setNamespaceAware(namespaceAware);
             DocumentBuilder db = dbf.newDocumentBuilder();
             InputSource is = new InputSource(new StringReader(xml));
             return db.parse(is);
@@ -80,18 +84,26 @@ public class Xml {
         }
     }
     
+    public static Document document(String xml) {
+        return document(xml, true);
+    }
+    
     /**
      * Parse xml from file
      * @param filename - name of the file with xml content
      * @return parsed xml document
      */
-    public static Document documentFromFile(String filename) {
+    public static Document documentFromFile(String filename, boolean namespaceAware) {
         if(filename == null) return null;
         try {
-            return document(new FileInputStream(filename));
+            return document(new FileInputStream(filename), namespaceAware);
         } catch (Exception e) {
             throw new IllegalArgumentException("Unable to parse xml document from file " + filename, e);
         }
+    }
+    
+    public static Document documentFromFile(String filename) {
+        return documentFromFile(filename, true);
     }
     
     /**
@@ -99,13 +111,17 @@ public class Xml {
      * @param filename - file with xml content
      * @return parsed xml document
      */
-    public static Document documentFromFile(File file) {
+    public static Document documentFromFile(File file, boolean namespaceAware) {
         if(file== null) return null;
         try {
-            return document(new FileInputStream(file));
+            return document(new FileInputStream(file), namespaceAware);
         } catch (Exception e) {
             throw new IllegalArgumentException("Unable to parse xml document from file " + file, e);
         }
+    }
+    
+    public static Document documentFromFile(File file) {
+        return documentFromFile(file, true);
     }
 
     /**

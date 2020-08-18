@@ -46,7 +46,7 @@ public class XmlTest {
     @Test
 	public void document() throws Exception {
         String file = "src/test/resources/xml-test.xml";
-        Document doc = Xml.documentFromFile(file);
+        Document doc = Xml.documentFromFile(file, false);
         Assert.assertNotNull("doc", doc);
     }
 }
