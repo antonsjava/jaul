@@ -334,21 +334,15 @@ public class Xml {
      */
     public static void trimWhiteSpaces(Node node) {
         if(node == null) return;
-        if(node.getNodeType() != Node.ELEMENT_NODE) return;
-        NodeList children = node.getChildNodes();
-        if(children == null) return;
-        if((children.getLength() < 1)) return;
-        if((children.getLength() < 2) && (children.item(0).getNodeType() == Node.TEXT_NODE)) return;
-        for(int i = children.getLength()-1; i >= 0; i--) {
-            Node child = children.item(i);
-            if(child.getNodeType() == Node.TEXT_NODE) {
-                String text = child.getTextContent();
-                if(!Is.empty(text)) text = text.trim();
-                if(Is.empty(text)) {
-                    node.removeChild(child);
-                } else {
-                }
-            } else {
+        if(node.getNodeType() == Node.TEXT_NODE) {
+            String value = node.getNodeValue();
+            if(value != null) value = value.trim();
+            if(Is.empty(value)) node.getParentNode().removeChild(node);
+        } else {
+            NodeList children = node.getChildNodes();
+            if(children == null) return;
+            for(int i = children.getLength()-1; i >= 0; i--) {
+                Node child = children.item(i);
                 trimWhiteSpaces(child);
             }
         }
