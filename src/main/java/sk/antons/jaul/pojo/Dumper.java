@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import org.w3c.dom.Element;
 import sk.antons.jaul.xml.Xml;
+import sk.antons.jaul.xml.XmlFormat;
 
 /**
  * Generates dump of POJO instance.
@@ -77,7 +78,7 @@ public class Dumper {
         
         if(isSimpleClass(clazz)) {
             String s = null;
-            if(Element.class.isAssignableFrom(clazz)) s = Xml.elementToString((Element)o, "utf-8", false, false);
+            if(Element.class.isAssignableFrom(clazz)) s = XmlFormat.instance(Xml.elementToString((Element)o, "utf-8", false, false), 1).forceoneline().format();
             else s = o.toString();
             if(s != null) s = s.replace('\n', ' ');
             dumpMedssage(sb, path, s);
@@ -405,7 +406,7 @@ public class Dumper {
         
         if(isSimpleClass(clazz)) {
             String s = null;
-            if(Element.class.isAssignableFrom(clazz)) s = Xml.elementToString((Element)o, "utf-8", false, false);
+            if(Element.class.isAssignableFrom(clazz)) s = XmlFormat.instance(Xml.elementToString((Element)o, "utf-8", false, false), 1).forceoneline().format();
             else s = o.toString();
             jsonMessage(json, name, s);
 			stack.remove(stack.size()-1);
