@@ -40,6 +40,28 @@ Simple base64 encoder
   byte[] newdata = Base64.decode(text);
 ```
 
+## Any64
+
+Simple bytes to text encoder baset on Base64 but uses different charset.
+It produce encoded text with only characters from given charset (no '=' 
+padding)
+
+```java
+  byte[] charset = new char[] {'a', 'b', ..... 64 unique chars};
+  byte[] data = ...
+  Any64 encoder = Any64.instance(charset);
+  String text = encoder.encode(data);
+  byte[] newdata = encoder.decode(text);
+```
+If you are satisfied with Base64 charset and you want to replace only plus 
+and slash characters. (Usually only those characters are problematic.)
+```java
+  byte[] data = ...
+  Any64 encoder = Any64.instance('?', '!');
+  String text = encoder.encode(data);
+  byte[] newdata = encoder.decode(text);
+```
+
 ## Hex
 
 Simple Hex encoder
