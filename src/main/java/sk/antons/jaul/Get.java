@@ -40,6 +40,16 @@ public class Get {
         if(value.isEmpty()) return null;
         return (T) value.get(0);
     }
+    
+    /**
+     * First element of provided array. 
+     * @param value - provided array 
+     * @return first element of array of null if provided collection is empty.
+     */
+    public static <T> T first(T[] value) {
+        if(value == null) return null;
+        return (T) value[0];
+    }
 
     /**
      * First element of provided collection. 
@@ -50,6 +60,55 @@ public class Get {
         if(value == null) return null;
         if(value.isEmpty()) return null;
         return (T) value.iterator().next();
+    }
+
+
+    /**
+     * last element of provided collection. 
+     * @param value - provided collection 
+     * @return last element of collection or null if provided collection is empty.
+     */
+    public static <T> T last(List<T> value) {
+        if(value == null) return null;
+        if(value.isEmpty()) return null;
+        return (T) value.get(value.size()-1);
+    }
+    
+    /**
+     * last element of provided array. 
+     * @param value - provided array 
+     * @return last element of array or null if provided collection is empty.
+     */
+    public static <T> T last(T[] value) {
+        if(value == null) return null;
+        return (T) value[value.length-1];
+    }
+    
+    /**
+     * Nth element of provided collection. 
+     * @param value - provided collection 
+     * @param index - index of element 
+     * @return Nth element of collection or null if provided collection index not exists.
+     */
+    public static <T> T nth(List<T> value, int index) {
+        if(value == null) return null;
+        if(value.isEmpty()) return null;
+        if(index < 0) return null;
+        if(index >= value.size()) return null;
+        return (T) value.get(index);
+    }
+
+    /**
+     * Nth element of provided array. 
+     * @param value - provided array 
+     * @param index - index of element 
+     * @return Nth element of array or null if provided array index not exists.
+     */
+    public static <T> T nth(T[] value, int index) {
+        if(value == null) return null;
+        if(index < 0) return null;
+        if(index >= value.length) return null;
+        return (T) value[index];
     }
 
 
