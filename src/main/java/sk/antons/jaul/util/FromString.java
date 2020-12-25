@@ -18,6 +18,9 @@ package sk.antons.jaul.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import sk.antons.jaul.Is;
 
@@ -213,5 +216,87 @@ public class FromString {
      * @return converted value or null in case empty input
      */
     public Date dateValue(String format) { return dateValue(null, format); }
+    
+    /**
+     * Converts string value to date.
+     * @param defaultValue - default value
+     * @param format - format of the parsed date (SimpleDateFpormat)
+     * @return converted value
+     */
+    public LocalDate localDateValue(LocalDate defaultValue, DateTimeFormatter format) {
+        if(Is.empty(value)) {
+            if(defaultEmptyValue) return defaultValue;
+            throw new IllegalArgumentException("Unable to parse date from empty value");
+        }
+        if(Is.empty(format)) {
+            throw new IllegalArgumentException("Unable to parse date using empty format");
+        }
+        
+        LocalDate rv = null;
+        value = value.replace(',', '.');
+        try {
+            rv = LocalDate.parse(value, format);
+        } catch (Exception e) {
+            if(!ignoreBadValue) throw new IllegalArgumentException(e);
+            rv = defaultValue;
+        }
+        return rv;
+    }
+
+    /**
+     * Converts string value to date.
+     * @param defaultValue - default value
+     * @param format - format of the parsed date (SimpleDateFpormat)
+     * @return converted value
+     */
+    public LocalDate localDateValue(LocalDate defaultValue, String format) { return localDateValue(defaultValue, DateTimeFormatter.ofPattern(format)); }
+    
+    /**
+     * Converts string value to date.
+     * @param format - format of the parsed date (SimpleDateFpormat)
+     * @return converted value or null in case empty input
+     */
+    public LocalDate localDateValue(String format) { return localDateValue(null, DateTimeFormatter.ofPattern(format)); }
+    
+    /**
+     * Converts string value to date.
+     * @param defaultValue - default value
+     * @param format - format of the parsed date (SimpleDateFpormat)
+     * @return converted value
+     */
+    public LocalDateTime localDateTimeValue(LocalDateTime defaultValue, DateTimeFormatter format) {
+        if(Is.empty(value)) {
+            if(defaultEmptyValue) return defaultValue;
+            throw new IllegalArgumentException("Unable to parse date from empty value");
+        }
+        if(Is.empty(format)) {
+            throw new IllegalArgumentException("Unable to parse date using empty format");
+        }
+        
+        LocalDateTime rv = null;
+        value = value.replace(',', '.');
+        try {
+            rv = LocalDateTime.parse(value, format);
+        } catch (Exception e) {
+            if(!ignoreBadValue) throw new IllegalArgumentException(e);
+            rv = defaultValue;
+        }
+        return rv;
+    }
+
+    /**
+     * Converts string value to date.
+     * @param defaultValue - default value
+     * @param format - format of the parsed date (SimpleDateFpormat)
+     * @return converted value
+     */
+    public LocalDateTime localDateTimeValue(LocalDateTime defaultValue, String format) { return localDateTimeValue(defaultValue, DateTimeFormatter.ofPattern(format)); }
+    
+    /**
+     * Converts string value to date.
+     * @param format - format of the parsed date (SimpleDateFpormat)
+     * @return converted value or null in case empty input
+     */
+    public LocalDateTime localDateTimeValue(String format) { return localDateTimeValue(null, DateTimeFormatter.ofPattern(format)); }
 
 }

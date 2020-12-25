@@ -16,6 +16,8 @@
 
 package sk.antons.jaul;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -437,8 +439,8 @@ public class Get {
      * @param value - value to be converted
      * @return 
      */
-    public static FromDate from(Date value) {
-        return new FromDate(value, null);
+    public static FromDate.DT from(Date value) {
+        return new FromDate.DT(value, null);
     }
     
     /**
@@ -447,8 +449,27 @@ public class Get {
      * @param nullResult  - value to be used if value is null
      * @return 
      */
-    public static FromDate from(Date value, String nullResult) {
-        return new FromDate(value, nullResult);
+    public static FromDate.DT from(Date value, String nullResult) {
+        return new FromDate.DT(value, nullResult);
+    }
+    
+    /**
+     * returns date converter
+     * @param value - value to be converted
+     * @return 
+     */
+    public static FromDate.LDT from(LocalDate value) {
+        return new FromDate.LDT(value, null);
+    }
+    
+    /**
+     * returns date converter
+     * @param value - value to be converted
+     * @param nullResult  - value to be used if value is null
+     * @return 
+     */
+    public static FromDate.LDT from(LocalDate value, String nullResult) {
+        return new FromDate.LDT(value, nullResult);
     }
 
     /**
@@ -458,6 +479,25 @@ public class Get {
      */
     public static FromString from(String value) {
         return new FromString(value);
+    }
+    
+    /**
+     * returns date converter
+     * @param value - value to be converted
+     * @return 
+     */
+    public static FromDate.LDTTM from(LocalDateTime value) {
+        return new FromDate.LDTTM(value, null);
+    }
+    
+    /**
+     * returns date converter
+     * @param value - value to be converted
+     * @param nullResult  - value to be used if value is null
+     * @return 
+     */
+    public static FromDate.LDTTM from(LocalDateTime value, String nullResult) {
+        return new FromDate.LDTTM(value, nullResult);
     }
 
     /**

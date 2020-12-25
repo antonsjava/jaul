@@ -17,6 +17,9 @@
 package sk.antons.jaul.util;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import sk.antons.jaul.Is;
 
@@ -25,38 +28,112 @@ import sk.antons.jaul.Is;
  * @author antons
  */
 public class FromDate {
-    private Date value;
-    private String nullResult;
 
-    /**
-     * 
-     * @param value - value to be converted.
-     * @param nullResult - default value for null date.
-     */
-    public FromDate(Date value, String nullResult) {
-        this.value = value;
-        this.nullResult = nullResult;
-    }
-    
+    public static class DT {
+        private Date value;
+        private String nullResult;
 
-    /**
-     * Converts Date to String value to int.
-     * @param format - format of the date in SimpleDateFormatter
-     * @return converted value or nullResult if input date is null;
-     */
-    public String string(String format) {
-        if(Is.empty(value)) return null;
-        String rv = nullResult;
-        try {
-            if(format == null) format = "yyyy.MM.dd";
-            if(value != null) {
-                SimpleDateFormat df = new SimpleDateFormat(format);
-                rv = df.format(value);
-            }
-        } catch (Exception e) {
-            throw new IllegalArgumentException(e);
+        /**
+         * 
+         * @param value - value to be converted.
+         * @param nullResult - default value for null date.
+         */
+        public DT(Date value, String nullResult) {
+            this.value = value;
+            this.nullResult = nullResult;
         }
-        return rv;
+        
+
+        /**
+         * Converts Date to String value to int.
+         * @param format - format of the date in SimpleDateFormatter
+         * @return converted value or nullResult if input date is null;
+         */
+        public String string(String format) {
+            if(Is.empty(value)) return null;
+            String rv = nullResult;
+            try {
+                if(format == null) format = "yyyy.MM.dd";
+                if(value != null) {
+                    SimpleDateFormat df = new SimpleDateFormat(format);
+                    rv = df.format(value);
+                }
+            } catch (Exception e) {
+                throw new IllegalArgumentException(e);
+            }
+            return rv;
+        }
     }
     
+    public static class LDT {
+        private LocalDate value;
+        private String nullResult;
+
+        /**
+         * 
+         * @param value - value to be converted.
+         * @param nullResult - default value for null date.
+         */
+        public LDT(LocalDate value, String nullResult) {
+            this.value = value;
+            this.nullResult = nullResult;
+        }
+        
+
+        /**
+         * Converts Date to String value to int.
+         * @param format - format of the date in SimpleDateFormatter
+         * @return converted value or nullResult if input date is null;
+         */
+        public String string(String format) {
+            if(Is.empty(value)) return null;
+            String rv = nullResult;
+            try {
+                if(format == null) format = "yyyy.MM.dd";
+                if(value != null) {
+                    DateTimeFormatter df = DateTimeFormatter.ofPattern(format);
+                    rv = df.format(value);
+                }
+            } catch (Exception e) {
+                throw new IllegalArgumentException(e);
+            }
+            return rv;
+        }
+    }
+    
+    public static class LDTTM {
+        private LocalDateTime value;
+        private String nullResult;
+
+        /**
+         * 
+         * @param value - value to be converted.
+         * @param nullResult - default value for null date.
+         */
+        public LDTTM(LocalDateTime value, String nullResult) {
+            this.value = value;
+            this.nullResult = nullResult;
+        }
+        
+
+        /**
+         * Converts Date to String value to int.
+         * @param format - format of the date in SimpleDateFormatter
+         * @return converted value or nullResult if input date is null;
+         */
+        public String string(String format) {
+            if(Is.empty(value)) return null;
+            String rv = nullResult;
+            try {
+                if(format == null) format = "yyyy.MM.dd HH:mm:ss";
+                if(value != null) {
+                    DateTimeFormatter df = DateTimeFormatter.ofPattern(format);
+                    rv = df.format(value);
+                }
+            } catch (Exception e) {
+                throw new IllegalArgumentException(e);
+            }
+            return rv;
+        }
+    }
 }
