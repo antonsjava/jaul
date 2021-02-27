@@ -41,7 +41,7 @@ import java.util.Map;
  */
 public class Messer {
     
-    private int depth = 0;
+    private int depth = -1;
     private Map<Class, Class> classmap = new HashMap<Class, Class>();
 
     public static Messer instance() {
@@ -166,7 +166,7 @@ public class Messer {
         T rv = (T) simpleValue(clazz, name);
         if(rv != null) return rv;
         rv = emptyInstance(clazz);
-        if((depth > 0) && (path.size()> depth)) return rv;
+        if((depth > -1) && (path.size() > depth)) return rv;
         if(path.contains(clazz)) return rv;
         path.add(clazz);
         fill(rv, path);
