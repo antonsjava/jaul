@@ -40,7 +40,8 @@ import java.util.Map;
  * @author antons
  */
 public class Messer {
-
+    
+    private int depth = 0;
     private Map<Class, Class> classmap = new HashMap<Class, Class>();
 
     public static Messer instance() {
@@ -49,6 +50,11 @@ public class Messer {
 
     public <T> T junk(Class<T> clazz) {
         return (T) instance(clazz, new ArrayList<Class>(), null);
+    }
+
+    public Messer depth(int depth) {
+        this.depth = depth;
+        return this;
     }
 
     public Messer map(Class from, Class to) {
@@ -160,6 +166,7 @@ public class Messer {
         T rv = (T) simpleValue(clazz, name);
         if(rv != null) return rv;
         rv = emptyInstance(clazz);
+        if((depth > 0) && (path.size()> depth)) return rv;
         if(path.contains(clazz)) return rv;
         path.add(clazz);
         fill(rv, path);
