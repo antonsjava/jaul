@@ -33,6 +33,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.w3c.dom.Element;
+import sk.antons.jaul.Get;
 import sk.antons.jaul.xml.Xml;
 import sk.antons.jaul.xml.XmlFormat;
 
@@ -41,8 +42,9 @@ import sk.antons.jaul.xml.XmlFormat;
  * @author antons
  */
 public class Dumper {
-
+    private boolean methoddriven = false;
     public static Dumper instance() { return new Dumper(); }
+    public static Dumper instance(boolean methoddriven) { Dumper d = new Dumper(); d.methoddriven = methoddriven; return d;}
     public String dump(Object value) { 
 		if(value == null) return null;
         StringBuilder sb = new StringBuilder("instance of ").append(value.getClass()).append(" hash: ").append(value.hashCode()).append('\n');
@@ -279,16 +281,38 @@ public class Dumper {
             }
         }
     }
-    private FieldCopmarator comp = FieldCopmarator.instance(); 
+    private static String method2name(Method method) {
+        String name = method.getName();
+        if(name.startsWith("get")) {
+            name = name.substring(3);
+        } else if(name.startsWith("is")) {
+            name = name.substring(2);
+        }
+        name = Character.toLowerCase(name.charAt(0)) + name.substring(1);
+        return name;
+    }
+    private FieldCopmarator fcomp = FieldCopmarator.instance(); 
+    private MethodCopmarator mcomp = MethodCopmarator.instance(); 
     private void dumpObject(StringBuilder sb, String path, Class clazz, Object o, List stack) {
-        List<Field> fields = allFields(clazz);
-        if(fields == null) return;
-        Collections.sort(fields, comp);
-        for(Field field : fields) {
-            if(Modifier.isStatic(field.getModifiers())) continue;
-            Object oo = value(clazz, o, field);
-            if(oo == null) continue;
-            dump(sb, path+'.'+field.getName(), oo, stack);
+        if(methoddriven) {
+            List<Method> methods = allMethods(clazz);
+            if(methods == null) return;
+            Collections.sort(methods, mcomp);
+            for(Method method : methods) {
+                Object oo = value(clazz, o, method);
+                if(oo == null) continue;
+                dump(sb, path+'.'+method2name(method), oo, stack);
+            }
+        } else {
+            List<Field> fields = allFields(clazz);
+            if(fields == null) return;
+            Collections.sort(fields, fcomp);
+            for(Field field : fields) {
+                if(Modifier.isStatic(field.getModifiers())) continue;
+                Object oo = value(clazz, o, field);
+                if(oo == null) continue;
+                dump(sb, path+'.'+field.getName(), oo, stack);
+            }
         }
         
     }
@@ -335,6 +359,30 @@ public class Dumper {
         if(field != null) return field;
         return field(clazz.getSuperclass(), name);
     }
+    private List<Method> allMethods(Class clazz) {
+        List<Method> list = new ArrayList<Method>();
+        allMethods(clazz, list);
+        return list;
+    }
+    private void allMethods(Class clazz, List<Method> list) {
+        if(clazz == null) return;
+        if(clazz.equals(Object.class)) return;
+        Method[] methods = clazz.getDeclaredMethods();
+        if(methods == null) return;
+        for(Method method : methods) {
+            if(Modifier.isStatic(method.getModifiers())) continue;
+            if(!Modifier.isPublic(method.getModifiers())) continue;
+            if(Get.size(method.getParameterTypes()) > 0 ) continue;
+            String name = method.getName();
+            if(  (
+                (name.startsWith("get") && (name.length() > 3))
+                || (name.startsWith("is") && (name.length() > 2))
+            ))  {
+                list.add(method);
+            }
+        }
+        allMethods(clazz.getSuperclass(), list);
+    }
     private Object valueOld(Class clazz, Object object, Field field) {
         field.setAccessible(true);
         Object o = null;
@@ -370,6 +418,14 @@ public class Dumper {
         }
         return o;
     }
+    private Object value(Class clazz, Object object, Method method) {
+        Object o = null;
+        try {
+            o = method.invoke(object, new Object[]{});
+        } catch(Exception e) {
+        }
+        return o;
+    }
 
     private static class FieldCopmarator implements Comparator<Field> {
 
@@ -385,6 +441,23 @@ public class Dumper {
         }
 
         public static FieldCopmarator instance() { return new FieldCopmarator(); }
+    
+    }
+    
+    private static class MethodCopmarator implements Comparator<Method> {
+
+        @Override
+        public int compare(Method o1, Method o2) {
+            String name1 = null;
+            String name2 = null;
+            name1 = o1.getName();
+            name2 = o2.getName();
+            if(name1 == null) name1 = "";
+            if(name2 == null) name2 = "";
+            return name1.compareTo(name2);
+        }
+
+        public static MethodCopmarator instance() { return new MethodCopmarator(); }
     
     }
 
@@ -478,17 +551,30 @@ public class Dumper {
         }
     }
     private void jsonObject(JsonString json, String name, Class clazz, Object o, List stack) {
-        List<Field> fields = allFields(clazz);
-        if(fields == null) return;
-        Collections.sort(fields, comp);
-        json.objectStart();
-        for(Field field : fields) {
-            if(Modifier.isStatic(field.getModifiers())) continue;
-            Object oo = value(clazz, o, field);
-            if(oo == null) continue;
-            json(json, field.getName(), oo, stack);
+        if(methoddriven) {
+            List<Method> methods = allMethods(clazz);
+            if(methods == null) return;
+            Collections.sort(methods, mcomp);
+            json.objectStart();
+            for(Method method : methods) {
+                Object oo = value(clazz, o, method);
+                if(oo == null) continue;
+                json(json, method2name(method), oo, stack);
+            }
+            json.objectEnd();
+        } else {
+            List<Field> fields = allFields(clazz);
+            if(fields == null) return;
+            Collections.sort(fields, fcomp);
+            json.objectStart();
+            for(Field field : fields) {
+                if(Modifier.isStatic(field.getModifiers())) continue;
+                Object oo = value(clazz, o, field);
+                if(oo == null) continue;
+                json(json, field.getName(), oo, stack);
+            }
+            json.objectEnd();
         }
-        json.objectEnd();
     }
 
 //    public static void main(String[] argv) {

@@ -13,5 +13,6 @@ public class Pojo {
     public static Messer messer() { return Messer.instance(); }
     public static Differ differ() { return Differ.instance(); }
     public static Dumper dumper() { return Dumper.instance(); }
+    public static Dumper dumper(boolean methoddriven) { return Dumper.instance(methoddriven); }
 
 }
