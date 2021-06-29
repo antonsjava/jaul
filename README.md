@@ -18,7 +18,6 @@ There are several types of utilities
  - [xml](./xml.md) helpers
  - [utilities](./utilities.md)
 
-
 ## Maven usage
 
 ```
