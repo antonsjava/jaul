@@ -66,6 +66,12 @@ public class JsonString {
      * @return this instance
      */
     public JsonString objectStart() {
+        if(isArray()) {
+            if(isSomething()) {
+                sb.append(',');
+                if(indent != null) sb.append(' ');
+            }
+        }
         if(indent ==  null) sb.append('{');
         else sb.append("{");
         something();
