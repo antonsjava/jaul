@@ -74,7 +74,7 @@ Simple Hex encoder
 
 ## Unicode
 
-Simple inocode encoder
+Simple unicode encoder
 
 ```java
   String data = ...
@@ -83,4 +83,13 @@ Simple inocode encoder
 ```
 
 
+## Html
+
+Simple html escaping encoder
+
+```java
+  String data = ...
+  String text = Html.escapeSimple(data);
+  String newdata = Html.unescape(text);
+```
 
