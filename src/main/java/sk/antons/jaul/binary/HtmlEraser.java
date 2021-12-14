@@ -7,250 +7,259 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Simple html escaper utility.
- * 
+ *
  * @author antons
  */
-public class Html {
+public class HtmlEraser {
 
-    /**
-     * Only characters '<', '>', '"', '\'', '&' are escaped to their names.
-     * @param value text to be escaped
-     * @return escaped text
-     */
-    public static String escapeSimple(String value) {
-        if(value == null) return null;
-        StringBuilder sb = new StringBuilder(value.length()*2);
-        int len = value.length();
-        for(int i = 0; i < len; i++) {
-            char c = value.charAt(i);
-            switch(c) {
-                case '<': sb.append("&lt;"); break;
-                case '>': sb.append("&gt;"); break;
-                case '"': sb.append("&quot;"); break;
-                case '\'': sb.append("&apos;"); break;
-                case '&': sb.append("&amp;"); break;
-                default: sb.append(c);
-            }
-        }
-        return sb.toString();
+    private String xml;
+
+    private boolean reducespaces = true;
+    public HtmlEraser reducespaces(boolean value) { this.reducespaces = value; return this; }
+    private boolean tabtospace = true;
+    public HtmlEraser tabtospace(boolean value) { this.tabtospace = value; return this; }
+    private boolean nltospace = true;
+    public HtmlEraser nltospace(boolean value) { this.nltospace = value; return this; }
+    private boolean unescape = true;
+    public HtmlEraser unescape(boolean value) { this.unescape = value; return this; }
+    private int maxlen = 0;
+    public HtmlEraser maxlen(int value) { this.maxlen = value; return this; }
+
+    private int length;
+    private int length2;
+    private int length3;
+
+    public HtmlEraser(String xml) {
+        this.xml = xml;
+        this.length = xml.length();
+        this.length2 = length-2;
+        this.length3 = length-3;
     }
+
+    public static HtmlEraser of(String xml) { return new HtmlEraser(xml); }
     
-    /**
-     * Characters '<', '>', '"', '\'', '&' are escaped to their names.
-     * And non ascii characters are escaped to generale escape form (&#NNNN;) 
-     * @param value text to be escaped
-     * @return escaped text
-     */
-    public static String escapeSimpleAndNonAscii(String value) {
-        if(value == null) return null;
-        StringBuilder sb = new StringBuilder(value.length()*2);
-        int len = value.length();
-        for(int i = 0; i < len; i++) {
-            char c = value.charAt(i);
-            switch(c) {
-                case '<': sb.append("&lt;"); break;
-                case '>': sb.append("&gt;"); break;
-                case '"': sb.append("&quot;"); break;
-                case '\'': sb.append("&apos;"); break;
-                case '&': sb.append("&amp;"); break;
-                default:
-                    if(c < 128) sb.append(c);
-                    else sb.append("&#").append((int)c).append(';');
-            }
-        }
-        return sb.toString();
-    }
-    
-    /**
-     * All known named characters are escaped to their names.
-     * @param value text to be escaped
-     * @return escaped text
-     */
-    public static String escapeNames(String value) {
-        if(value == null) return null;
-        StringBuilder sb = new StringBuilder(value.length()*2);
-        int len = value.length();
-        for(int i = 0; i < len; i++) {
-            char c = value.charAt(i);
-            switch(c) {
-                case '<': sb.append("&lt;"); break;
-                case '>': sb.append("&gt;"); break;
-                case '"': sb.append("&quot;"); break;
-                case '\'': sb.append("&apos;"); break;
-                case '&': sb.append("&amp;"); break;
-                default:
-                    String name = names().get(c);
-                    if(name == null) sb.append(c);
-                    else sb.append(name);
-            }
-        }
-        return sb.toString();
-    }
-    
-    /**
-     * All known named characters are escaped to their names.
-     * And other non ascii characters are escaped to generale escape form (&#NNNN;) 
-     * @param value text to be escaped
-     * @return escaped text
-     */
-    public static String escapeNamesAndNonAscii(String value) {
-        if(value == null) return null;
-        StringBuilder sb = new StringBuilder(value.length()*2);
-        int len = value.length();
-        for(int i = 0; i < len; i++) {
-            char c = value.charAt(i);
-            switch(c) {
-                case '<': sb.append("&lt;"); break;
-                case '>': sb.append("&gt;"); break;
-                case '"': sb.append("&quot;"); break;
-                case '\'': sb.append("&apos;"); break;
-                case '&': sb.append("&amp;"); break;
-                default:
-                    String name = names().get(c);
-                    if(name != null) sb.append(name);
-                    else if(c < 127) sb.append(c);
-                    else sb.append("&#").append((int)c).append(';');
-            }
-        }
-        return sb.toString();
-    }
-    
-    /**
-     * All numeric codes (&#NNNN; and &#xHHHH;) and mamed entities (&xxxx;) are converted to 
-     * represented chars.
-     * @param value escaped text
-     * @return unescaped text
-     */
-    public static String unescape(String value) {
-        if(value == null) return null;
-        StringBuilder sb = new StringBuilder(value.length());
-        int len = value.length();
-        for(int i = 0; i < len; i++) {
-            char c = value.charAt(i);
-            if(c == '&') {
-                char nc = charAt(value, len, i+1);
-                if(nc == '#') {
-                    char nnc = charAt(value, len, i+2);
-                    if(nnc == 'x') {
-                        int numlen = hexLen(value, len, i+3);
-                        if(numlen > 0) {
-                            int num = hexNum(value, len, i+3, numlen);
-                            sb.append((char)num);
-                            i = i + numlen + 3; 
-                        } else {
-                            sb.append(c);
-                        }
+    public String erase() {
+        try {
+            StringBuilder sb = new StringBuilder();
+            char previous = '-';
+            boolean insidecomm = false;
+            boolean insidetag = false;
+            boolean eraseelem = false;
+            int index = 0;
+            while(index < length) {
+                if((maxlen > 0) && (sb.length() > maxlen)) {
+                    sb.append("...");
+                    break;
+                } 
+                char c = xml.charAt(index);
+                index++;
+                if(insidecomm) {
+                } else if(insidetag) {
+                } else if(c == '<') {
+                    if(isStartComment(index)) {
+                        insidecomm = true;
+                    } if(isStartEraseElem(index)) {
+                        eraseelem = true;
                     } else {
-                        int numlen = decimalLen(value, len, i+2);
-                        if(numlen > 0) {
-                            int num = decimalNum(value, len, i+2, numlen);
-                            sb.append((char)num);
-                            i = i + numlen + 2; 
-                        } else {
-                            sb.append(c);
-                        }
-                    }
-                } else {
-                    Node node = root().find(value, len, i);
-                    if(node == null) {
-                        sb.append(c);
-                    } else {
-                        sb.append(node.character);
-                        i = i + node.name.length() - 1;
+                        insidetag = true;
                     }
                 }
-            } else {
-                sb.append(c);
+                
+                if((!insidecomm) && (!insidetag) && (!eraseelem)) {
+                    if(tabtospace && (c == '\t')) c = ' ';
+                    if(nltospace && (c == '\n')) c = ' ';
+                    if(nltospace && (c == '\r')) c = ' ';
+                    if(unescape && (c == '&')) {
+                        NodeResult result = unescapeNumeric(index-1);
+                        if(result == null) result = unescape(index-1, root());
+                        if(result != null) {
+                            c = result.c;
+                            index = index + result.len - 1;
+                        }
+                    }
+                    if(c == ' ') {
+                        if(reducespaces) {
+                            if(previous != ' ') sb.append(c);
+                        } else {
+                            sb.append(c);
+                        }
+                    } else {
+                        sb.append(c);
+                    }
+                    previous = c;
+                }
+                
+                if(insidecomm) {
+                    if(c == '-') {
+                        if(isEndComment(index)) {
+                            index = index + 3;
+                            insidecomm = false;
+                        }
+                    }
+                } else if(c == '>') {
+                        if(insidetag) insidetag = false;
+                        if(eraseelem && isEndEraseElem(index-1)) eraseelem = false;
+                }
             }
-        }
-        return sb.toString();
-    }
-    
-    private static char charAt(String value, int len, int index) {
-        if(index < len) {
-            return value.charAt(index);
-        } else {
-            return 0;
+                
+            return sb.toString();
+        } catch(Exception e) {
+            return null;
         }
     }
-    
-    private static int decimalLen(String value, int len, int index) {
-        for(int i = 0; i < 5; i++) {
-            char c = charAt(value, len, index + i);
-            if(c == ';') return i;
-            if((c < '0') || (c > '9')) break; 
-        }
-        return -1;
-    }
-    
-    private static int decimalNum(String value, int len, int index, int numlen) {
-        int num = 0;
-        for(int i = 0; i < numlen; i++) {
-            char c = charAt(value, len, index + i);
-            num = num*10 + c - '0';
-        }
-        return num;
-    }  
-    
-    private static int hexLen(String value, int len, int index) {
-        for(int i = 0; i < 5; i++) {
-            char c = charAt(value, len, index + i);
-            if(c == ';') return i;
-            if(!(
-                ((c >= '0') && (c <= '9')) 
-                ||
-                ((c >= 'a') && (c <= 'f')) 
-                ||
-                ((c >= 'A') && (c <= 'F')) 
-                )) break; 
-        }
-        return -1;
-    }
-    
-    private static int hexNum(String value, int len, int index, int numlen) {
-        int num = 0;
-        for(int i = 0; i < numlen; i++) {
-            char c = charAt(value, len, index + i);
-            if((c >= '0') && (c <= '9')) {
-                num = num*16 + c - '0';
-            } else if((c >= 'a') && (c <= 'f')) {
-                num = num*16 + c - 'a';
-            } else {
-                num = num*16 + c - 'A';
-            }
-        }
-        return num;
-    }
-    
-//    private static class Node {
-//        String name;
-//        char character;
-//        Map<Character, Node> children = new HashMap<Character, Node>();
-//        void add(String name, char character, int index) {
-//            if(name.length() == index) {
-//                this.name = name;
-//                this.character = character;
-//            } else {
-//                char c = name.charAt(index);
-//                Node n = children.get(c);
-//                if(n == null) {
-//                    n = new Node();
-//                    children.put(c, n);
-//                }
-//                n.add(name, character, index+1);
-//            }
-//        }
-//        
-//        Node find(String value, int len, int index) {
-//            char c = charAt(value, len, index);
-//            Node n = children.get(c);
-//            if(n == null) return null;
-//            if(c == ';') return n;
-//            return n.find(value, len, index+1);
-//        }       
-//    }
 
+    private boolean isStartComment(int index) {
+        if(index >= length3) return false;
+        if(xml.charAt(index) != '!') return false;
+        if(xml.charAt(index+1) != '-') return false;
+        if(xml.charAt(index+2) != '-') return false;
+        return true;
+    }
+    
+    private boolean isEndComment(int index) {
+        if(index >= length2) return false;
+        if(xml.charAt(index) != '-') return false;
+        if(xml.charAt(index+1) != '>') return false;
+        return true;
+    }
+
+    private static String[] eraseelems = new String[] {"style", "script", "meta"};
+    
+    private boolean isStartEraseElem(int index) {
+        boolean isok = false;
+        for(String eraseelem : eraseelems) {
+            int i = index;
+            int len = eraseelem.length();
+            boolean match = true;
+            for(int j = 0; j < len; j++, i++) {
+                if(i >= length) { match = false; break; }
+                char c1 = Character.toLowerCase(xml.charAt(i));
+                char c2 = eraseelem.charAt(j);
+                if(c1 == c2) continue;
+                match = false;
+                break;
+            }
+            if(match) {
+                if(isNameEnd(i)) {
+                    if(isInsideStartElem(i)) {
+                        isok = true;
+                        break;
+                    }
+                }
+            }
+        }
+        return isok;
+    }
+
+    private boolean isEndEraseElem(int index) {
+        boolean isok = false;
+        for(String eraseelem : eraseelems) {
+            int len = eraseelem.length();
+            int i = index - len - 2;
+            if((i>=0) && (xml.charAt(i++) != '<')) continue;
+            if((i>=0) && (xml.charAt(i++) != '/')) continue;
+            boolean match = true;
+            for(int j = 0; j < len; j++, i++) {
+                if(i < 0) { match = false; break; }
+                char c1 = Character.toLowerCase(xml.charAt(i));
+                char c2 = eraseelem.charAt(j);
+                if(c1 == c2) continue;
+                match = false;
+                break;
+            }
+            if(match) { 
+                isok = true;
+                break;
+            }
+        }
+
+        return isok;
+        
+    }
+    
+    private boolean isInsideStartElem(int index) {
+        char prev = ' ';
+        while(index < length) {
+            char c = xml.charAt(index);
+            if(c == '>') {
+                if(prev == '/') return false;
+                else return true;
+            }
+            index++;
+        } 
+        return false;
+    }
+    private boolean isNameEnd(int index) {
+        if(index >= length) return false;
+        char c = xml.charAt(index);
+        switch(c) {
+            case ' ':
+            case '>':
+            case '\n':
+            case '\r':
+                return true;
+            default: 
+                return false;
+        }
+    }
+
+    private NodeResult unescapeNumeric(int index) {
+        if(index >= length) return null;
+        if(xml.charAt(index++) != '&') return null;
+        if(xml.charAt(index++) != '#') return null;
+        if(xml.charAt(index) != 'x') {
+            index++;
+            int num = 0;
+            for(int i = 0; i < 5; i++) {
+                char c = xml.charAt(index++);
+                if(index >= length) return null;
+                if(c == ';') {
+                    return NodeResult.of((char)num, i+5);
+                } else {
+                    if(('0'<=c) && (c<='9')) num = num*16 + c - '0';
+                    else if(('a'<=c) && (c<='f')) num = num*16 + c - 'a' + 10;
+                    else if(('A'<=c) && (c<='F')) num = num*16 + c - 'A' + 10;
+                    else return null;
+                }
+            }
+            return null;
+        } else {
+            int num = 0;
+            for(int i = 0; i < 5; i++) {
+                char c = xml.charAt(index++);
+                if(index >= length) return null;
+                if(c == ';') {
+                    return NodeResult.of((char)num, i+4);
+                } else {
+                    if(('0'<=c) && (c<='9')) num = num*10 + c - '0';
+                    else return null;
+                }
+            }
+            return null;
+        }
+    }
+
+    private NodeResult unescape(int index, Node node) {
+        if(node == null) return null;
+        if(index >= length) return null;
+        char c = xml.charAt(index);
+        Node n = node.get(c);
+        if(n == null) return null;
+        if(c == ';') return NodeResult.of(n.character, n.name.length());
+        else return unescape(index+1, n);
+    }
+
+    private static class NodeResult {
+        char c;
+        int len; 
+        private static NodeResult of(char c, int len) {
+            NodeResult nr = new NodeResult();
+            nr.c = c;
+            nr.len = len;
+            return nr;
+        }
+    }
+    
     private static class Node {
         String name;
         char character;
@@ -279,14 +288,11 @@ public class Html {
             }
         }
         
-        Node find(String value, int len, int index) {
-            char c = charAt(value, len, index);
-            int i = index(c);
-            if(i < 0) return null;
-            Node n = children[i];
-            if(n == null) return null;
-            if(c == ';') return n;
-            return n.find(value, len, index+1);
+        Node get(char c) {
+            int index = index(c);
+            if(index < 0) return null;
+            Node n = children[index];
+            return n;
         }       
     }
 
@@ -296,13 +302,6 @@ public class Html {
             init();
         }
         return root;
-    }
-    private static Map<Character, String> names = null;
-    private static Map<Character, String> names() {
-        if(names == null) {
-            init();
-        }
-        return names;
     }
     
     private static void addName(String name, char c, Node root, Map<Character, String> names) {
@@ -318,6 +317,7 @@ public class Html {
 		addName("&quot;", '"', node, map);
 		addName("&lt;", '<', node, map);
 		addName("&gt;", '>', node, map);
+		addName("&nbsp;", ' ', node, map);
 
 		addName("&Aacute;", '\u00C1', node, map);
 		addName("&aacute;", '\u00E1', node, map);
@@ -442,7 +442,7 @@ public class Html {
 		addName("&Mu;", '\u039C', node, map);
 		addName("&mu;", '\u03BC', node, map);
 		addName("&nabla;", '\u2207', node, map);
-		addName("&nbsp;", '\u00A0', node, map);
+		addName("&nbsp;", ' ', node, map);
 		addName("&ndash;", '\u2013', node, map);
 		addName("&ne;", '\u2260', node, map);
 		addName("&ni;", '\u220B', node, map);
@@ -565,23 +565,11 @@ public class Html {
 		addName("&Yuml;", '\u0178', node, map);
 		addName("&Zeta;", '\u0396', node, map);
 		addName("&zeta;", '\u03B6', node, map);
-		addName("&zwj;", '\u200D', node, map);
-		addName("&zwnj;", '\u200C', node, map);
+		//addName("&zwj;", '\u200D', node, map);
+		addName("&zwj;", ' ', node, map);
+		//addName("&zwnj;", '\u200C', node, map);
+		addName("&zwnj;", ' ', node, map);
         root = node;
-        names = map;
     }
-    
-//    public static void main(String[] params) {
-//        List<String> list = Split.file("/tmp/empty.txt", "utf-8").byLinesToList();
-//        for(String string : list) {
-//            List<String> data = Split.string(string).bySubstringToList("\t");
-//            String num = data.get(0);
-//            int ii = Get.from(num, true, true).intValue();
-//            String hex = Integer.toHexString(ii).toUpperCase();
-//            while(hex.length() < 4) hex = "0" + hex;
-//            String name = data.get(1);
-//
-//            System.out.println("        addName(\""+name+"\", '\\u"+hex+"', node, map);");
-//        }
-//    }
+
 }
