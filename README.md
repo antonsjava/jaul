@@ -22,7 +22,7 @@ There are several types of utilities
 
 ```
    <dependency>
-      <groupId>com.github.antonsjava</groupId>
+      <groupId>io.github.antonsjava</groupId>
       <artifactId>jaul</artifactId>
       <version>LASTVERSION</version>
    </dependency>
