@@ -54,10 +54,10 @@ public class HtmlEraser {
             boolean eraseelem = false;
             int index = 0;
             while(index < length) {
-                if((maxlen > 0) && (sb.length() > maxlen)) {
+                if((maxlen > 0) && (sb.length() >= maxlen)) {
                     sb.append("...");
                     break;
-                } 
+                }
                 char c = html.charAt(index);
                 index++;
                 if(insidecomm) {
@@ -65,7 +65,7 @@ public class HtmlEraser {
                 } else if(c == '<') {
                     if(isStartComment(index)) {
                         insidecomm = true;
-                    } if(isStartEraseElem(index)) {
+                    } else if(isStartEraseElem(index)) {
                         eraseelem = true;
                     } else {
                         insidetag = true;
@@ -99,7 +99,7 @@ public class HtmlEraser {
                 if(insidecomm) {
                     if(c == '-') {
                         if(isEndComment(index)) {
-                            index = index + 3;
+                            index = index + 2;
                             insidecomm = false;
                         }
                     }
@@ -125,6 +125,7 @@ public class HtmlEraser {
     }
     
     private boolean isEndComment(int index) {
+        System.out.println(html.substring(index));
         if(index >= length2) return false;
         if(html.charAt(index) != '-') return false;
         if(html.charAt(index+1) != '>') return false;
