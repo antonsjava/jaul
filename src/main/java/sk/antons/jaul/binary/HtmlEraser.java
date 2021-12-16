@@ -12,7 +12,7 @@ import java.util.Map;
  */
 public class HtmlEraser {
 
-    private String xml;
+    private String html;
 
     private boolean reducespaces = true;
     public HtmlEraser reducespaces(boolean value) { this.reducespaces = value; return this; }
@@ -29,16 +29,23 @@ public class HtmlEraser {
     private int length2;
     private int length3;
 
-    public HtmlEraser(String xml) {
-        this.xml = xml;
-        this.length = xml.length();
-        this.length2 = length-2;
-        this.length3 = length-3;
+    public HtmlEraser(String html) {
+        this.html = html;
+        if(html != null) {
+            this.length = html.length();
+            this.length2 = length-2;
+            this.length3 = length-3;
+        }
     }
 
-    public static HtmlEraser of(String xml) { return new HtmlEraser(xml); }
+    public static HtmlEraser of(String html) { return new HtmlEraser(html); }
     
     public String erase() {
+        return erase(false);
+    }
+
+    public String erase(boolean propagateError) {
+        if(html == null) return null;
         try {
             StringBuilder sb = new StringBuilder();
             char previous = '-';
@@ -51,7 +58,7 @@ public class HtmlEraser {
                     sb.append("...");
                     break;
                 } 
-                char c = xml.charAt(index);
+                char c = html.charAt(index);
                 index++;
                 if(insidecomm) {
                 } else if(insidetag) {
@@ -104,22 +111,23 @@ public class HtmlEraser {
                 
             return sb.toString();
         } catch(Exception e) {
+            if(propagateError) throw new IllegalArgumentException("Unable to erace text " + html, e);
             return null;
         }
     }
 
     private boolean isStartComment(int index) {
         if(index >= length3) return false;
-        if(xml.charAt(index) != '!') return false;
-        if(xml.charAt(index+1) != '-') return false;
-        if(xml.charAt(index+2) != '-') return false;
+        if(html.charAt(index) != '!') return false;
+        if(html.charAt(index+1) != '-') return false;
+        if(html.charAt(index+2) != '-') return false;
         return true;
     }
     
     private boolean isEndComment(int index) {
         if(index >= length2) return false;
-        if(xml.charAt(index) != '-') return false;
-        if(xml.charAt(index+1) != '>') return false;
+        if(html.charAt(index) != '-') return false;
+        if(html.charAt(index+1) != '>') return false;
         return true;
     }
 
@@ -133,7 +141,7 @@ public class HtmlEraser {
             boolean match = true;
             for(int j = 0; j < len; j++, i++) {
                 if(i >= length) { match = false; break; }
-                char c1 = Character.toLowerCase(xml.charAt(i));
+                char c1 = Character.toLowerCase(html.charAt(i));
                 char c2 = eraseelem.charAt(j);
                 if(c1 == c2) continue;
                 match = false;
@@ -156,12 +164,12 @@ public class HtmlEraser {
         for(String eraseelem : eraseelems) {
             int len = eraseelem.length();
             int i = index - len - 2;
-            if((i>=0) && (xml.charAt(i++) != '<')) continue;
-            if((i>=0) && (xml.charAt(i++) != '/')) continue;
+            if((i>=0) && (html.charAt(i++) != '<')) continue;
+            if((i>=0) && (html.charAt(i++) != '/')) continue;
             boolean match = true;
             for(int j = 0; j < len; j++, i++) {
                 if(i < 0) { match = false; break; }
-                char c1 = Character.toLowerCase(xml.charAt(i));
+                char c1 = Character.toLowerCase(html.charAt(i));
                 char c2 = eraseelem.charAt(j);
                 if(c1 == c2) continue;
                 match = false;
@@ -180,7 +188,7 @@ public class HtmlEraser {
     private boolean isInsideStartElem(int index) {
         char prev = ' ';
         while(index < length) {
-            char c = xml.charAt(index);
+            char c = html.charAt(index);
             if(c == '>') {
                 if(prev == '/') return false;
                 else return true;
@@ -191,7 +199,7 @@ public class HtmlEraser {
     }
     private boolean isNameEnd(int index) {
         if(index >= length) return false;
-        char c = xml.charAt(index);
+        char c = html.charAt(index);
         switch(c) {
             case ' ':
             case '>':
@@ -205,13 +213,13 @@ public class HtmlEraser {
 
     private NodeResult unescapeNumeric(int index) {
         if(index >= length) return null;
-        if(xml.charAt(index++) != '&') return null;
-        if(xml.charAt(index++) != '#') return null;
-        if(xml.charAt(index) != 'x') {
+        if(html.charAt(index++) != '&') return null;
+        if(html.charAt(index++) != '#') return null;
+        if(html.charAt(index) != 'x') {
             index++;
             int num = 0;
             for(int i = 0; i < 5; i++) {
-                char c = xml.charAt(index++);
+                char c = html.charAt(index++);
                 if(index >= length) return null;
                 if(c == ';') {
                     return NodeResult.of((char)num, i+5);
@@ -226,7 +234,7 @@ public class HtmlEraser {
         } else {
             int num = 0;
             for(int i = 0; i < 5; i++) {
-                char c = xml.charAt(index++);
+                char c = html.charAt(index++);
                 if(index >= length) return null;
                 if(c == ';') {
                     return NodeResult.of((char)num, i+4);
@@ -242,7 +250,7 @@ public class HtmlEraser {
     private NodeResult unescape(int index, Node node) {
         if(node == null) return null;
         if(index >= length) return null;
-        char c = xml.charAt(index);
+        char c = html.charAt(index);
         Node n = node.get(c);
         if(n == null) return null;
         if(c == ';') return NodeResult.of(n.character, n.name.length());
