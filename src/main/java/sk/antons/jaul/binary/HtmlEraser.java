@@ -125,7 +125,6 @@ public class HtmlEraser {
     }
     
     private boolean isEndComment(int index) {
-        System.out.println(html.substring(index));
         if(index >= length2) return false;
         if(html.charAt(index) != '-') return false;
         if(html.charAt(index+1) != '>') return false;
