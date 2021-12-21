@@ -19,12 +19,11 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /**
- *
  * @author antons
  */
 public class HtmlEraserTest {
 
-    private static String data = "<p>Covid &jablko; automat: <!--Situácia--> v <script>toto ti nie je</script>okresoch &amp; &</p>";
+    private static String data = "<p>Covid &jablko; <script />automat: <!--Situácia--> v <script>toto ti < > > <nie je</script>okresoch &amp; &</p>";
 	
     @Test
 	public void simple() throws Exception {
@@ -35,7 +34,7 @@ public class HtmlEraserTest {
     @Test
 	public void simplelen() throws Exception {
         String erased = HtmlEraser.of(data).maxlen(10).erase();
-        Assert.assertEquals("Covid &jab...", erased);
+        Assert.assertEquals("Covid &...", erased);
     }
     
     @Test

@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- *
+ * Removes html tags from given text.
  * @author antons
  */
 public class HtmlEraser {
@@ -15,17 +15,43 @@ public class HtmlEraser {
     private String html;
 
     private boolean reducespaces = true;
+    /**
+     * Reduce consequent spaces to one space.
+     * @param value new value (default = true)
+     * @return this
+     */
     public HtmlEraser reducespaces(boolean value) { this.reducespaces = value; return this; }
     private boolean tabtospace = true;
+    /**
+     * Convert tab to space
+     * @param value new value (default = true)
+     * @return this
+     */
     public HtmlEraser tabtospace(boolean value) { this.tabtospace = value; return this; }
     private boolean nltospace = true;
+    /**
+     * Convert newline to space
+     * @param value new value (default = true)
+     * @return this
+     */
     public HtmlEraser nltospace(boolean value) { this.nltospace = value; return this; }
+    /**
+     * unescape &xxx; sequences
+     * @param value new value (default = true)
+     * @return this
+     */
     private boolean unescape = true;
     public HtmlEraser unescape(boolean value) { this.unescape = value; return this; }
     private int maxlen = 0;
+    /**
+     * reduce result text to length
+     * @param value new value (default = 0 - unlimited)
+     * @return this
+     */
     public HtmlEraser maxlen(int value) { this.maxlen = value; return this; }
 
     private int length;
+    private int length1;
     private int length2;
     private int length3;
 
@@ -33,6 +59,7 @@ public class HtmlEraser {
         this.html = html;
         if(html != null) {
             this.length = html.length();
+            this.length1 = length-1;
             this.length2 = length-2;
             this.length3 = length-3;
         }
@@ -46,33 +73,43 @@ public class HtmlEraser {
 
     public String erase(boolean propagateError) {
         if(html == null) return null;
+        StringBuilder sb = new StringBuilder();
         try {
-            StringBuilder sb = new StringBuilder();
             char previous = '-';
             boolean insidecomm = false;
-            boolean insidetag = false;
             boolean eraseelem = false;
             int index = 0;
             while(index < length) {
                 if((maxlen > 0) && (sb.length() >= maxlen)) {
+                    if(maxlen > 3) sb.setLength(maxlen-3);
                     sb.append("...");
                     break;
                 }
+                boolean skipnext = false;
                 char c = html.charAt(index);
+                Token token = token(index, c);
                 index++;
                 if(insidecomm) {
-                } else if(insidetag) {
-                } else if(c == '<') {
-                    if(isStartComment(index)) {
+                } else if(eraseelem) {
+                } else if(token == Token.COMMENT_START) {
                         insidecomm = true;
-                    } else if(isStartEraseElem(index)) {
-                        eraseelem = true;
+                } else if((token == Token.TAG_START_SIMPLE) || (token == Token.TAG_START_SLASH)) {
+                    int index2 = html.indexOf('>', index);
+                    if(index2 < 0) {
+                        index = length;
                     } else {
-                        insidetag = true;
+                        Token token2 = token(index2, '>');
+                        if(token2 == Token.TAG_END_SIMPLE) {
+                            if(isStartEraseElem(index)) {
+                                eraseelem = true;
+                            }     
+                        }
+                        index = index2+1;
+                        skipnext = true;
                     }
                 }
                 
-                if((!insidecomm) && (!insidetag) && (!eraseelem)) {
+                if((!insidecomm) && (!skipnext) && (!eraseelem)) {
                     if(tabtospace && (c == '\t')) c = ' ';
                     if(nltospace && (c == '\n')) c = ' ';
                     if(nltospace && (c == '\r')) c = ' ';
@@ -97,25 +134,55 @@ public class HtmlEraser {
                 }
                 
                 if(insidecomm) {
-                    if(c == '-') {
-                        if(isEndComment(index)) {
-                            index = index + 2;
+                    if(token == Token.COMMENT_END) {
                             insidecomm = false;
-                        }
                     }
-                } else if(c == '>') {
-                        if(insidetag) insidetag = false;
-                        if(eraseelem && isEndEraseElem(index-1)) eraseelem = false;
+                } else if(eraseelem) {
+                    if(token == Token.TAG_END_SIMPLE) {
+                        if(isEndEraseElem(index-1)) eraseelem = false;
+                    }
                 }
             }
                 
             return sb.toString();
         } catch(Exception e) {
             if(propagateError) throw new IllegalArgumentException("Unable to erace text " + html, e);
-            return null;
+            sb.append(" unparseable...");
+            return sb.toString();
         }
     }
 
+    private Token token(int index, char c) {
+        int i = index;
+            if(c == '<') {
+                if(i < length1) {
+                    char c1 = html.charAt(i+1);
+                    if(c1 == '!') {
+                        if((i < length3) && (html.charAt(i+2) == '-') && (html.charAt(i+3) == '-')) {
+                            return Token.COMMENT_START;
+                        }
+                    } else if(c1 == '/') {
+                        return Token.TAG_START_SLASH;
+                    }
+                }
+                return Token.TAG_START_SIMPLE;
+            } else if(c == '>') {
+                if(i > 0) {
+                    char c1 = html.charAt(i-1);
+                    if(c1 == '-') {
+                        if((i > 1) && (html.charAt(i-2) == '-')) {
+                            return Token.COMMENT_END;
+                        }
+                    } else if(c1 == '/') {
+                        return Token.TAG_END_SLASH;
+                    }
+                    
+                }
+                return Token.TAG_END_SIMPLE;
+            }
+        return null;
+    }
+    
     private boolean isStartComment(int index) {
         if(index >= length3) return false;
         if(html.charAt(index) != '!') return false;
@@ -578,6 +645,14 @@ public class HtmlEraser {
 		//addName("&zwnj;", '\u200C', node, map);
 		addName("&zwnj;", ' ', node, map);
         root = node;
+    }
+    
+
+    private static enum Token {
+        COMMENT_START, COMMENT_END,
+        TAG_START_SIMPLE, TAG_END_SIMPLE,
+        TAG_START_SLASH, TAG_END_SLASH,
+        AMP
     }
 
 }

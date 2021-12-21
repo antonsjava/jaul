@@ -93,3 +93,13 @@ Simple html escaping encoder
   String newdata = Html.unescape(text);
 ```
 
+
+## HtmlEraser
+
+Remove html tags from given text. (From "<p>foo</p>" generate "foo")
+
+```java
+  String html = ...
+  String text = HtmlEraser.of(html).erase();
+```
+
