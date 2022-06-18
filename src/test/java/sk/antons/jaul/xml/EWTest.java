@@ -19,6 +19,7 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.w3c.dom.Document;
+import sk.antons.jaul.Get;
 
 /**
  *
@@ -164,6 +165,18 @@ public class EWTest {
         node = root.firstElementByTagName("name");
         Assert.assertTrue("elements3 nodes 1 tag", "name".equals(node.tag()));
         Assert.assertTrue("elements3 nodes 1 order", "first".equals(node.attr("name")));
+        
+    }
+
+    @Test
+	public void byPath() throws Exception {
+        String file = "src/test/resources/xml-test.xml";
+        Document doc = Xml.documentFromFile(file, false);
+        Assert.assertNotNull("doc", doc);
+        EW root = EW.elem(doc.getDocumentElement());
+        Assert.assertTrue("root", "root".equals(root.tag()));
+        Assert.assertTrue("firstElem", "xx1".equals(root.firstByPathText("node", "node")));
+        Assert.assertEquals("allElem", 4, Get.size(root.allByPath("node", "node")));
         
     }
 }
