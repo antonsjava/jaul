@@ -435,6 +435,17 @@ public class EW {
     }
     
     /**
+     * Finds first element defined by path and return its text
+     * @param path path defined by eleement names
+     * @return element text  or null 
+     */
+    public String firstByPathText(String... path) {
+        EW ew = firstByPath(path);
+        if(Is.empty(path)) return null;
+        return ew.text();
+    }
+    
+    /**
      * Finds all elements defined by path.
      * @param path path defined by eleement names
      * @return list of elements 
