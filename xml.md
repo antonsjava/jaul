@@ -130,3 +130,42 @@ You can use code like this
  }
 ```
 
+## Elem
+
+Simplified Xml API. For simple xml with 
+ - no declarations
+ - no process instrauctions
+ - no namespace logic
+ - no comments
+ - text only in leaves
+It handle xml as simple data structure, which can be craated, manipulated and searched.  
+
+It is possible to create xml using api
+```java
+ Elem elem = Elem.of("root")
+              .addAttr("id", "1212");
+              .addChild(Elem.of("ns1:child").text("a text"));
+```
+to create xml like 
+```
+ <root id="1212">
+   <ns1:child>a text</ns1:child>
+ </root>
+```
+
+You can search in elements by name
+```java
+ Elem elem = Elem.parse(new FileInputStream("/tmp/example.xml"));
+ List<Elem> surnames = elem.find("book", "author", "surname").all();
+ List<String> surnamestexts = elem.find("book", "author", "surname").allText();
+```
+ Elem addressCityElem = elem.find("address", "city").first();
+ String addressCitytext = elem.find("address", "city").firstText();
+```
+
+You can modify elements
+```java
+ Elem elem = Elem.parse(new FileInputStream("/tmp/example.xml"));
+ Elem addressCityElem = elem.find("address", "city").first();
+ addressCityElem.replace(Elem.of("city").text("Brno"));
+```
