@@ -789,12 +789,14 @@ public class Elem {
 
         Elem root = null;
         Stack<Elem> stack = new Stack<Elem>();
-        StringBuilder sb = null;
+        StringBuilder sb = new StringBuilder();
+        boolean lastWasStartElelemnt = false;
 
         @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
             super.startElement(uri, localName, qName, attributes);
-            sb = new StringBuilder();
+            sb.setLength(0);
+            lastWasStartElelemnt = true;
             if(qName != null) {
                 Elem elem = Elem.of(qName);
                 if(root == null) root = elem;
@@ -812,14 +814,14 @@ public class Elem {
         public void endElement(String uri, String localName, String qName) throws SAXException {
             super.endElement(uri, localName, qName); 
             Elem elem = stack.pop();
-            if((elem != null) && sb != null) elem.text(sb.toString());
-            sb = null;
+            if((elem != null) && lastWasStartElelemnt) elem.text(sb.toString());
+            lastWasStartElelemnt = false;
         }
 
         @Override
         public void characters(char[] ch, int start, int length) throws SAXException {
             super.characters(ch, start, length); 
-            if(sb != null) sb.append(ch, start, length);
+            if(lastWasStartElelemnt) sb.append(ch, start, length);
         }
     
     }
