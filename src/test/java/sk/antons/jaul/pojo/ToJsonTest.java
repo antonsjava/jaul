@@ -15,8 +15,6 @@
  */
 package sk.antons.jaul.pojo;
 
-import sk.antons.jaul.util.*;
-import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -36,6 +34,7 @@ public class ToJsonTest {
         String text = js.toString();
         System.out.println(" -- " + text);
         Assert.assertNotNull(text);
+        Assert.assertEquals("{\"attr1\":\"value1\",\"attr2\":\"value2\"}", text);
     }
     
     @Test
@@ -44,10 +43,33 @@ public class ToJsonTest {
         js.arrayStart();
         js.value("value1");
         js.value("value2");
+        js.value("value3");
         js.arrayEnd();
         String text = js.toString();
         System.out.println(" -- " + text);
         Assert.assertNotNull(text);
+        Assert.assertEquals("[\"value1\",\"value2\",\"value3\"]", text);
+    }
+    
+    @Test
+	public void array2() throws Exception {
+        JsonString js = JsonString.instance();
+        js.objectStart();
+        js.attrName("nested");
+        js.arrayStart();
+        js.objectStart();
+        js.attr("pokus", "val\nue");
+        js.objectEnd();
+        js.objectStart();
+        js.attr("pokus2", "value2");
+        js.objectEnd();
+        js.arrayEnd();
+        js.attr("after", "value");
+        js.objectEnd();
+        String text = js.toString();
+        System.out.println(" -- " + text);
+        Assert.assertNotNull(text);
+        Assert.assertEquals("{\"nested\":[{\"pokus\":\"val\\nue\"},{\"pokus2\":\"value2\"}],\"after\":\"value\"}", text);
     }
     
 }

@@ -4,7 +4,7 @@
 
     <groupId>io.github.antonsjava</groupId>
     <artifactId>jaul</artifactId>
-    <version>1.27</version>
+    <version>1.28</version>
     <packaging>bundle</packaging>
 
     <name>Jaul</name>
