@@ -103,7 +103,7 @@ public class Base64Test {
         sb = new StringBuilder();
         Base64.encode(is, sb, 0);
         Base64.decode(new StringReader(result), os);
-        Assert.assertTrue("empty", sb.isEmpty());
+        Assert.assertTrue("empty", sb.length() == 0);
         Assert.assertTrue("empty", os.toByteArray().length == 0);
 
         value = "any carnal pleas".getBytes();
