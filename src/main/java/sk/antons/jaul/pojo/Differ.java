@@ -53,6 +53,7 @@ public class Differ {
     public static class Changes {
         private List<Change> changes = new ArrayList<Change>();
         public int size() { return changes.size(); }
+        public List<Change> changes() { return changes; }
         private void add(String path, String v1, String v2) { changes.add(Change.instance(path, v1, v2)); }
         
         /**

@@ -127,6 +127,7 @@ public class Elem {
      */
     public String attr(String name) {
         if(Is.empty(name)) return null;
+        if(Is.empty(attrs)) return null;
         for(Attr attr : attrs) {
             if(name.equals(attr.name.name)) return attr.value;
             else if(name.equals(attr.name.prefixname)) return attr.value;
@@ -142,6 +143,7 @@ public class Elem {
      */
     public Attr attribute(String name) {
         if(Is.empty(name)) return null;
+        if(Is.empty(attrs)) return null;
         for(Attr attr : attrs) {
             if(name.equals(attr.name.name)) return attr;
             else if(name.equals(attr.name.prefixname)) return attr;
@@ -157,6 +159,7 @@ public class Elem {
     public List<Attr> attributes(String name) {
         List<Attr> list = new ArrayList<Attr>();
         if(Is.empty(name)) return list;
+        if(Is.empty(attrs)) return list;
         for(Attr attr : attrs) {
             if(name.equals(attr.name.name)) list.add(attr);
             else if(name.equals(attr.name.prefixname)) list.add(attr);
