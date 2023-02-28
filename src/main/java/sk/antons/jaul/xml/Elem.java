@@ -35,6 +35,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 import sk.antons.jaul.Get;
 import sk.antons.jaul.Is;
+import sk.antons.jaul.binary.Html;
 import sk.antons.jaul.util.AsRuntimeEx;
 
 /**
@@ -468,11 +469,12 @@ public class Elem {
         
         private static Attr of() { return new Attr(); } 
 
-        public String toString() {
+        public String toString() { return toString(null); }
+        public String toString(Escaping escaping) {
             StringBuilder sb = new StringBuilder();
             sb.append(name.prefixedName());
             if(value != null) {
-                sb.append("=\"").append(value).append('"');
+                sb.append("=\"").append(escape(value, escaping)).append('"');
             }
             return sb.toString();
         }
@@ -575,6 +577,7 @@ public class Elem {
         boolean declaration = false;
         String encoding = "utf-8";
         String indent = null;
+        Escaping escaping = Escaping.SIMPLE;
         boolean indentAttrs = false;
         
         private Exporter() { }
@@ -594,6 +597,10 @@ public class Elem {
          * String to new used for indendation. (If null no formating is applied)
          */
         public Exporter indent(String value) { this.indent = value; return this; } 
+        /**
+         * Type of defaulting. (default is SIMPLE)
+         */
+        public Exporter escaping(Escaping value) { this.escaping = value == null ? Escaping.SIMPLE : value; return this; } 
         
         /**
          * Exports Elem to string. 
@@ -643,7 +650,7 @@ public class Elem {
                 sb.append('<').append(elem.name.prefixedName());
                 if(!Is.empty(elem.attrs)) {
                     for(Attr attr : elem.attrs) {
-                        sb.append(' ').append(attr.toString());
+                        sb.append(' ').append(attr.toString(escaping));
                     }
                 }
                 if(Is.empty(elem.children) && Is.empty(elem.text)) {
@@ -651,7 +658,7 @@ public class Elem {
                 } else {
                     sb.append('>');
                     if(Is.empty(elem.children)) {
-                        sb.append(elem.text);
+                        sb.append(escape(elem.text, escaping));
                     } else {
                         for(Elem elem2 : elem.children) {
                             toString(sb, elem2);
@@ -671,7 +678,7 @@ public class Elem {
                 if(!Is.empty(elem.attrs)) {
                     for(Attr attr : elem.attrs) {
                         if(indentAttrs) sb.append('\n').append(prefix).append(indent).append(indent);
-                        sb.append(' ').append(attr.toString());
+                        sb.append(' ').append(attr.toString(escaping));
                     }
                 }
                 if(Is.empty(elem.children) && Is.empty(elem.text)) {
@@ -679,7 +686,7 @@ public class Elem {
                 } else {
                     if(Is.empty(elem.children)) {
                         sb.append(">");
-                        sb.append(elem.text);
+                        sb.append(escape(elem.text, escaping));
                         sb.append("</").append(elem.name.prefixedName()).append(">\n");
                     } else {
                         sb.append(">\n");
@@ -827,6 +834,36 @@ public class Elem {
             if(lastWasStartElelemnt) sb.append(ch, start, length);
         }
     
+    }
+
+    public enum Escaping {
+        /**
+         * No escaping ....dangerous
+         */
+        NONE, 
+        /**
+         * simple escaping - &amp; &lt;, *gt;
+         */
+        SIMPLE, 
+        /**
+         * simple escaping + all non assii chars
+         */
+        FULL;
+    }
+
+    private static String escape(String value, Escaping escaping) {
+        if(value == null) return "";
+        switch(escaping) {
+            case NONE:
+                return value;
+            case SIMPLE:
+                return Html.escapeSimple(value);
+            case FULL:
+                return Html.escapeSimpleAndNonAscii(value);
+            default:
+                return value;
+        }
+        
     }
 
 // -------------------- subclasses end ---------------

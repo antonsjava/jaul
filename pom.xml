@@ -4,8 +4,8 @@
 
     <groupId>io.github.antonsjava</groupId>
     <artifactId>jaul</artifactId>
-    <version>1.29</version>
-    <packaging>bundle</packaging>
+    <version>1.30</version>
+    <packaging>jar</packaging>
 
     <name>Jaul</name>
     <description>just another utility library</description>
@@ -37,6 +37,10 @@
 
     <properties>
         <additionalparam>-Xdoclint:none</additionalparam>
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
 
     <distributionManagement>
@@ -60,29 +64,6 @@
     </dependencies>
 
     <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
-                <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
-                </configuration>
-			</plugin>
-        <plugin>
-          <groupId>org.apache.felix</groupId>
-          <artifactId>maven-bundle-plugin</artifactId>
-          <version>3.0.1</version>
-          <extensions>true</extensions>
-          <configuration>
-            <instructions>
-              <Bundle-DocURL>${project.url}</Bundle-DocURL>
-              <_include>-osgi.bnd</_include>
-            </instructions>
-          </configuration>
-        </plugin>
-        </plugins>
     </build>
 
     <profiles>
@@ -93,7 +74,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
-                        <version>2.2.1</version>
+                        <version>3.2.1</version>
                         <executions>
                             <execution>
                                 <id>attach-sources</id>
@@ -106,7 +87,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>2.9.1</version>
+                        <version>3.5.0</version>
                         <configuration>
                             <detectJavaApiLink>false</detectJavaApiLink>
                         </configuration>
@@ -122,7 +103,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.5</version>
+                        <version>3.0.1</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
@@ -137,7 +118,7 @@
                     <plugin>
                         <groupId>org.sonatype.plugins</groupId>
                         <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>1.6.8</version>
+                        <version>1.6.13</version>
                         <extensions>true</extensions>
                         <configuration>
                             <serverId>ossrh</serverId>
