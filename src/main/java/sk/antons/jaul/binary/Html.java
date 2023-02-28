@@ -14,7 +14,7 @@ import java.util.Map;
 public class Html {
 
     /**
-     * Only characters '<', '>', '"', '\'', '&' are escaped to their names.
+     * Only characters &apos;&lt;&apos;, &apos;&gt;&apos;, &apos;&quot;&apos;, &apos;\&apos;&apos;, &apos;&amp;&apos; are escaped to their names.
      * @param value text to be escaped
      * @return escaped text
      */
@@ -37,8 +37,8 @@ public class Html {
     }
     
     /**
-     * Characters '<', '>', '"', '\'', '&' are escaped to their names.
-     * And non ascii characters are escaped to generale escape form (&#NNNN;) 
+     * Characters &apos;&lt;&apos;, &apos;&gt;&apos;, &apos;&quot;&apos;, &apos;\&apos;&apos;, &apos;&amp;&apos; are escaped to their names.
+     * And non ascii characters are escaped to generale escape form (&amp;#NNNN;) 
      * @param value text to be escaped
      * @return escaped text
      */
@@ -90,7 +90,7 @@ public class Html {
     
     /**
      * All known named characters are escaped to their names.
-     * And other non ascii characters are escaped to generale escape form (&#NNNN;) 
+     * And other non ascii characters are escaped to generale escape form (&amp;#NNNN;) 
      * @param value text to be escaped
      * @return escaped text
      */
@@ -117,7 +117,7 @@ public class Html {
     }
     
     /**
-     * All numeric codes (&#NNNN; and &#xHHHH;) and mamed entities (&xxxx;) are converted to 
+     * All numeric codes (&amp;#NNNN; and &amp;#xHHHH;) and mamed entities (&amp;xxxx;) are converted to 
      * represented chars.
      * @param value escaped text
      * @return unescaped text

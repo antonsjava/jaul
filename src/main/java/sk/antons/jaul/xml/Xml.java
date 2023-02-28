@@ -108,7 +108,7 @@ public class Xml {
     
     /**
      * Parse xml from file
-     * @param filename - file with xml content
+     * @param file - file with xml content
      * @return parsed xml document
      */
     public static Document documentFromFile(File file, boolean namespaceAware) {
@@ -124,9 +124,10 @@ public class Xml {
         return documentFromFile(file, true);
     }
 
+
     /**
-     * Escapes "'<>& characters to XML compliant escape sequences.
-     * If you handle also &000; sequences use also Unicode.escapeHtml() method.
+     * Escapes &quot;&apos;&lt;&gt;&amp; characters to XML compliant escape sequences.
+     * If you handle also &amp;000; sequences use also Unicode.escapeHtml() method.
      * @param value to be escaped
      * @return escaped value
      */
@@ -147,8 +148,8 @@ public class Xml {
     }
     
     /**
-     * Escapes XML compliant escape sequences into "'<>& characters.
-     * If you handle also &000; sequences use also Unicode.unescapeHtml() method.
+     * Escapes XML compliant escape sequences into &quot;&apos;&lt;&gt;&amp; characters.
+     * If you handle also &amp;000; sequences use also Unicode.unescapeHtml() method.
      * @param value escaped value
      * @return un-escaped value
      */

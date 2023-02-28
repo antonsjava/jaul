@@ -157,7 +157,7 @@ public class Unicode {
 
 	/**
 	 * Translates the given String into ASCII chars and others are escaped.
-     * Uses HTML &#XXX; escape form;
+     * Uses HTML &amp;#XXX; escape form;
 	 * 
 	 * @param input - string to be encoded
 	 * @param ignoreInvisible - chars up to 31 will be not escaped (useful if
@@ -177,7 +177,7 @@ public class Unicode {
 	
 	/**
 	 * Decodes unicode escaped literal back to real String.
-     * Uses HTML &#XXX; escape form;
+     * Uses HTML &amp;#XXX; escape form;
 	 * 
 	 * @param input text with escape sequences
 	 * @return String with translated escape sequences

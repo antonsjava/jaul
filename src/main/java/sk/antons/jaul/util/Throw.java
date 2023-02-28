@@ -63,7 +63,6 @@ public class Throw {
      * Mapping exception to IllegalStateException and throws it. 
      * (Error and RuntimeException are simply rethrown) 
      * @param t exception to be thrown
-     * @param message - message for new created exception
      */
     public static void state(Throwable t) {
         state(t, null, false, false);
@@ -98,7 +97,6 @@ public class Throw {
      * Mapping exception to IllegalArgumentException and throws it. 
      * (Error and RuntimeException are simply rethrown) 
      * @param t exception to be thrown
-     * @param message - message for new created exception
      */
     public static void argument(Throwable t) {
         state(t, null, false, false);

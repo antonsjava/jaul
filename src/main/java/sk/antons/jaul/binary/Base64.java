@@ -102,9 +102,8 @@ public class Base64 {
 
     /**
      * Encodes bytes to single line base64 string. 
-     * @param value   bytes to be encoded
+     * @param is   bytes to be encoded
      * @param wrapLen - if greater than zero result is wrapped to this len
-     * @return encoded data.
      */
     public static void encode(InputStream is, Appendable appendable, int wrapLen) {
         if(is == null) return;

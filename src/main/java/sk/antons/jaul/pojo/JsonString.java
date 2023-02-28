@@ -51,7 +51,7 @@ public class JsonString {
     public JsonString ignoreNulls(boolean value) { ignoreNulls = value; return this; }
     /**
      * If not null resulted string is indented using provided value.
-     * @param value string used for indentation
+     * @param indent string used for indentation
      * @return this instance
      */
     public JsonString indent(String indent) { this.indent = indent; return this; }

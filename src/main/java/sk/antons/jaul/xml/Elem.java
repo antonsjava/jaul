@@ -62,10 +62,10 @@ import sk.antons.jaul.util.AsRuntimeEx;
  *   String xml = root.export().toString();
  *   String formatedxml = root.export().indent("  ").toString();
  *
- *   List<Elem> list = root.find("child1", "list").all());
+ *   List&lt;Elem&gt; list = root.find("child1", "list").all());
  *   Elem descendant = root.find("child1", "list").first());
  * 
- *   List<String> listtext = root.find("child1", "list").allText());
+ *   List&lt;String&gt; listtext = root.find("child1", "list").allText());
  *   String descendanttext = root.find("child1", "list").firstText());
  *
  *   root.find("child2").first().replace(Elem.of("child5").text("value88"));
@@ -385,7 +385,7 @@ public class Elem {
     
     /**
      * Parse xml in input stream to Elem tree.
-     * @param xml input xml
+     * @param is input xml
      * @return new tree of ELem instancies.
      */
     public static Elem parse(InputStream is) {
@@ -395,7 +395,7 @@ public class Elem {
 
     /**
      * Parse xml in reader to Elem tree.
-     * @param xml input xml
+     * @param reader input xml
      * @return new tree of ELem instancies.
      */
     public static Elem parse(Reader reader) {
