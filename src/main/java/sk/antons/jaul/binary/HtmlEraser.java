@@ -41,7 +41,14 @@ public class HtmlEraser {
      * @return this
      */
     private boolean unescape = true;
+    
+    /**
+     * Set true if unescaped.
+     * @param value true if result must be unescaped
+     * @return this
+     */
     public HtmlEraser unescape(boolean value) { this.unescape = value; return this; }
+    
     private int maxlen = 0;
     /**
      * reduce result text to length
@@ -55,6 +62,10 @@ public class HtmlEraser {
     private int length2;
     private int length3;
 
+    /**
+     * Constructs instance of erraser from string with html.
+     * @param html input string
+     */
     public HtmlEraser(String html) {
         this.html = html;
         if(html != null) {
@@ -65,12 +76,28 @@ public class HtmlEraser {
         }
     }
 
+    /**
+     * Constructs instance of erraser from string with html.
+     * @param html input string
+     * @return eraser 
+     */
     public static HtmlEraser of(String html) { return new HtmlEraser(html); }
     
+
+    /**
+     * Returns erased string.
+     * @return erased string
+     */
     public String erase() {
         return erase(false);
     }
 
+    /**
+     * Returns erased string.
+     * @param propagateError true if errors should be propagated (othervise 
+     * ignored)
+     * @return erased string
+     */
     public String erase(boolean propagateError) {
         if(html == null) return null;
         StringBuilder sb = new StringBuilder();

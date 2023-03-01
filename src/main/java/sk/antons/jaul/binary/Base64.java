@@ -103,6 +103,7 @@ public class Base64 {
     /**
      * Encodes bytes to single line base64 string. 
      * @param is   bytes to be encoded
+     * @param appendable target
      * @param wrapLen - if greater than zero result is wrapped to this len
      */
     public static void encode(InputStream is, Appendable appendable, int wrapLen) {
@@ -252,7 +253,11 @@ public class Base64 {
         return buff;
     }
 
-    
+    /**
+     * Decode from reader to output stream
+     * @param reader input
+     * @param os output
+     */    
     public static void decode(Reader reader, OutputStream os) {
         if(reader == null) return;
         int index = 1;

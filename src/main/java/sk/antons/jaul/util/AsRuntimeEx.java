@@ -26,6 +26,7 @@ public class AsRuntimeEx {
      * @param t exception to be wrapped
      * @param message - message for new created exception
      * @param params parameters for message {} placeholders
+     * @return instance of IllegalStateException
      */
     public static RuntimeException wrapState(Throwable t, String message, Object... params) {
         return new IllegalStateException(format(message, params), t);
@@ -35,6 +36,7 @@ public class AsRuntimeEx {
      * Wraps given exception as IllegalStateException.
      * @param t exception to be wrapped
      * @param message - message for new created exception
+     * @return instance of IllegalStateException
      */
     public static RuntimeException wrapState(Throwable t, String message) {
         return new IllegalStateException(message, t);
@@ -43,6 +45,7 @@ public class AsRuntimeEx {
     /**
      * Wraps given exception as IllegalArgumentException.
      * @param t exception to be wrapped
+     * @return instance of IllegalStateException
      */
     public static RuntimeException wrapState(Throwable t) {
         return new IllegalStateException(t);
@@ -53,6 +56,7 @@ public class AsRuntimeEx {
      * @param t exception to be wrapped
      * @param message - message for new created exception
      * @param params parameters for message {} placeholders
+     * @return instance of IllegalStateException
      */
     public static RuntimeException wrapArgument(Throwable t, String message, Object... params) {
         return new IllegalArgumentException(format(message, params), t);
@@ -62,6 +66,7 @@ public class AsRuntimeEx {
      * Wraps given exception as IllegalArgumentException.
      * @param t exception to be wrapped
      * @param message - message for new created exception
+     * @return instance of IllegalArgumentException
      */
     public static RuntimeException wrapArgument(Throwable t, String message) {
         return new IllegalArgumentException(message, t);
@@ -70,6 +75,7 @@ public class AsRuntimeEx {
     /**
      * Wraps given exception as IllegalArgumentException.
      * @param t exception to be wrapped
+     * @return instance of IllegalArgumentException
      */
     public static RuntimeException wrapArgument(Throwable t) {
         return new IllegalArgumentException(t);
@@ -81,6 +87,7 @@ public class AsRuntimeEx {
      * @param t exception to be wrapped or returned
      * @param message - message for new created exception
      * @param params parameters for message {} placeholders
+     * @return instance of IllegalStateException
      */
     public static RuntimeException state(Throwable t, String message, Object... params) {
         if(t instanceof RuntimeException) return (RuntimeException)t;
@@ -92,6 +99,7 @@ public class AsRuntimeEx {
      * otherwise wrap it as IllegalStateException.
      * @param t exception to be wrapped or returned
      * @param message - message for new created exception
+     * @return instance of IllegalStateException
      */
     public static RuntimeException state(Throwable t, String message) {
         if(t instanceof RuntimeException) return (RuntimeException)t;
@@ -102,6 +110,7 @@ public class AsRuntimeEx {
      * If given exception is RuntimeException returns that exception 
      * otherwise wrap it as IllegalStateException.
      * @param t exception to be wrapped or returned
+     * @return instance of IllegalStateException
      */
     public static RuntimeException state(Throwable t) {
         if(t instanceof RuntimeException) return (RuntimeException)t;
@@ -112,6 +121,7 @@ public class AsRuntimeEx {
      * Factory for IllegalStateException with SLF formatting
      * @param message exceptiom message
      * @param params parameters for message {} placeholders
+     * @return instance of IllegalArgumentException
      */
     public static RuntimeException state(String message, Object... params) {
         return new IllegalArgumentException(format(message, params));
@@ -120,6 +130,7 @@ public class AsRuntimeEx {
     /**
      * Factory for IllegalStateException 
      * @param message exceptiom message
+     * @return instance of IllegalArgumentException
      */
     public static RuntimeException state(String message) {
         return new IllegalArgumentException(message);
@@ -131,6 +142,7 @@ public class AsRuntimeEx {
      * @param t exception to be wrapped or returned
      * @param message - message for new created exception
      * @param params parameters for message {} placeholders
+     * @return instance of IllegalArgumentException
      */
     public static RuntimeException argument(Throwable t, String message, Object... params) {
         if(t instanceof RuntimeException) return (RuntimeException)t;
@@ -142,6 +154,7 @@ public class AsRuntimeEx {
      * otherwise wrap it as IllegalArgumentException.
      * @param t exception to be wrapped or returned
      * @param message - message for new created exception
+     * @return instance of IllegalArgumentException
      */
     public static RuntimeException argument(Throwable t, String message) {
         if(t instanceof RuntimeException) return (RuntimeException)t;
@@ -152,6 +165,7 @@ public class AsRuntimeEx {
      * If given exception is RuntimeException returns that exception 
      * otherwise wrap it as IllegalArgumentException.
      * @param t exception to be wrapped or returned
+     * @return instance of IllegalArgumentException
      */
     public static RuntimeException argument(Throwable t) {
         if(t instanceof RuntimeException) return (RuntimeException)t;
@@ -162,6 +176,7 @@ public class AsRuntimeEx {
      * Factory for IllegalArgumentException with SLF formatting
      * @param message exceptiom message
      * @param params parameters for message {} placeholders
+     * @return instance of IllegalArgumentException
      */
     public static RuntimeException argument(String message, Object... params) {
         return new IllegalArgumentException(format(message, params));
@@ -170,6 +185,7 @@ public class AsRuntimeEx {
     /**
      * Factory for IllegalArgumentException
      * @param message exceptiom message
+     * @return instance of IllegalArgumentException
      */
     public static RuntimeException argument(String message) {
         return new IllegalArgumentException(message);

@@ -131,7 +131,7 @@ public class Is {
 
     /**
      * Safely inboxing provided boolean value
-     * @param value 
+     * @param value boolean value 
      * @return true is unvoxed value is true
      */
     public static boolean truth(Boolean value) {

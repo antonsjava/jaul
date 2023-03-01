@@ -34,6 +34,7 @@ public class Get {
     
     /**
      * First element of provided collection. 
+     * @param <T> list type
      * @param value - provided collection 
      * @return first element of collection of null if provided collection is empty.
      */
@@ -45,6 +46,7 @@ public class Get {
     
     /**
      * First element of provided array. 
+     * @param <T> list type
      * @param value - provided array 
      * @return first element of array of null if provided collection is empty.
      */
@@ -56,6 +58,7 @@ public class Get {
     /**
      * First element of provided collection. 
      * @param value - provided collection 
+     * @param <T> list type
      * @return first element of collection of null if provided collection is empty.
      */
     public static <T> T first(Collection<T> value) {
@@ -67,6 +70,7 @@ public class Get {
 
     /**
      * last element of provided collection. 
+     * @param <T> list type
      * @param value - provided collection 
      * @return last element of collection or null if provided collection is empty.
      */
@@ -78,6 +82,7 @@ public class Get {
     
     /**
      * last element of provided array. 
+     * @param <T> array type
      * @param value - provided array 
      * @return last element of array or null if provided collection is empty.
      */
@@ -88,6 +93,7 @@ public class Get {
     
     /**
      * Nth element of provided collection. 
+     * @param <T> list type
      * @param value - provided collection 
      * @param index - index of element 
      * @return Nth element of collection or null if provided collection index not exists.
@@ -102,6 +108,7 @@ public class Get {
 
     /**
      * Nth element of provided array. 
+     * @param <T> array type
      * @param value - provided array 
      * @param index - index of element 
      * @return Nth element of array or null if provided array index not exists.
@@ -437,7 +444,7 @@ public class Get {
     /**
      * returns date converter
      * @param value - value to be converted
-     * @return 
+     * @return date converter
      */
     public static FromDate.DT from(Date value) {
         return new FromDate.DT(value, null);
@@ -447,7 +454,7 @@ public class Get {
      * returns date converter
      * @param value - value to be converted
      * @param nullResult  - value to be used if value is null
-     * @return 
+     * @return date converter
      */
     public static FromDate.DT from(Date value, String nullResult) {
         return new FromDate.DT(value, nullResult);
@@ -456,7 +463,7 @@ public class Get {
     /**
      * returns date converter
      * @param value - value to be converted
-     * @return 
+     * @return dtae converter
      */
     public static FromDate.LDT from(LocalDate value) {
         return new FromDate.LDT(value, null);
@@ -466,7 +473,7 @@ public class Get {
      * returns date converter
      * @param value - value to be converted
      * @param nullResult  - value to be used if value is null
-     * @return 
+     * @return date converter
      */
     public static FromDate.LDT from(LocalDate value, String nullResult) {
         return new FromDate.LDT(value, nullResult);
@@ -475,7 +482,7 @@ public class Get {
     /**
      * returns StringParser instance
      * @param value - value to be parsed
-     * @return 
+     * @return string parser
      */
     public static FromString from(String value) {
         return new FromString(value);
@@ -484,7 +491,7 @@ public class Get {
     /**
      * returns date converter
      * @param value - value to be converted
-     * @return 
+     * @return date converter
      */
     public static FromDate.LDTTM from(LocalDateTime value) {
         return new FromDate.LDTTM(value, null);
@@ -494,7 +501,7 @@ public class Get {
      * returns date converter
      * @param value - value to be converted
      * @param nullResult  - value to be used if value is null
-     * @return 
+     * @return date converter
      */
     public static FromDate.LDTTM from(LocalDateTime value, String nullResult) {
         return new FromDate.LDTTM(value, nullResult);
@@ -505,7 +512,7 @@ public class Get {
      * @param value - value to be parsed
      * @param defaultEmpty - return default value in case of empty string
      * @param defaultBad - return default value in case of bad string
-     * @return 
+     * @return string parser
      */
     public static FromString from(String value, boolean defaultEmpty, boolean defaultBad) {
         return new FromString(value, defaultEmpty, defaultBad);
