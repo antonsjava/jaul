@@ -45,11 +45,11 @@ import sk.antons.jaul.util.AsRuntimeEx;
  * <li> process instructions are not supported/ignored
  * <li> comments are not supported/ignored
  * <li> texts are allowed only in list elements.
- * <li> no namespace logic is supported 
+ * <li> no namespace logic is supported
  * </ul>
  * API allows to create and manipulate such limited XMLs like this
  * <pre>
- * 
+ *
  *   Elem root = Elem.of("root")
  *       .addAttr("attr1", "value1")
  *       .addAttr("ns:attr2", "value2")
@@ -58,22 +58,22 @@ import sk.antons.jaul.util.AsRuntimeEx;
  *                                 .text("listdata")))
  *        .addChild(Elem.of("child2").text("value33"))
  *        .addChild(Elem.of("child2").text("value44"));
- * 
+ *
  *   String xml = root.export().toString();
  *   String formatedxml = root.export().indent("  ").toString();
  *
  *   List&lt;Elem&gt; list = root.find("child1", "list").all());
  *   Elem descendant = root.find("child1", "list").first());
- * 
+ *
  *   List&lt;String&gt; listtext = root.find("child1", "list").allText());
  *   String descendanttext = root.find("child1", "list").firstText());
  *
  *   root.find("child2").first().replace(Elem.of("child5").text("value88"));
- *    
+ *
  *   root.attribute(1).delete();
  *
  *   Elem anotherroot = Elem.parse(new FileInputStream("/tmp/example.xml"));
- * 
+ *
  * </pre>
  * @author antons
  */
@@ -85,12 +85,18 @@ public class Elem {
     String text;
 
     private Elem() {}
-    
+
     /**
      * Name of element
-     * @return 
+     * @return
      */
-    public Name name() { return name; } 
+    public Name name() { return name; }
+
+    /**
+     * Parent of element
+     * @return
+     */
+    public Elem parent() { return parent; }
 
     /**
      * Text inside element.
@@ -102,14 +108,14 @@ public class Elem {
      * @param value text to ve set (simple escaping is processed here)
      * @return this Elem.
      */
-    public Elem text(String value) { 
+    public Elem text(String value) {
         if(children != null) throw new IllegalStateException("It is possible to set text only to list element. This element has child");
         this.text = value;
-        return this; 
+        return this;
     }
 
     /**
-     * Construct new Elem witn name 
+     * Construct new Elem witn name
      * @param name name od elelement like 'root' or 'ns2:root';
      * @return new created elelemt
      */
@@ -119,11 +125,11 @@ public class Elem {
         elem.name = Name.of(name);
         return elem;
     }
-    
+
     /**
-     * Returns value of first attribute with specified name. 
+     * Returns value of first attribute with specified name.
      * It returns null is attribute with such name not exists.
-     * @param name name of the attribute 
+     * @param name name of the attribute
      * @return value of specified attribute
      */
     public String attr(String name) {
@@ -135,11 +141,11 @@ public class Elem {
         }
         return null;
     }
-    
+
     /**
-     * Returns first attribute with specified name. 
+     * Returns first attribute with specified name.
      * It returns null is attribute with such name not exists.
-     * @param name name of the attribute 
+     * @param name name of the attribute
      * @return first specified attribute
      */
     public Attr attribute(String name) {
@@ -151,10 +157,10 @@ public class Elem {
         }
         return null;
     }
-    
+
     /**
-     * Returns all attributes with specified name. 
-     * @param name name of the attribute 
+     * Returns all attributes with specified name.
+     * @param name name of the attribute
      * @return all specified attributes
      */
     public List<Attr> attributes(String name) {
@@ -167,7 +173,7 @@ public class Elem {
         }
         return list;
     }
-    
+
     /**
      * Size of directly nested elements.
      * @return Size of directly nested elements.
@@ -175,19 +181,19 @@ public class Elem {
     public int childrenSize() { return Get.size(children); }
 
     /**
-     * Returns nth nested element or null if such element not exists. 
+     * Returns nth nested element or null if such element not exists.
      * @param index index of nested element
      * @return specified nested element
      */
     public Elem child(int index) { return Get.nth(children, index); }
-    
+
     /**
      * Add child element to this element. Element is added to end.
      * @param elem element to add
      * @return this Elem
      */
     public Elem addChild(Elem elem) { return addChild(elem, -1); }
-    
+
     /**
      * Add child element to this element. Element is added to specified position.
      * @param elem element to add
@@ -203,28 +209,28 @@ public class Elem {
         children.add(index, elem);
         return this;
     }
-    
+
     /**
      * Size of attributes of this element.
      * @return Size of attributes of this element.
      */
     public int attributeSize() { return Get.size(attrs); }
-    
+
     /**
      * Returns nth attribute.
      * @param index inex of attribute to be returned
      * @return nth attribute
      */
     public Attr attribute(int index) { return Get.nth(attrs, index); }
-    
+
     /**
-     * Add new attribute to element. 
+     * Add new attribute to element.
      * @param name name of attribute
      * @param value value of attribute
      * @return this Elem
      */
     public Elem addAttr(String name, String value) { return addAttr(name, value, -1); }
-    
+
     /**
      * Add new attribute to element. Attribute will be aded to specified position.
      * @param name name of attribute
@@ -267,7 +273,7 @@ public class Elem {
                             i = value.length();
                         }
                     } else {
-                        sb.append(c); 
+                        sb.append(c);
                     }
                     break;
                 default:
@@ -282,22 +288,22 @@ public class Elem {
      * @return Exporter
      */
     public Exporter export() { return this.new Exporter(); };
-    
+
     /**
      * Start method for searchin sub elements by name.
      * @param path path to sub element
      * @return Finder
      */
     public Finder find(String... path) { return this.new Finder().path(path); };
- 
+
     private int attrIndex(Attr attr) {
         return attrs == null ? -1 : attrs.indexOf(attr);
     }
-    
+
     private int childIndex(Elem elem) {
         return children == null ? -1 : children.indexOf(elem);
     }
-    
+
     /**
      * Disconnect this element from xml tree.
      * @return parent Elem
@@ -310,7 +316,7 @@ public class Elem {
         parent = null;
         return e;
     }
-    
+
     /**
      * Replace this element in xml tree. Work only if this element is not root.
      * @param elem mew element to replace this one
@@ -323,7 +329,7 @@ public class Elem {
         delete();
         return e;
     }
-    
+
     /**
      * Add new element to xml just before this element. Work only if this element is not root.
      * @param elem mew element to be added to xml
@@ -355,7 +361,7 @@ public class Elem {
         texts(Elem.this, sb);
         return sb.toString();
     }
-    
+
     private void texts(Elem elem, StringBuilder sb) {
         if(elem.text != null) {
             if(sb.length() > 0) sb.append(' ');
@@ -382,7 +388,7 @@ public class Elem {
         InputSource iso = new InputSource(new StringReader(xml));
         return parse(iso);
     }
-    
+
     /**
      * Parse xml in input stream to Elem tree.
      * @param is input xml
@@ -416,7 +422,7 @@ public class Elem {
     }
 
     /**
-     * Deep clone of this element.  
+     * Deep clone of this element.
      * @return deep clone of Elem
      */
     public Elem clone() {
@@ -428,7 +434,7 @@ public class Elem {
                 elem.addAttrRaw(attr.name.prefixname, attr.value, -1);
             }
         }
-        
+
         if(!Is.empty(children)) {
             for(Elem el : children) {
                 elem.addChild(el.clone());
@@ -436,7 +442,7 @@ public class Elem {
         }
         return elem;
     }
-    
+
 // -------------------- subclasses start ---------------
 
     /**
@@ -446,28 +452,28 @@ public class Elem {
         Name name;
         String value;
         Elem parent;
-        
+
         private Attr() {}
         /**
          * Name of attribute
-         * @return 
+         * @return
          */
-        public Name name() { return name; } 
+        public Name name() { return name; }
         /**
          * Value of attribute
-         * @return 
+         * @return
          */
         public String value() { return value; }
-        private Attr name(Name value) { this.name = value; return this; } 
+        private Attr name(Name value) { this.name = value; return this; }
         private Attr parent(Elem value) { this.parent = value; return this; }
         private Attr valueRaw(String value) { this.value = value; return this; }
-        private Attr value(String value) { 
+        private Attr value(String value) {
             if(value != null) value = simpleEncode(value);
-            this.value = value; 
-            return this; 
+            this.value = value;
+            return this;
         }
-        
-        private static Attr of() { return new Attr(); } 
+
+        private static Attr of() { return new Attr(); }
 
         public String toString() { return toString(null); }
         public String toString(Escaping escaping) {
@@ -491,7 +497,7 @@ public class Elem {
             parent = null;
             return e;
         }
-        
+
         /**
          * Add new attribute this element just before this attribute.
          * @return Element of this attribute
@@ -511,7 +517,7 @@ public class Elem {
             int pos = parent.attrIndex(this);
             return parent.addAttr(name, value, pos+1);
         }
-        
+
         /**
          * Replate this attribute with newone.
          * @return Element of this attribute
@@ -523,24 +529,24 @@ public class Elem {
             delete();
             return e;
         }
-        
+
     }
-    
+
     /**
      * Name of element or attribute.
      */
     public static class Name {
-        
+
         String name;
         String prefix;
         String prefixname;
-        
+
         private Name() {}
         /**
          * Name without namespace prefix.
          * @return name without namespace prefix
          */
-        public String name() { return name; } 
+        public String name() { return name; }
         /**
          * Namespace prefix if exists.
          * @return namespace prefix
@@ -551,22 +557,22 @@ public class Elem {
          * @return name with namespace prefix
          */
         public String prefixedName() { return prefixname; }
-        private Name name(String value) { 
+        private Name name(String value) {
             if(Is.empty(value)) throw new IllegalArgumentException("name can't be empty");
             int pos = value.indexOf(':');
             if(pos<0) {
-                this.name = value; 
-                this.prefix = null; 
-                this.prefixname = value; 
+                this.name = value;
+                this.prefix = null;
+                this.prefixname = value;
             } else {
-                this.name = value.substring(pos+1); 
-                this.prefix = value.substring(0, pos); 
-                this.prefixname = value; 
+                this.name = value.substring(pos+1);
+                this.prefix = value.substring(0, pos);
+                this.prefixname = value;
             }
-            return this; 
-        } 
-        
-        private static Name of(String name) { return new Name().name(name); } 
+            return this;
+        }
+
+        private static Name of(String name) { return new Name().name(name); }
 
     }
 
@@ -579,47 +585,47 @@ public class Elem {
         String indent = null;
         Escaping escaping = Escaping.SIMPLE;
         boolean indentAttrs = false;
-        
+
         private Exporter() { }
         /**
          * True if xml declaration should be printed. (default false)
          */
-        public Exporter declaration(boolean value) { this.declaration = value; return this; } 
+        public Exporter declaration(boolean value) { this.declaration = value; return this; }
         /**
          * True if atributes should be indented. (default false)
          */
-        public Exporter indentAttrs(boolean value) { this.indentAttrs = value; return this; } 
+        public Exporter indentAttrs(boolean value) { this.indentAttrs = value; return this; }
         /**
          * Character encoding. (useful for output stream export) {default utf-8}
          */
-        public Exporter encoding(String value) { this.encoding = value; return this; } 
+        public Exporter encoding(String value) { this.encoding = value; return this; }
         /**
          * String to new used for indendation. (If null no formating is applied)
          */
-        public Exporter indent(String value) { this.indent = value; return this; } 
+        public Exporter indent(String value) { this.indent = value; return this; }
         /**
          * Type of defaulting. (default is SIMPLE)
          */
-        public Exporter escaping(Escaping value) { this.escaping = value == null ? Escaping.SIMPLE : value; return this; } 
-        
+        public Exporter escaping(Escaping value) { this.escaping = value == null ? Escaping.SIMPLE : value; return this; }
+
         /**
-         * Exports Elem to string. 
+         * Exports Elem to string.
          */
         public String toString() {
             StringBuilder sb = new StringBuilder();
             toString(sb);
             return sb.toString();
         }
-        
+
         /**
-         * Exports Elem to writer. 
+         * Exports Elem to writer.
          */
         public void toWriter(Writer writer) {
             toString(writer);
         }
-        
+
         /**
-         * Exports Elem to output stream. 
+         * Exports Elem to output stream.
          */
         public void toOutputStream(OutputStream os) {
             try {
@@ -644,7 +650,7 @@ public class Elem {
                 throw AsRuntimeEx.state(e);
             }
         }
-        
+
         private void toString(Appendable sb, Elem elem) {
             try {
                 sb.append('<').append(elem.name.prefixedName());
@@ -670,7 +676,7 @@ public class Elem {
                 throw AsRuntimeEx.state(e);
             }
         }
-        
+
         private void toPrettyString(Appendable sb, Elem elem, String prefix) {
             try {
                 sb.append(prefix);
@@ -708,10 +714,10 @@ public class Elem {
      */
     public class Finder {
         String[] path;
-        
+
         private Finder() { }
-        private Finder path(String... path) { this.path = path; return this; } 
-        
+        private Finder path(String... path) { this.path = path; return this; }
+
         /**
          * finds all elements with specified path.
          * @return all elements with specified path
@@ -722,7 +728,7 @@ public class Elem {
             all(Elem.this, path, 0, list);
             return list;
         }
-        
+
         private void all(Elem elem, String[] path, int index, List<Elem> list) {
             if(index>=path.length) {
                 list.add(elem);
@@ -735,7 +741,7 @@ public class Elem {
                 }
             }
         }
-        
+
         /**
          * finds all elements with specified path and colles their tests.
          * @return texts from all elements with specified path
@@ -746,7 +752,7 @@ public class Elem {
             allText(Elem.this, path, 0, list);
             return list;
         }
-        
+
         private void allText(Elem elem, String[] path, int index, List<String> list) {
             if(index>=path.length) {
                 list.add(elem.texts());
@@ -759,7 +765,7 @@ public class Elem {
                 }
             }
         }
-        
+
         /**
          * Finds first element with specified path.
          * @return first element with specified path
@@ -768,7 +774,7 @@ public class Elem {
             if(Is.empty(path)) return null;
             return first(Elem.this, path, 0);
         }
-        
+
         private Elem first(Elem elem, String[] path, int index) {
             if(index>=path.length) {
                 return elem;
@@ -784,7 +790,7 @@ public class Elem {
             }
             return null;
         }
-        
+
         /**
          * Finds first element with specified path and returns its text.
          * @return text of first element with specified path
@@ -822,7 +828,7 @@ public class Elem {
 
         @Override
         public void endElement(String uri, String localName, String qName) throws SAXException {
-            super.endElement(uri, localName, qName); 
+            super.endElement(uri, localName, qName);
             Elem elem = stack.pop();
             if((elem != null) && lastWasStartElelemnt) elem.text(sb.toString());
             lastWasStartElelemnt = false;
@@ -830,21 +836,21 @@ public class Elem {
 
         @Override
         public void characters(char[] ch, int start, int length) throws SAXException {
-            super.characters(ch, start, length); 
+            super.characters(ch, start, length);
             if(lastWasStartElelemnt) sb.append(ch, start, length);
         }
-    
+
     }
 
     public enum Escaping {
         /**
          * No escaping ....dangerous
          */
-        NONE, 
+        NONE,
         /**
          * simple escaping - &amp; &lt;, *gt;
          */
-        SIMPLE, 
+        SIMPLE,
         /**
          * simple escaping + all non assii chars
          */
@@ -863,7 +869,7 @@ public class Elem {
             default:
                 return value;
         }
-        
+
     }
 
 // -------------------- subclasses end ---------------
@@ -886,9 +892,9 @@ public class Elem {
         root.find("child2").first().replace(Elem.of("child5").text("value88"));
         System.out.println(" -- " + root.export().indent("  ").toString());
 
-        
+
         root.export().indent("  ").toOutputStream(new FileOutputStream("/tmp/a.xml"));
-        
+
         root.attribute(1).delete();
         Elem eee = Elem.parse(root.export().toString());
         System.out.println(" ---<<< " + eee.export().indent("  ").toString());
