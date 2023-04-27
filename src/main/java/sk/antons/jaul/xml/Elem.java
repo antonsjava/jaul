@@ -16,7 +16,7 @@
 
 package sk.antons.jaul.xml;
 
-import java.io.FileNotFoundException;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -876,7 +876,7 @@ public class Elem {
 // -------------------- subclasses end ---------------
 
 
-    public static void main(String[] argv) throws FileNotFoundException {
+    public static void main(String[] argv) throws Exception {
         Elem root = Elem.of("pokus")
             .addAttr("attr1", "value1")
             .addAttr("attr2", "val <![CDATA[ioooooi]]>u\ne<2")
@@ -915,5 +915,15 @@ public class Elem {
         System.out.println(eee2.toString());
         System.out.println(eee2.export().toString());
         System.out.println(eee2.export().escaping(Escaping.FULL).toString());
+
+        Elem eee3 = Elem.parse(new FileInputStream("/tmp/aaa/pokus.xml"));
+            FileOutputStream fos = new FileOutputStream("/tmp/aaa/pokus2.xml");
+            eee3.export().encoding("windows-1252")
+                .declaration(true)
+                .escaping(Elem.Escaping.FULL)
+                .indent("\t")
+                .toOutputStream(fos);
+            fos.flush();
+            fos.close();
     }
 }
