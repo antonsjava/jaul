@@ -466,12 +466,7 @@ public class Elem {
         public String value() { return value; }
         private Attr name(Name value) { this.name = value; return this; }
         private Attr parent(Elem value) { this.parent = value; return this; }
-        private Attr valueRaw(String value) { this.value = value; return this; }
-        private Attr value(String value) {
-            if(value != null) value = simpleEncode(value);
-            this.value = value;
-            return this;
-        }
+        public Attr value(String value) { this.value = value; return this; }
 
         private static Attr of() { return new Attr(); }
 
@@ -859,6 +854,7 @@ public class Elem {
 
     private static String escape(String value, Escaping escaping) {
         if(value == null) return "";
+        if(escaping == null) return value;
         switch(escaping) {
             case NONE:
                 return value;
@@ -870,6 +866,11 @@ public class Elem {
                 return value;
         }
 
+    }
+
+    private static String unescape(String value) {
+        if(value == null) return "";
+        return Html.unescape(value);
     }
 
 // -------------------- subclasses end ---------------
@@ -906,5 +907,13 @@ public class Elem {
 
         System.out.println(" ...oo. " + root.clone().export().indent("  ").toString());
 
+        String xml = "<a attr=\"toto &lt; toto\">pokus pokus2 &amp;</a>";
+        Elem eee2 = Elem.parse(xml);
+        System.out.println(" ------------ parse -------------------");
+        System.out.println(" - text: " + eee2.text());
+        System.out.println(" - attr: " + eee2.attr("attr"));
+        System.out.println(eee2.toString());
+        System.out.println(eee2.export().toString());
+        System.out.println(eee2.export().escaping(Escaping.FULL).toString());
     }
 }
