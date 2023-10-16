@@ -27,6 +27,8 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
+import java.util.function.Predicate;
+import static javax.management.Query.value;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.Attributes;
@@ -871,6 +873,31 @@ public class Elem {
     private static String unescape(String value) {
         if(value == null) return "";
         return Html.unescape(value);
+    }
+
+    /**
+     * Traverse xml tree nodes. (DFS preorder)
+     * Each elem is put to predicate for processing
+     * and if predicate returns true subtree is also traversed.
+     * This code finds all elements with name 'person'
+     *
+     * <pre>
+     * {@code Elem document = ...}
+     * {@code final List<Elem> persons = new ArrayList<>();}
+     * {@code document.traverse(e -> {if("person".equals(e.name().name())) persons.add(e); return true;})}
+     * </pre>
+     *
+     * @param predicate process node and returns true if subtree should be traversed.
+     */
+    public void traverse(Predicate<Elem> predicate) {
+        boolean cont = predicate.test(this);
+        if(cont) {
+            int len = this.attributeSize();
+            for(int i = 0; i < len; i++) {
+                Elem elem = this.child(i);
+                elem.traverse(predicate);
+            }
+        }
     }
 
 // -------------------- subclasses end ---------------
