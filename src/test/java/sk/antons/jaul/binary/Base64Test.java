@@ -20,14 +20,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.StringReader;
 import org.junit.Assert;
 import org.junit.Test;
-import sk.antons.jaul.pojo.Pojo;
 
 /**
  *
  * @author antons
  */
 public class Base64Test {
-	
+
     private static String printArray(byte[] data) {
         StringBuilder sb = new StringBuilder();
         for(int i = 0; i < data.length; i++) {
@@ -35,14 +34,14 @@ public class Base64Test {
         }
         return sb.toString();
     }
-    
+
     @Test
 	public void encode() throws Exception {
         byte[] value = null;
         String result = null;
         Assert.assertNull("null encode", Base64.encode(value));
         Assert.assertNull("null decode", Base64.decode(result));
-        
+
         value = new byte[]{};
         result = "";
         Assert.assertTrue("empty", Base64.encode(value).length() == 0);
@@ -50,40 +49,40 @@ public class Base64Test {
 
         value = "qwertyuiop".getBytes();
         result = "cXdlcnR5dWlvcA==";
-        
-        //System.out.println(" inp --- " + printArray(value)); 
-        //System.out.println(" inp --- " + printArray(Base64.decode(result))); 
+
+        //System.out.println(" inp --- " + printArray(value));
+        //System.out.println(" inp --- " + printArray(Base64.decode(result)));
         value = "any carnal pleas".getBytes();
         result = "YW55IGNhcm5hbCBwbGVhcw==";
         Assert.assertTrue("xx" + Base64.encode(value), result.equals(Base64.encode(value)));
         Assert.assertTrue("xxss" + new String(Base64.decode(result)), result.equals(Base64.encode(Base64.decode(result))));
         Assert.assertTrue("xx" +  new String(Base64.decode(result)), "any carnal pleas".equals(new String(Base64.decode(result))));
-        
+
         value = "any carnal pleasu".getBytes();
         result = "YW55IGNhcm5hbCBwbGVhc3U=";
         Assert.assertTrue("xx" + Base64.encode(value), result.equals(Base64.encode(value)));
         Assert.assertTrue("xxss" + new String(Base64.decode(result)), result.equals(Base64.encode(Base64.decode(result))));
         Assert.assertTrue("xx" +  new String(Base64.decode(result)), "any carnal pleasu".equals(new String(Base64.decode(result))));
-        
+
         value = "any carnal pleasur".getBytes();
         result = "YW55IGNhcm5hbCBwbGVhc3Vy";
         Assert.assertTrue("xx" + Base64.encode(value), result.equals(Base64.encode(value)));
         Assert.assertTrue("xxss" + new String(Base64.decode(result)), result.equals(Base64.encode(Base64.decode(result))));
         Assert.assertTrue("xx" +  new String(Base64.decode(result)), "any carnal pleasur".equals(new String(Base64.decode(result))));
-        
+
         value = "any carnal pleasure".getBytes();
         result = "YW55IGNhcm5hbCBwbGVhc3VyZQ==";
         Assert.assertTrue("xx" + Base64.encode(value), result.equals(Base64.encode(value)));
         Assert.assertTrue("xxss" + new String(Base64.decode(result)), result.equals(Base64.encode(Base64.decode(result))));
         Assert.assertTrue("xx" +  new String(Base64.decode(result)), "any carnal pleasure".equals(new String(Base64.decode(result))));
-        
+
         value = "any carnal pleasure".getBytes();
         result = "YW55IGNhcm\n5hbCBwbGVh\nc3VyZQ==";
         Assert.assertTrue("xx" + Base64.encode(value, 10), result.equals(Base64.encode(value, 10)));
         Assert.assertTrue("xxss" + new String(Base64.decode(result)), result.equals(Base64.encode(Base64.decode(result), 10)));
         Assert.assertTrue("xx" +  new String(Base64.decode(result)), "any carnal pleasure".equals(new String(Base64.decode(result))));
     }
-    
+
     @Test
 	public void encodestream() throws Exception {
         byte[] value = new byte[0];
@@ -95,7 +94,7 @@ public class Base64Test {
         Base64.decode(new StringReader(result), os);
         Assert.assertEquals("null encode", "", sb.toString());
         Assert.assertNotNull("null decode", os.toByteArray());
-        
+
         value = new byte[]{};
         result = "";
         is = new ByteArrayInputStream(value);
@@ -120,7 +119,7 @@ public class Base64Test {
         //System.out.println(" ---2- " + Pojo.dumper().dump(os.toByteArray()));
         Assert.assertEquals(result, sb.toString());
         Assert.assertEquals(new String(value), new String(os.toByteArray()));
-        
+
         value = "any carnal pleasu".getBytes();
         result = "YW55IGNhcm5hbCBwbGVhc3U=";
         is = new ByteArrayInputStream(value);
@@ -130,7 +129,7 @@ public class Base64Test {
         Base64.decode(new StringReader(result), os);
         Assert.assertEquals(result, sb.toString());
         Assert.assertEquals(new String(value), new String(os.toByteArray()));
-        
+
         value = "any carnal pleasur".getBytes();
         result = "YW55IGNhcm5hbCBwbGVhc3Vy";
         is = new ByteArrayInputStream(value);
@@ -140,7 +139,7 @@ public class Base64Test {
         Base64.decode(new StringReader(result), os);
         Assert.assertEquals(result, sb.toString());
         Assert.assertEquals(new String(value), new String(os.toByteArray()));
-        
+
         value = "any carnal pleasure".getBytes();
         result = "YW55IGNhcm5hbCBwbGVhc3VyZQ==";
         is = new ByteArrayInputStream(value);
@@ -150,7 +149,7 @@ public class Base64Test {
         Base64.decode(new StringReader(result), os);
         Assert.assertEquals(result, sb.toString());
         Assert.assertEquals(new String(value), new String(os.toByteArray()));
-        
+
         value = "any carnal pleasure".getBytes();
         result = "YW55IGNhcm\n5hbCBwbGVh\nc3VyZQ==";
         is = new ByteArrayInputStream(value);
@@ -164,10 +163,10 @@ public class Base64Test {
 
     @Test
 	public void full() throws Exception {
-        
-        for(int i = 0; i < 257; i++) {
-            for(int j = 0; j < 257; j++) {
-                for(int k = 0; k < 257; k++) {
+
+        for(int i = 0; i < 256; i++) {
+            for(int j = 0; j < 256; j++) {
+                for(int k = 0; k < 256; k++) {
                         byte[] data = new byte[]{(byte)i, (byte)j, (byte)k};
                         String my = Base64.encode(data);
                         String jav = java.util.Base64.getEncoder().encodeToString(data);
@@ -184,13 +183,13 @@ public class Base64Test {
         }
 
     }
-    
+
     @Test
 	public void fullstream() throws Exception {
-        
-        for(int i = 0; i < 257; i++) {
-            for(int j = 0; j < 257; j++) {
-                for(int k = 0; k < 257; k++) {
+
+        for(int i = 0; i < 256; i++) {
+            for(int j = 0; j < 256; j++) {
+                for(int k = 0; k < 256; k++) {
                         byte[] data = new byte[]{(byte)i, (byte)j, (byte)k};
                         ByteArrayInputStream is = new ByteArrayInputStream(data);
                         StringBuilder sb = new StringBuilder();
@@ -211,4 +210,74 @@ public class Base64Test {
 
     }
 
+
+    @Test
+	public void url() throws Exception {
+
+        for(int i = 0; i < 256; i++) {
+            for(int j = 0; j < 256; j++) {
+                for(int k = 0; k < 256; k++) {
+                        byte[] data = new byte[]{(byte)i, (byte)j, (byte)k};
+                        String st = Base64.standard().encode(data);
+                        String ur = Base64.url().encode(data);
+                        byte[] stdata = Base64.standard().decode(st);
+                        byte[] urdata = Base64.url().decode(ur);
+                        Assert.assertEquals(3, stdata.length);
+                        Assert.assertEquals((byte)i, stdata[0]);
+                        Assert.assertEquals((byte)j, stdata[1]);
+                        Assert.assertEquals((byte)k, stdata[2]);
+                        Assert.assertEquals(3, urdata.length);
+                        Assert.assertEquals((byte)i, urdata[0]);
+                        Assert.assertEquals((byte)j, urdata[1]);
+                        Assert.assertEquals((byte)k, urdata[2]);
+                        if(st.endsWith("==")) st = st.substring(0, st.length()-2);
+                        else if(st.endsWith("=")) st = st.substring(0, st.length()-1);
+                        st = st.replace('+', '-');
+                        st = st.replace('/', '_');
+                        Assert.assertEquals(st, ur);
+
+                }
+            }
+        }
+
+    }
+
+    @Test
+	public void urlVsStandard() throws Exception {
+
+        String input = "toto je neajky pokus o data";
+        while(input.length() > 0) {
+            byte[] data = input.getBytes();
+            String standard = Base64.standard().encode(data);
+            String url = Base64.url().encode(data);
+
+            Assert.assertEquals(input, new String(Base64.standard().decode(standard)));
+            Assert.assertEquals(input, new String(Base64.url().decode(url)));
+
+            String standardModified = standard;
+            if(standardModified.equals('=')) standardModified = standardModified.substring(0, standardModified.length() - 1);
+            if(standardModified.equals('=')) standardModified = standardModified.substring(0, standardModified.length() - 1);
+            Assert.assertEquals(input, new String(Base64.standard().decode(standardModified)));
+
+            standardModified = standardModified.replace('+', '-');
+            standardModified = standardModified.replace('/', '_');
+            Assert.assertEquals(standard, standardModified);
+
+
+            input = input.substring(1);
+        }
+
+
+    }
+
+    @Test
+	public void encodeWithSpaces() throws Exception {
+        String result = "any carnal pleasure";
+        String encoded = "YW55IGNhcm5hbCBwbGVhc3VyZQ==";
+        Assert.assertEquals(result, new String(Base64.standard().decode(encoded)));
+        encoded = "YW55IGNhcm5hbCBwbGVhc3VyZQ";
+        Assert.assertEquals(result, new String(Base64.standard().decode(encoded)));
+        encoded = " YW 55IGN hcm\n5hbCB\rwbGVh\tc3VyZQ== ";
+        Assert.assertEquals(result, new String(Base64.standard().decode(encoded)));
+    }
 }
