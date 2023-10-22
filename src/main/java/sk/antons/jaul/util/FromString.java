@@ -16,6 +16,7 @@
 
 package sk.antons.jaul.util;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -25,7 +26,7 @@ import java.util.Date;
 import sk.antons.jaul.Is;
 
 /**
- * Converts string value to primitives. 
+ * Converts string value to primitives.
  * @author antons
  */
 public class FromString {
@@ -34,16 +35,16 @@ public class FromString {
     private boolean ignoreBadValue = false;
 
     /**
-     * 
+     *
      * @param value - value to be parsed.
      */
     public FromString(String value) {
         this.value = value;
     }
-    
-    
+
+
     /**
-     * 
+     *
      * @param value - value to be parsed
      * @param defaultEmptyValue - true if empty value should be defaulted (default is true)
      * @param ignoreBadValue - true if also bad formated value should be
@@ -73,7 +74,7 @@ public class FromString {
         }
         return rv;
     }
-    
+
     /**
      * Converts string value to int.
      * @return converted value or 0 in case empty input
@@ -98,7 +99,7 @@ public class FromString {
         }
         return rv;
     }
-    
+
     /**
      * Converts string value to long.
      * @return converted value or 0 in case empty input
@@ -125,7 +126,7 @@ public class FromString {
         }
         return rv;
     }
-    
+
     /**
      * Converts string value to float.
      * @return converted value or 0 in case empty input
@@ -151,14 +152,14 @@ public class FromString {
         }
         return rv;
     }
-    
+
     /**
      * Converts string value to double.
      * @return converted value or 0 in case empty input
      */
     public double doubleValue() { return doubleValue(0); }
 
-    
+
     /**
      * Converts string value to boolean.
      * @param defaultValue - default value
@@ -176,14 +177,40 @@ public class FromString {
         if("1".equals(value)) return true;
         return false;
     }
-    
+
     /**
      * Converts string value to boolean.
      * @return converted value or false in case empty input
      */
     public boolean booleanValue() { return booleanValue(false); }
 
-    
+    /**
+     * Converts string value to BigDecimal.
+     * @param defaultValue - default value
+     * @return converted value
+     */
+    public BigDecimal bd(BigDecimal defaultValue) {
+        if(Is.empty(value)) {
+            if(defaultEmptyValue) return defaultValue;
+            throw new IllegalArgumentException("Unable to tarse boolean from empty value");
+        }
+        BigDecimal rv = defaultValue;
+        value = value.replace(',', '.');
+        try {
+            rv = new BigDecimal(value);
+        } catch (Exception e) {
+            if(!ignoreBadValue) throw e;
+        }
+        return rv;
+    }
+
+    /**
+     * Converts string value to BigDecimal.
+     * @return converted value or false in case empty input
+     */
+    public BigDecimal bd() { return bd(null); }
+
+
     /**
      * Converts string value to date.
      * @param defaultValue - default value
@@ -198,7 +225,7 @@ public class FromString {
         if(Is.empty(format)) {
             throw new IllegalArgumentException("Unable to tarse date using empty format");
         }
-        
+
         Date rv = defaultValue;
         value = value.replace(',', '.');
         try {
@@ -209,14 +236,14 @@ public class FromString {
         }
         return rv;
     }
-    
+
     /**
      * Converts string value to date.
      * @param format - format of the parsed date (SimpleDateFpormat)
      * @return converted value or null in case empty input
      */
     public Date dateValue(String format) { return dateValue(null, format); }
-    
+
     /**
      * Converts string value to date.
      * @param defaultValue - default value
@@ -231,7 +258,7 @@ public class FromString {
         if(Is.empty(format)) {
             throw new IllegalArgumentException("Unable to parse date using empty format");
         }
-        
+
         LocalDate rv = null;
         value = value.replace(',', '.');
         try {
@@ -250,14 +277,14 @@ public class FromString {
      * @return converted value
      */
     public LocalDate localDateValue(LocalDate defaultValue, String format) { return localDateValue(defaultValue, DateTimeFormatter.ofPattern(format)); }
-    
+
     /**
      * Converts string value to date.
      * @param format - format of the parsed date (SimpleDateFpormat)
      * @return converted value or null in case empty input
      */
     public LocalDate localDateValue(String format) { return localDateValue(null, DateTimeFormatter.ofPattern(format)); }
-    
+
     /**
      * Converts string value to date.
      * @param defaultValue - default value
@@ -272,7 +299,7 @@ public class FromString {
         if(Is.empty(format)) {
             throw new IllegalArgumentException("Unable to parse date using empty format");
         }
-        
+
         LocalDateTime rv = null;
         value = value.replace(',', '.');
         try {
@@ -291,7 +318,7 @@ public class FromString {
      * @return converted value
      */
     public LocalDateTime localDateTimeValue(LocalDateTime defaultValue, String format) { return localDateTimeValue(defaultValue, DateTimeFormatter.ofPattern(format)); }
-    
+
     /**
      * Converts string value to date.
      * @param format - format of the parsed date (SimpleDateFpormat)
