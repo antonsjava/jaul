@@ -25,10 +25,11 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Stack;
 import java.util.function.Predicate;
-import static javax.management.Query.value;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.Attributes;
@@ -582,6 +583,7 @@ public class Elem {
         String indent = null;
         Escaping escaping = Escaping.SIMPLE;
         boolean indentAttrs = false;
+        boolean sortAttrs = false;
 
         private Exporter() { }
         /**
@@ -589,9 +591,13 @@ public class Elem {
          */
         public Exporter declaration(boolean value) { this.declaration = value; return this; }
         /**
-         * True if atributes should be indented. (default false)
+         * True if attributes should be indented. (default false)
          */
         public Exporter indentAttrs(boolean value) { this.indentAttrs = value; return this; }
+        /**
+         * True if attributes should be sorted by name. (default false)
+         */
+        public Exporter sortAttrs(boolean value) { this.sortAttrs = value; return this; }
         /**
          * Character encoding. (useful for output stream export) {default utf-8}
          */
@@ -679,8 +685,13 @@ public class Elem {
                 sb.append(prefix);
                 sb.append('<').append(elem.name.prefixedName());
                 if(!Is.empty(elem.attrs)) {
+                    boolean first = true;
+                    String indentprefix = "";
+                    if(indentAttrs) indentprefix = spacec(elem.name.prefixedName().length()+1);
+                    if(sortAttrs) Collections.sort(attrs, AttrByNameComparator.instance());
                     for(Attr attr : elem.attrs) {
-                        if(indentAttrs) sb.append('\n').append(prefix).append(indent).append(indent);
+                        if(indentAttrs && (!first)) sb.append('\n').append(prefix).append(indentprefix);
+                        first = false;
                         sb.append(' ').append(attr.toString(escaping));
                     }
                 }
@@ -851,7 +862,11 @@ public class Elem {
         /**
          * simple escaping + all non assii chars
          */
-        FULL;
+        FULL,
+        /**
+         * simple escaping + all non assii chars + nontrintable asii
+         */
+        FULL_NONPRINT;
     }
 
     private static String escape(String value, Escaping escaping) {
@@ -864,6 +879,8 @@ public class Elem {
                 return Html.escapeSimple(value);
             case FULL:
                 return Html.escapeSimpleAndNonAscii(value);
+            case FULL_NONPRINT:
+                return Html.escapeSimpleAndNonAsciiAndNonPrintable(value);
             default:
                 return value;
         }
@@ -898,6 +915,25 @@ public class Elem {
                 elem.traverse(predicate);
             }
         }
+    }
+
+    private static String spacec(int len) {
+        StringBuilder sb = new StringBuilder();
+        for(int i = 0; i < len; i++) sb.append(' ');
+        return sb.toString();
+    }
+
+    private static class AttrByNameComparator implements Comparator<Attr> {
+
+        @Override
+        public int compare(Attr t1, Attr t2) {
+            String n1 = t1 == null ? "" : (t1.name == null ? "" : (t1.name.name == null ? "" : t1.name.name));
+            String n2 = t2 == null ? "" : (t2.name == null ? "" : (t2.name.name == null ? "" : t2.name.name));
+            return n1.compareTo(n2);
+        }
+
+        public static AttrByNameComparator instance() { return new AttrByNameComparator(); }
+
     }
 
 // -------------------- subclasses end ---------------
@@ -947,10 +983,13 @@ public class Elem {
             FileOutputStream fos = new FileOutputStream("/tmp/aaa/pokus2.xml");
             eee3.export().encoding("windows-1252")
                 .declaration(true)
-                .escaping(Elem.Escaping.FULL)
+                .escaping(Elem.Escaping.FULL_NONPRINT)
                 .indent("\t")
+                .indentAttrs(true)
+                .sortAttrs(true)
                 .toOutputStream(fos);
             fos.flush();
             fos.close();
+
     }
 }

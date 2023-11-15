@@ -1,5 +1,5 @@
 /*
- * 
+ *
  */
 package sk.antons.jaul.binary;
 
@@ -8,7 +8,7 @@ import java.util.Map;
 
 /**
  * Simple html escaper utility.
- * 
+ *
  * @author antons
  */
 public class Html {
@@ -35,10 +35,10 @@ public class Html {
         }
         return sb.toString();
     }
-    
+
     /**
      * Characters &apos;&lt;&apos;, &apos;&gt;&apos;, &apos;&quot;&apos;, &apos;\&apos;&apos;, &apos;&amp;&apos; are escaped to their names.
-     * And non ascii characters are escaped to generale escape form (&amp;#NNNN;) 
+     * And non ascii characters are escaped to generale escape form (&amp;#NNNN;)
      * @param value text to be escaped
      * @return escaped text
      */
@@ -55,13 +55,39 @@ public class Html {
                 case '\'': sb.append("&apos;"); break;
                 case '&': sb.append("&amp;"); break;
                 default:
-                    if(c < 128) sb.append(c);
+                    if(c < 127) sb.append(c);
                     else sb.append("&#").append((int)c).append(';');
             }
         }
         return sb.toString();
     }
-    
+
+    /**
+     * Characters &apos;&lt;&apos;, &apos;&gt;&apos;, &apos;&quot;&apos;, &apos;\&apos;&apos;, &apos;&amp;&apos; are escaped to their names.
+     * And non ascii characters are escaped to generale escape form (&amp;#NNNN;)
+     * @param value text to be escaped
+     * @return escaped text
+     */
+    public static String escapeSimpleAndNonAsciiAndNonPrintable(String value) {
+        if(value == null) return null;
+        StringBuilder sb = new StringBuilder(value.length()*2);
+        int len = value.length();
+        for(int i = 0; i < len; i++) {
+            char c = value.charAt(i);
+            switch(c) {
+                case '<': sb.append("&lt;"); break;
+                case '>': sb.append("&gt;"); break;
+                case '"': sb.append("&quot;"); break;
+                case '\'': sb.append("&apos;"); break;
+                case '&': sb.append("&amp;"); break;
+                default:
+                    if((c < 127) && (c > 31)) sb.append(c);
+                    else sb.append("&#").append((int)c).append(';');
+            }
+        }
+        return sb.toString();
+    }
+
     /**
      * All known named characters are escaped to their names.
      * @param value text to be escaped
@@ -87,10 +113,10 @@ public class Html {
         }
         return sb.toString();
     }
-    
+
     /**
      * All known named characters are escaped to their names.
-     * And other non ascii characters are escaped to generale escape form (&amp;#NNNN;) 
+     * And other non ascii characters are escaped to generale escape form (&amp;#NNNN;)
      * @param value text to be escaped
      * @return escaped text
      */
@@ -115,9 +141,37 @@ public class Html {
         }
         return sb.toString();
     }
-    
+
     /**
-     * All numeric codes (&amp;#NNNN; and &amp;#xHHHH;) and mamed entities (&amp;xxxx;) are converted to 
+     * All known named characters are escaped to their names.
+     * And other non ascii characters are escaped to generale escape form (&amp;#NNNN;)
+     * @param value text to be escaped
+     * @return escaped text
+     */
+    public static String escapeNamesAndNonAsciiAndNonPrintable(String value) {
+        if(value == null) return null;
+        StringBuilder sb = new StringBuilder(value.length()*2);
+        int len = value.length();
+        for(int i = 0; i < len; i++) {
+            char c = value.charAt(i);
+            switch(c) {
+                case '<': sb.append("&lt;"); break;
+                case '>': sb.append("&gt;"); break;
+                case '"': sb.append("&quot;"); break;
+                case '\'': sb.append("&apos;"); break;
+                case '&': sb.append("&amp;"); break;
+                default:
+                    String name = names().get(c);
+                    if(name != null) sb.append(name);
+                    else if((c < 127) && (c > 31)) sb.append(c);
+                    else sb.append("&#").append((int)c).append(';');
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
+     * All numeric codes (&amp;#NNNN; and &amp;#xHHHH;) and mamed entities (&amp;xxxx;) are converted to
      * represented chars.
      * @param value escaped text
      * @return unescaped text
@@ -137,7 +191,7 @@ public class Html {
                         if(numlen > 0) {
                             int num = hexNum(value, len, i+3, numlen);
                             sb.append((char)num);
-                            i = i + numlen + 3; 
+                            i = i + numlen + 3;
                         } else {
                             sb.append(c);
                         }
@@ -146,7 +200,7 @@ public class Html {
                         if(numlen > 0) {
                             int num = decimalNum(value, len, i+2, numlen);
                             sb.append((char)num);
-                            i = i + numlen + 2; 
+                            i = i + numlen + 2;
                         } else {
                             sb.append(c);
                         }
@@ -166,7 +220,7 @@ public class Html {
         }
         return sb.toString();
     }
-    
+
     private static char charAt(String value, int len, int index) {
         if(index < len) {
             return value.charAt(index);
@@ -174,16 +228,16 @@ public class Html {
             return 0;
         }
     }
-    
+
     private static int decimalLen(String value, int len, int index) {
         for(int i = 0; i < 5; i++) {
             char c = charAt(value, len, index + i);
             if(c == ';') return i;
-            if((c < '0') || (c > '9')) break; 
+            if((c < '0') || (c > '9')) break;
         }
         return -1;
     }
-    
+
     private static int decimalNum(String value, int len, int index, int numlen) {
         int num = 0;
         for(int i = 0; i < numlen; i++) {
@@ -191,23 +245,23 @@ public class Html {
             num = num*10 + c - '0';
         }
         return num;
-    }  
-    
+    }
+
     private static int hexLen(String value, int len, int index) {
         for(int i = 0; i < 5; i++) {
             char c = charAt(value, len, index + i);
             if(c == ';') return i;
             if(!(
-                ((c >= '0') && (c <= '9')) 
+                ((c >= '0') && (c <= '9'))
                 ||
-                ((c >= 'a') && (c <= 'f')) 
+                ((c >= 'a') && (c <= 'f'))
                 ||
-                ((c >= 'A') && (c <= 'F')) 
-                )) break; 
+                ((c >= 'A') && (c <= 'F'))
+                )) break;
         }
         return -1;
     }
-    
+
     private static int hexNum(String value, int len, int index, int numlen) {
         int num = 0;
         for(int i = 0; i < numlen; i++) {
@@ -222,7 +276,7 @@ public class Html {
         }
         return num;
     }
-    
+
 //    private static class Node {
 //        String name;
 //        char character;
@@ -241,14 +295,14 @@ public class Html {
 //                n.add(name, character, index+1);
 //            }
 //        }
-//        
+//
 //        Node find(String value, int len, int index) {
 //            char c = charAt(value, len, index);
 //            Node n = children.get(c);
 //            if(n == null) return null;
 //            if(c == ';') return n;
 //            return n.find(value, len, index+1);
-//        }       
+//        }
 //    }
 
     private static class Node {
@@ -256,14 +310,14 @@ public class Html {
         char character;
         Node[] children = new Node[2 + 10 + 26 + 26];
         private int index(char c) {
-            if(c == '&') return 0; 
-            else if(c == ';') return 1; 
+            if(c == '&') return 0;
+            else if(c == ';') return 1;
             else if(('0'<= c) && (c <= '9')) return c - '0' + 2;
             else if(('a'<= c) && (c <= 'z')) return c - 'a' + 10 + 2;
             else if(('A'<= c) && (c <= 'Z')) return c - 'A' + 26 + 10 + 2;
             else return -1;
         }
-        
+
         void add(String name, char character, int index) {
             if(name.length() == index) {
                 this.name = name;
@@ -278,7 +332,7 @@ public class Html {
                 n.add(name, character, index+1);
             }
         }
-        
+
         Node find(String value, int len, int index) {
             char c = charAt(value, len, index);
             int i = index(c);
@@ -287,7 +341,7 @@ public class Html {
             if(n == null) return null;
             if(c == ';') return n;
             return n.find(value, len, index+1);
-        }       
+        }
     }
 
     private static Node root = null;
@@ -304,12 +358,12 @@ public class Html {
         }
         return names;
     }
-    
+
     private static void addName(String name, char c, Node root, Map<Character, String> names) {
         root.add(name, c, 0);
         names.put(c, name);
     }
-    
+
     private static void init() {
         Node node = new Node();
         Map<Character, String> map = new HashMap<Character, String>();
@@ -570,7 +624,7 @@ public class Html {
         root = node;
         names = map;
     }
-    
+
 //    public static void main(String[] params) {
 //        List<String> list = Split.file("/tmp/empty.txt", "utf-8").byLinesToList();
 //        for(String string : list) {
