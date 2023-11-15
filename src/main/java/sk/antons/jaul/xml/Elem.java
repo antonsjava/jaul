@@ -909,7 +909,7 @@ public class Elem {
     public void traverse(Predicate<Elem> predicate) {
         boolean cont = predicate.test(this);
         if(cont) {
-            int len = this.attributeSize();
+            int len = this.childrenSize();
             for(int i = 0; i < len; i++) {
                 Elem elem = this.child(i);
                 elem.traverse(predicate);
