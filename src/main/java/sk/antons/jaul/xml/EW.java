@@ -25,17 +25,17 @@ import org.w3c.dom.NodeList;
 import sk.antons.jaul.Is;
 
 /**
- * Simple Element wrapper class. simplify traversing of xml dom by elements. 
- * Hides Node part of dom model. 
- * 
- * Instance of EW represents an element node of xml dom document. It brings methods for 
- * traversing the xml document by elements. 
- * 
- * any time you can create EW by EW.elem(element) and return back encapsulated 
+ * Simple Element wrapper class. simplify traversing of xml dom by elements.
+ * Hides Node part of dom model.
+ *
+ * Instance of EW represents an element node of xml dom document. It brings methods for
+ * traversing the xml document by elements.
+ *
+ * any time you can create EW by EW.elem(element) and return back encapsulated
  * element by ER.elem().
  *
- * Implementation is not reentrant. 
- * 
+ * Implementation is not reentrant.
+ *
  * @author antons
  */
 public class EW {
@@ -78,7 +78,7 @@ public class EW {
     public Element elem() {
         return element;
     }
-    
+
     private String attr(String ns, String name) {
         if(name == null) return null;
         for(Attr a : attributes()) {
@@ -116,7 +116,7 @@ public class EW {
         if(element == null) return null;
         return element.getTextContent();
     }
-    
+
     /**
      * Returns parent element of this element if exists.
      * @return parent element or null if not exixsts.
@@ -148,7 +148,7 @@ public class EW {
         }
         return list;
     }
-    
+
     private static List<EW> traverse(Element e, String ns, String tag) {
         List<EW> list = new ArrayList<EW>();
         if(ns != null) ns = ns + ":";
@@ -174,7 +174,7 @@ public class EW {
                 list.add(EW.elem(e));
             }
         }
-        
+
         NodeList nl = e.getChildNodes();
         if(nl != null) {
             for(int i = 0; i < nl.getLength(); i++) {
@@ -185,7 +185,7 @@ public class EW {
             }
         }
     }
-    
+
     private static EW toFirst(NodeList nl, String ns, String tag) {
         if(nl != null) {
             if(ns != null) ns = ns + ":";
@@ -203,8 +203,8 @@ public class EW {
         }
         return null;
     }
-    
-    
+
+
     private static EW traverseFirst(Element e, String ns, String tag) {
         if(ns != null) ns = ns + ":";
         String tag2 = null;
@@ -230,7 +230,7 @@ public class EW {
                 return EW.elem(e);
             }
         }
-        
+
         NodeList nl = e.getChildNodes();
         if(nl != null) {
             for(int i = 0; i < nl.getLength(); i++) {
@@ -243,52 +243,52 @@ public class EW {
         }
         return null;
     }
-    
-    
-    
+
+
+
     /**
      * list of all direct e
-     * 
-     * lements in xml. 
-     * @return List of direct element descendants of this element. 
+     *
+     * lements in xml.
+     * @return List of direct element descendants of this element.
      */
     public List<EW> children() {
         return toList(element.getChildNodes(), null, null);
     }
 
     /**
-     * list of direct elements in xml filtered by tag name. 
+     * list of direct elements in xml filtered by tag name.
      * @param tag - tag name of selected children
-     * @return List of direct element descendants of this element. 
+     * @return List of direct element descendants of this element.
      */
     public List<EW> childrenByTagName(String tag) {
         return toList(element.getChildNodes(), null, tag);
-    } 
+    }
 
     /**
-     * list of direct elements in xml filtered by tag name. 
+     * list of direct elements in xml filtered by tag name.
      * @param ns - namespace prefix of tag name
      * @param tag - tag name of selected children
-     * @return List of direct element descendants of this element. 
+     * @return List of direct element descendants of this element.
      */
     public List<EW> childrenByTagNameNS(String ns, String tag) {
         return toList(element.getChildNodes(), ns, tag);
     }
-    
+
     /**
-     * list of all descendant elements in xml filtered by tag name. 
+     * list of all descendant elements in xml filtered by tag name.
      * @param tag - tag name of selected children
-     * @return List of direct element descendants of this element. 
+     * @return List of direct element descendants of this element.
      */
     public List<EW> elementsByTagName(String tag) {
         return traverse(element, null, tag);
-    } 
+    }
 
     /**
-     * list of all descendant elements in xml filtered by tag name. 
+     * list of all descendant elements in xml filtered by tag name.
      * @param ns - namespace prefix of tag name
      * @param tag - tag name of selected children
-     * @return List of direct element descendants of this element. 
+     * @return List of direct element descendants of this element.
      */
     public List<EW> elementsByTagNameNS(String ns, String tag) {
         return traverse(element, ns, tag);
@@ -301,7 +301,7 @@ public class EW {
     public EW firstChild() {
         return toFirst(element.getChildNodes(), null, null);
     }
-    
+
     /**
      * return first child of this node filtered by tag name
      * @param tag - tag name of selected children
@@ -321,7 +321,7 @@ public class EW {
         return toFirst(element.getChildNodes(), ns, tag);
     }
 
-    
+
     /**
      * return first descendant of this node filtered by tag name
      * @param tag - tag name of selected children
@@ -342,7 +342,7 @@ public class EW {
     }
 
     /**
-     * Tag name of encapsulated element. element.getNodeName() without name 
+     * Tag name of encapsulated element. element.getNodeName() without name
      * space prefix.
      * @return tag name of encapsulated element
      */
@@ -352,7 +352,7 @@ public class EW {
         if(pos > -1) return value.substring(pos+1);
         return value;
     }
-    
+
 
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -371,8 +371,8 @@ public class EW {
         }
         return names;
     }
- 
-    
+
+
     private static class Attr {
         private String fullname;
         private String name;
@@ -389,10 +389,10 @@ public class EW {
             } else {
                 name = fullname;
             }
-            
+
         }
     }
-    
+
 
     /**
      * return text content of first child of this node filtered by tag name
@@ -420,33 +420,34 @@ public class EW {
     /**
      * Finds first element defined by path.
      * @param path path defined by eleement names
-     * @return element or null 
+     * @return element or null
      */
     public EW firstByPath(String... path) {
-        EW root = this;
         if(Is.empty(path)) return null;
+        EW root = this;
         for(String name : path) {
             root = root.firstChildByTagName(name);
             if(root == null) return null;
         }
         return root;
     }
-    
+
     /**
      * Finds first element defined by path and return its text
      * @param path path defined by eleement names
-     * @return element text  or null 
+     * @return element text  or null
      */
     public String firstByPathText(String... path) {
-        EW ew = firstByPath(path);
         if(Is.empty(path)) return null;
+        EW ew = firstByPath(path);
+        if(ew == null) return null;
         return ew.text();
     }
-    
+
     /**
      * Finds all elements defined by path.
      * @param path path defined by eleement names
-     * @return list of elements 
+     * @return list of elements
      */
     public List<EW> allByPath(String... path) {
         List<EW> list = new ArrayList<EW>();
@@ -454,7 +455,7 @@ public class EW {
         allByPath(list, path, 0);
         return list;
     }
-    
+
     private void allByPath(List<EW> list, String[] path, int index) {
         List<EW> chlist = childrenByTagName(path[index]);
         if(Is.empty(chlist)) return;
