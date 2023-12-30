@@ -110,7 +110,7 @@ public class Stk {
                     first = false;
                     must = after;
                     sb.append("\n\tat ").append(line);
-                } else if(stackTraceElement.getClassName().startsWith("camp.xit")) {
+                } else if(isImportant(stackTraceElement.getClassName())) {
                     if(buffer.size() > before) sb.append("\n\tat ...");
                     for(int i = before; i > 0; i--) {
                         int index = buffer.size() - i;
@@ -130,6 +130,13 @@ public class Stk {
             if(buffer.size() > 0) sb.append("\n\tat ...");
         }
         st(sb, t.getCause(), false);
+    }
+
+    private boolean isImportant(String className) {
+        for(String prefix : prefixes) {
+            if(className.startsWith(prefix)) return true;
+        }
+        return false;
     }
 
 }
