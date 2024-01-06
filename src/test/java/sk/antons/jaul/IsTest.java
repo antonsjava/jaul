@@ -27,15 +27,15 @@ import org.junit.Test;
  * @author antons
  */
 public class IsTest {
-	
+
     @Test
 	public void emptyObject() throws Exception {
-        Object value = new Integer(12);
+        Object value = 12;
         Assert.assertFalse("not null", Is.empty(value));
         value = null;
         Assert.assertTrue("null", Is.empty(value));
     }
-    
+
     @Test
 	public void emptyString() throws Exception {
         String value = "jablko";
@@ -45,7 +45,7 @@ public class IsTest {
         value = null;
         Assert.assertTrue("null", Is.empty(value));
     }
-    
+
     @Test
 	public void emptyCollection() throws Exception {
         List value = null;
@@ -55,7 +55,7 @@ public class IsTest {
         value.add("");
         Assert.assertFalse("not null not empty", Is.empty(value));
     }
-    
+
     @Test
 	public void emptyArray() throws Exception {
         Integer[] value = null;
@@ -65,7 +65,7 @@ public class IsTest {
         value = new Integer[]{1};
         Assert.assertFalse("not null not empty", Is.empty(value));
     }
-    
+
     @Test
 	public void emptyPrimitiveArray() throws Exception {
         int[] value = null;
@@ -75,7 +75,7 @@ public class IsTest {
         value = new int[]{1};
         Assert.assertFalse("not null not empty", Is.empty(value));
     }
-    
+
     @Test
 	public void emptyMap() throws Exception {
         Map value = null;
@@ -85,17 +85,17 @@ public class IsTest {
         value.put("d", "d");
         Assert.assertFalse("not null not empty", Is.empty(value));
     }
-    
+
     @Test
 	public void zeroInteger() throws Exception {
         Integer value = null;
         Assert.assertTrue("null", Is.zero(value));
-        value = new Integer(12);
+        value = 12;
         Assert.assertFalse("12", Is.zero(value));
-        value = new Integer(0);
+        value = 0;
         Assert.assertTrue("0", Is.zero(value));
     }
-    
+
     @Test
 	public void zeroInt() throws Exception {
         int value = 0;
@@ -103,19 +103,19 @@ public class IsTest {
         value = 12;
         Assert.assertFalse("12", Is.zero(value));
     }
-    
-    
+
+
     @Test
 	public void truthBoolean() throws Exception {
         Boolean value = null;
         Assert.assertFalse("null", Is.truth(value));
-        value = new Boolean(true);
+        value = true;
         Assert.assertTrue("true", Is.truth(value));
-        value = new Boolean(false);
+        value = false;
         Assert.assertFalse("false", Is.truth(value));
     }
-    
-    
+
+
     @Test
 	public void truthBool() throws Exception {
         boolean value = false;

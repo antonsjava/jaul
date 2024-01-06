@@ -20,14 +20,14 @@ import sk.antons.jaul.Is;
 import sk.antons.jaul.util.TextFile;
 
 /**
- * Helper class for formating xml in string form. It does't parse xml as document so it can porduce some error outputs. 
+ * Helper class for formating xml in string form. It does't parse xml as document so it can porduce some error outputs.
  * But it is usefull for makeing some debug log outputs.
  * <pre>
  * String xml = ...;
  * String oneline = XmlFormat.instance(xml, 10000).forceoneline().cutStringLiterals(400).format());
  * String formatted = XmlFormat.instance(xml, 10000).forceoneline().indent("  ").format());
  * </pre>
- * 
+ *
  * @author antons
  */
 public class XmlFormat {
@@ -39,29 +39,35 @@ public class XmlFormat {
     private int length;
     private boolean cut = false;
     private int cutLength = 1;
-    
+
     /**
      * Create instance of formatter.
      * @param xml xml to be formated
-     * @param treshhold if size of xml &gt; treshhold no temporal copy of xml will be created. Otherwice it creates xml.toCharArray() copy is created.
+     * @param threshold if size of xml &gt; threshold no temporal copy of xml will be created. Otherwice it creates xml.toCharArray() copy is created.
      */
-    public XmlFormat(String xml, int treshhold) {
+    public XmlFormat(String xml, int threshold) {
         if(xml != null) {
             this.length = xml.length();
         }
-        if(treshhold >= length) this.source = CharsSource.instance(xml);
+        if(threshold >= length) this.source = CharsSource.instance(xml);
         else this.source = StringSource.instance(xml);
     }
 
     /**
      * Create instance of formatter.
      * @param xml xml to be formated
-     * @param treshhold if size of xml &gt; treshhold no temporal copy of xml will be created. Otherwice it creates xml.toCharArray() copy is created.
+     * @param threshold if size of xml &gt; threshold no temporal copy of xml will be created. Otherwice it creates xml.toCharArray() copy is created.
      * @return new XmlFormat instance
      */
-    public static XmlFormat instance(String xml, int treshhold) { return new XmlFormat(xml, treshhold); }
+    public static XmlFormat instance(String xml, int threshold) { return new XmlFormat(xml, threshold); }
+    /**
+     * Create instance of formatter. with threshold 0 (no temporal copy to char array)
+     * @param xml xml to be formated
+     * @return new XmlFormat instance
+     */
+    public static XmlFormat instance(String xml) { return new XmlFormat(xml, 0); }
 
-    
+
     /**
      * Cause indended formatting (default is no formatted)
      * @param indent string to indent (like two spaces "  ")
@@ -72,9 +78,9 @@ public class XmlFormat {
         this.oneline = false;
         return this;
     }
-    
+
     /**
-     * Cause escaping of \r and \n chars. 
+     * Cause escaping of \r and \n chars.
      * @return this
      */
     public XmlFormat forceoneline() {
@@ -87,24 +93,24 @@ public class XmlFormat {
      * Useful for some debug logs of xml containng long binary data.
      * @param length length to cut literals
      * @return this
-     */    
+     */
     public XmlFormat cutStringLiterals(int length) {
         if(length < 4) length = 4;
         this.cut = true;
         this.cutLength = length;
         return this;
     }
-    
+
 
     /**
-     * Produce formated output. 
+     * Produce formated output.
      * @return tormated output.
      */
     public String format() {
         if(source.isEmpty()) return source.original();
         if(oneline) this.newxml = new StringBuilder(this.length + this.length/2);
         else this.newxml = new StringBuilder(this.length);
-        
+
         int index = 0;
         int depth = 0;
         Token prevprevtoken = null;
@@ -205,7 +211,7 @@ public class XmlFormat {
                     break;
                 default:
             }
-                
+
             prevprevtoken = prevtoken;
             prevtoken = position.token;
             index = position.index + prevtoken.size();
@@ -220,7 +226,7 @@ public class XmlFormat {
     private int find(int index, Token token) {
         return source.indexOf(token, index);
     }
-    
+
     private void next(int index, Position position) {
         for(int i = index; i < length; i++) {
             char c = source.charAt(i);
@@ -272,7 +278,7 @@ public class XmlFormat {
                 || (!((c == ' ') || (c == '\n') || (c == '\t') || (c == '\r')));
         }
     }
-    
+
     private static class Position {
         private int index;
         private Token token;
@@ -303,7 +309,7 @@ public class XmlFormat {
                 if((c == '\n') || (c == '\t') || (c == '\r')) c = ' ';
                 if((c != ' ') || (prev != ' ')) {
                     newxml.append(c);
-                } 
+                }
             }
             prev = c;
         }
@@ -325,7 +331,7 @@ public class XmlFormat {
     private void append(Token token) {
         newxml.append(token.pattern);
     }
-    
+
     private static enum Token {
         LEFT("<")
         , RIGHT(">")
@@ -341,9 +347,9 @@ public class XmlFormat {
 
         private String value;
         private char[] pattern;
-        private Token(String value) { 
-            this.value = value; 
-            this.pattern = value.toCharArray(); 
+        private Token(String value) {
+            this.value = value;
+            this.pattern = value.toCharArray();
         }
         public int size() { return pattern.length; }
     }
@@ -371,7 +377,7 @@ public class XmlFormat {
         }
 
         public static StringSource instance(String xml) { return new StringSource(xml); }
-        
+
         @Override public int length() { return length; }
         @Override public char charAt(int index) { return xml.charAt(index); }
         @Override public boolean isEmpty() { return length == 0; }
@@ -437,14 +443,14 @@ public class XmlFormat {
         }
 
         public static CharsSource instance(String xml) { return new CharsSource(xml); }
-        
+
         @Override public int length() { return length; }
         @Override public char charAt(int index) { return chars[index]; }
         @Override public boolean isEmpty() { return length == 0; }
         @Override public String original() { return xml; }
-        
-        @Override 
-        public int indexOf(Token token, int index) { 
+
+        @Override
+        public int indexOf(Token token, int index) {
             int len = token.pattern.length;
             int len2 = length - len;
             for(int i = index; i < len2; i++) {
@@ -476,7 +482,7 @@ public class XmlFormat {
             boolean cutting = false;
             if(cut) {
                if(from + cutLength < to) {
-                   toto = from + cutLength - 3; 
+                   toto = from + cutLength - 3;
                    cutting = true;
                }
             }
@@ -506,7 +512,7 @@ public class XmlFormat {
             boolean cutting = false;
             if(cut) {
                if(from + cutLength < length) {
-                   toto = from + cutLength - 3; 
+                   toto = from + cutLength - 3;
                    cutting = true;
                }
             }
@@ -531,20 +537,20 @@ public class XmlFormat {
         }
 
     }
-    
+
 
     public static void main(String[] argv) {
         String xml = TextFile.read("/tmp/aaa/a.xml", "utf-8");
         //String xml = TextFile.read("/home/pdocs/year-2020/2020-06-03 - nksr - rfo/xsd/319-2-2v00-20140324 RFO WS Poskytnutie referenčných údajov zoznamu IFO online/PoskytnutieUdajovIFOOnlineWS-v1.0 - zásielka dáta.xml", "utf-8");
         //String xml = "<start><a    xx=\" ka\"    >\n<name>jab\nlko</name>\nsomarina\n</a></start>";
-        int treshhold = 1000000;        
+        int threshold = 1000000;
         long timestart = System.currentTimeMillis();
         System.out.println(" ------------");
-        System.out.println(XmlFormat.instance(xml, treshhold).forceoneline().cutStringLiterals(5).format());
+        System.out.println(XmlFormat.instance(xml, threshold).forceoneline().cutStringLiterals(5).format());
         System.out.println(" ------------");
-        System.out.println(XmlFormat.instance(xml, treshhold).indent("  ").cutStringLiterals(5).forceoneline().format());
+        System.out.println(XmlFormat.instance(xml, threshold).indent("  ").cutStringLiterals(5).forceoneline().format());
         System.out.println(" ------------");
-        System.out.println(XmlFormat.instance(XmlFormat.instance(xml, treshhold).forceoneline().format(), treshhold).indent("  ").forceoneline().format());
+        System.out.println(XmlFormat.instance(XmlFormat.instance(xml, threshold).forceoneline().format(), threshold).indent("  ").forceoneline().format());
         System.out.println(" ------------");
         long timeend = System.currentTimeMillis();
         System.out.println(" time: " + (timeend - timestart));
@@ -553,14 +559,14 @@ public class XmlFormat {
 //        long tstart = System.currentTimeMillis();
 //        for(int i = 0; i < 100; i++) {
 //            System.out.println(" ------------");
-//            num = num + XmlFormat.instance(xml, treshhold).format().length();
-//            num = num + XmlFormat.instance(xml, treshhold).indent("  ").format().length();
+//            num = num + XmlFormat.instance(xml, threshold).format().length();
+//            num = num + XmlFormat.instance(xml, threshold).indent("  ").format().length();
 //            //num = num + Xml.documentToString(Xml.document(xml), "utf-8", false, false).length();
 //            //num = num + Xml.documentToString(Xml.document(xml), "utf-8", true, false).length();
 //        }
 //        long tend = System.currentTimeMillis();
 //        System.out.println(" num: " + num);
 //        System.out.println(" time: " + (tend - tstart));
-        
+
     }
 }

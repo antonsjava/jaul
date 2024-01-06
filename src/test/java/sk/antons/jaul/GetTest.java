@@ -28,7 +28,7 @@ import org.junit.Test;
  * @author antons
  */
 public class GetTest {
-	
+
     @Test
 	public void firstCollection() throws Exception {
         List value = null;
@@ -38,15 +38,15 @@ public class GetTest {
         value.add("");
         Assert.assertNotNull("notempty", Get.first(value));
     }
-    
+
     @Test
 	public void safeInteger() throws Exception {
         Integer value = null;
         Assert.assertTrue("null", Get.safeInt(value) == 0);
-        value = new Integer(12);
+        value = 12;
         Assert.assertTrue("not null", Get.safeInt(value) == 12);
     }
-    
+
     @Test
 	public void sizeString() throws Exception {
         String value = null;
@@ -147,5 +147,5 @@ public class GetTest {
         value = "12.11.2032";
         Assert.assertTrue("ok", Get.from(value).dateValue("dd.MM.yyyy") != null);
     }
-    
+
 }
