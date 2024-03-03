@@ -197,7 +197,7 @@ public class AsRuntimeEx {
      * @param t exception to be wrapped or returned
      * @param message - message for new created exception
      * @param params parameters for message {} placeholders
-     * @return instance of IllegalStateException
+     * @return instance of RuntimeException
      */
     public static RuntimeException of(Throwable t, String message, Object... params) {
         if(t instanceof RuntimeException) return (RuntimeException)t;
@@ -209,7 +209,7 @@ public class AsRuntimeEx {
      * otherwise wrap it as RuntimeException.
      * @param t exception to be wrapped or returned
      * @param message - message for new created exception
-     * @return instance of IllegalStateException
+     * @return instance of RuntimeException
      */
     public static RuntimeException of(Throwable t, String message) {
         if(t instanceof RuntimeException) return (RuntimeException)t;
@@ -220,7 +220,7 @@ public class AsRuntimeEx {
      * If given exception is RuntimeException returns that exception
      * otherwise wrap it as RuntimeException.
      * @param t exception to be wrapped or returned
-     * @return instance of IllegalStateException
+     * @return instance of RuntimeException
      */
     public static RuntimeException of(Throwable t) {
         if(t instanceof RuntimeException) return (RuntimeException)t;
@@ -231,7 +231,7 @@ public class AsRuntimeEx {
      * Factory for RuntimeException with SLF formatting
      * @param message exceptiom message
      * @param params parameters for message {} placeholders
-     * @return instance of IllegalArgumentException
+     * @return instance of RuntimeException
      */
     public static RuntimeException of(String message, Object... params) {
         return new RuntimeException(format(message, params));
@@ -240,7 +240,7 @@ public class AsRuntimeEx {
     /**
      * Factory for RuntimeException
      * @param message exceptiom message
-     * @return instance of IllegalArgumentException
+     * @return instance of RuntimeException
      */
     public static RuntimeException of(String message) {
         return new RuntimeException(message);
