@@ -18,6 +18,7 @@ package sk.antons.jaul.util;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -29,13 +30,13 @@ import sk.antons.jaul.Is;
 
 /**
  * Read and write text file to and from string.
- * 
+ *
  * @author antons
  */
 public class TextFile {
-    
+
     /**
-     * Reads text file into string. 
+     * Reads text file into string.
      * @param is - input stream with texts file data
      * @param charset = charset name
      * @return String from file
@@ -46,7 +47,7 @@ public class TextFile {
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(is, charset));
             StringBuilder sb = new StringBuilder();
-            
+
             String line = reader.readLine();
             while(line != null) {
                 if(sb.length() > 0 ) sb.append('\n');
@@ -55,7 +56,7 @@ public class TextFile {
             }
 
             reader.close();
-            
+
             return sb.toString();
         } catch (IOException e) {
             throw new IllegalArgumentException("Unable to read file data with charset '"+charset+"'", e);
@@ -63,7 +64,7 @@ public class TextFile {
     }
 
     /**
-     * Reads text file into string. 
+     * Reads text file into string.
      * @param filename - name of the file to be read
      * @param charset = charset name
      * @return String from file
@@ -77,16 +78,22 @@ public class TextFile {
             throw new IllegalArgumentException("Unable to read file '"+filename+"' with charset '"+charset+"'", e);
         }
     }
-    
+
     /**
      * Save text to file. Original file will be replaced.
      * @param filename - name of the file to be saved
      * @param charset - charset name
      * @param text  - text to be written to file;
+     * @param createDir  - if true create parent directory if not exists
      */
-    public static void save(String filename, String charset, String text) {
+    public static void save(String filename, String charset, String text, boolean createDir) {
         if(Is.empty(charset)) charset = "utf-8";
         try {
+            if(createDir) {
+                File f = new File(filename);
+                File p = f.getParentFile();
+                if(!p.exists()) p.mkdirs();
+            }
             Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filename), charset));
             if(text != null) writer.write(text);
             writer.flush();
@@ -94,6 +101,16 @@ public class TextFile {
         } catch (IOException e) {
             throw new IllegalArgumentException("Unable to save file '"+filename+"' with charset '"+charset+"'", e);
         }
+    }
+
+    /**
+     * Save text to file. Original file will be replaced.
+     * @param filename - name of the file to be saved
+     * @param charset - charset name
+     * @param text  - text to be written to file;
+     */
+    public static void save(String filename, String charset, String text) {
+        save(filename, charset, text, false);
     }
 
 }
