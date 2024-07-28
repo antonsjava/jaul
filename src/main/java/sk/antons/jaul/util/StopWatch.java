@@ -34,6 +34,7 @@ public class StopWatch {
     long starttime;
 
     int iterationCount;
+    int counter = 0;
 
     private StopWatch() {
         creationtime = System.currentTimeMillis();
@@ -54,7 +55,7 @@ public class StopWatch {
     /**
      * start new time measurement.
      */
-    public void reset() { this.starttime = System.currentTimeMillis(); }
+    public void reset() { this.starttime = System.currentTimeMillis(); this.counter = 0; }
 
     /**
      * time from last reset of creation or StopWatch.
@@ -72,6 +73,23 @@ public class StopWatch {
     public long wholeTime() { return System.currentTimeMillis() - this.creationtime; }
 
     /**
+     * add n to counter.
+     */
+    public void counter(int num) { this.counter = this.counter + num; }
+
+    /**
+     * returns counter value.
+     */
+    public int counter() { return this.counter; }
+
+    /**
+     * Estimated time to last iteration based on counter. (iterationCount must be specified)
+     */
+    public long remainingTime() {
+        return remainingTime(counter);
+    }
+
+    /**
      * Estimated time to last iteration. (iterationCount must be specified)
      */
     public long remainingTime(int iteration) {
@@ -81,6 +99,13 @@ public class StopWatch {
         long rtime = time * (iterationCount - iteration) / iteration;
         if(rtime < 0 ) iteration = 0;
         return rtime;
+    }
+
+    /**
+     * Estimated time to last iteration based on counter. (iterationCount must be specified)
+     */
+    public String remainingTimeReadable() {
+        return remainingTimeReadable(counter);
     }
 
     /**

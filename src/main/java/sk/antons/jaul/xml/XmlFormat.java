@@ -36,6 +36,7 @@ public class XmlFormat {
     private boolean oneline = true;
     private boolean forceoneline = false;
     private String indent = "  ";
+    private boolean indentAttrs = false;
     private int length;
     private boolean cut = false;
     private int cutLength = 1;
@@ -76,6 +77,17 @@ public class XmlFormat {
     public XmlFormat indent(String indent) {
         this.indent = indent;
         this.oneline = false;
+        return this;
+    }
+
+    /**
+     * Cause indended formatting for attributes. ( default is no formatted)
+     * It is used together with indent() formattong
+     * @param indentAttrs attrs will be indentd too
+     * @return this
+     */
+    public XmlFormat indentAttrs(boolean indentAttrs) {
+        this.indentAttrs = indentAttrs;
         return this;
     }
 
@@ -136,7 +148,7 @@ public class XmlFormat {
                     depth++;
                     break;
                 case RIGHT:
-                    appendTag(index, position.index);
+                    appendTag(index, position.index, depth);
                     append(Token.RIGHT);
                     //if(prevtoken == Token.CDATA_LEFT) depth--;
                     break;
@@ -159,7 +171,7 @@ public class XmlFormat {
                     break;
                 case RIGHT_SINGLE:
                     depth--;
-                    appendTag(index, position.index);
+                    appendTag(index, position.index, depth);
                     append(Token.RIGHT_SINGLE);
                     break;
                 case CDATA_LEFT:
@@ -206,7 +218,7 @@ public class XmlFormat {
                     append(Token.PROLOG_LEFT);
                     break;
                 case PROLOG_RIGHT:
-                    appendTag(index, position.index);
+                    appendTag(index, position.index, depth);
                     append(Token.PROLOG_RIGHT);
                     break;
                 default:
@@ -291,9 +303,10 @@ public class XmlFormat {
         }
         public boolean isValid() { return index > -1; }
     }
-    private void appendTag(int from, int to) {
+    private void appendTag(int from, int to, int depth) {
         char prev = 0;
         char escape = 0;
+        int spaces = 0;
         for(int i = from; i < to; i++) {
             char c = source.charAt(i);
             if(escape > 0) {
@@ -307,7 +320,12 @@ public class XmlFormat {
                 escape = c;
             } else {
                 if((c == '\n') || (c == '\t') || (c == '\r')) c = ' ';
-                if((c != ' ') || (prev != ' ')) {
+                if((c == ' ')) {
+                    if((prev != ' ')) {
+                        newxml.append(c);
+                        if(indentAttrs && (spaces++ > 0)) appendIndent(depth+2);
+                    }
+                } else {
                     newxml.append(c);
                 }
             }
@@ -549,6 +567,8 @@ public class XmlFormat {
         System.out.println(XmlFormat.instance(xml, threshold).forceoneline().cutStringLiterals(5).format());
         System.out.println(" ------------");
         System.out.println(XmlFormat.instance(xml, threshold).indent("  ").cutStringLiterals(5).forceoneline().format());
+        System.out.println(" ------------");
+        System.out.println(XmlFormat.instance(xml, threshold).indent("  ").indentAttrs(true).cutStringLiterals(5).forceoneline().format());
         System.out.println(" ------------");
         System.out.println(XmlFormat.instance(XmlFormat.instance(xml, threshold).forceoneline().format(), threshold).indent("  ").forceoneline().format());
         System.out.println(" ------------");
