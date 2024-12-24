@@ -19,10 +19,11 @@ import java.util.logging.Logger;
 /**
  * Helper class for time measurment in ms.
  * &lt;pre&gt;
- *    StopWatch sw = StopWatch.instance().iterationCount(100);
+ *    StopWatch sw = StopWatch.instance().finalRound(100);
  *    for(int i = 0; i &lt; 100; i++) {
  *        Thread.sleep(1000);
- *        System.out.println(" processed " + i + " remaining time: " + sw.remainingTimeReadable(i));
+ *        sw.round();
+ *        System.out.println(" processed " + i + " remaining time: " + sw.remainingTime().readable());
  *    }
  * &lt;/pre&gt;
  * @author antons
@@ -33,8 +34,8 @@ public class StopWatch {
     long creationtime;
     long starttime;
 
-    int iterationCount;
-    int counter = 0;
+    int finalRound;
+    int rounds = 0;
 
     private StopWatch() {
         creationtime = System.currentTimeMillis();
@@ -50,119 +51,122 @@ public class StopWatch {
     /**
      * Sets number of iterations used for remainting time counting;
      */
-    public StopWatch iterationCount(int count) { this.iterationCount = count; return this; }
+    public StopWatch finalRound(int value) { this.finalRound = value; return this; }
 
     /**
      * start new time measurement.
      */
-    public void reset() { this.starttime = System.currentTimeMillis(); this.counter = 0; }
+    public StopWatch reset() { this.starttime = System.currentTimeMillis(); this.rounds = 0; return this; }
+
+    /**
+     * add n to rounds.
+     */
+    public StopWatch round(int num) { this.rounds = this.rounds + num; return this; }
+
+    /**
+     * add 1 to rounds.
+     */
+    public StopWatch round() { this.rounds++; return this; }
+
+    /**
+     * returns number of rounds.
+     */
+    public int rounds() { return this.rounds; }
 
     /**
      * time from last reset of creation or StopWatch.
      */
-    public long time() { return System.currentTimeMillis() - this.starttime; }
-
-    /**
-     * time from last reset of creation or StopWatch.
-     */
-    public String timeReadable() { return readableTime(time(), false); }
+    public ReadableTime time() { return ReadableTime.of(System.currentTimeMillis() - this.starttime); }
 
     /**
      * time from creation or StopWatch.
      */
-    public long wholeTime() { return System.currentTimeMillis() - this.creationtime; }
+    public ReadableTime wholeTime() { return ReadableTime.of(System.currentTimeMillis() - this.creationtime); }
 
     /**
-     * add n to counter.
+     * Estimated time to last iteration based on counter. (finalRound must be specified)
      */
-    public void counter(int num) { this.counter = this.counter + num; }
-
-    /**
-     * returns counter value.
-     */
-    public int counter() { return this.counter; }
-
-    /**
-     * Estimated time to last iteration based on counter. (iterationCount must be specified)
-     */
-    public long remainingTime() {
-        return remainingTime(counter);
+    public ReadableTime remainingTime() {
+        long time = -1;
+        if(finalRound > 0) {
+            if(rounds > 0) {
+                time = System.currentTimeMillis() - this.starttime;
+                time = time * (finalRound - rounds) / rounds;
+            }
+        }
+        return ReadableTime.of(time);
     }
 
     /**
-     * Estimated time to last iteration. (iterationCount must be specified)
+     * Average time of round. Calculated as time() / rounds().
      */
-    public long remainingTime(int iteration) {
-        if(iterationCount < 1) return -1;
-        if(iteration < 1) return -1;
-        long time = time();
-        long rtime = time * (iterationCount - iteration) / iteration;
-        if(rtime < 0 ) iteration = 0;
-        return rtime;
+    public ReadableTime averageRoundTime() {
+        long time = -1;
+        if(rounds > 0) {
+            time = System.currentTimeMillis() - this.starttime;
+            time = time / rounds;
+        }
+        return ReadableTime.of(time);
     }
+
 
     /**
-     * Estimated time to last iteration based on counter. (iterationCount must be specified)
+     * Helper for displaying time interval in readable form
      */
-    public String remainingTimeReadable() {
-        return remainingTimeReadable(counter);
-    }
+    public static class ReadableTime {
 
-    /**
-     * Estimated time to last iteration. (iterationCount must be specified)
-     */
-    public String remainingTimeReadable(int iteration) {
-        return readableTime(remainingTime(iteration), false);
-    }
+        long time;
+        boolean displayMS = false;
 
-    public static String readableTime(long time, boolean displayMS)  {
-        if(time < 0) return "undefined";
-        long ms = time % 1000; time = time / 1000;
-        long sec = time % 60; time = time / 60;
-        long min = time % 60; time = time / 60;
-        long hour = time % 24; time = time / 24;
-        long day = time;
+        public ReadableTime(long time) { this.time = time; }
+        public static ReadableTime of(long time) { return new ReadableTime(time); }
+        public ReadableTime displayMsInReadable(boolean value) { this.displayMS = value; return this; }
 
-        boolean something = false;
-        StringBuilder sb = new StringBuilder();
-        if((day > 0) || something) {
-            sb.append(something?" ":"").append(day).append('d');
-            something = true;
+        public long ms() { return time; }
+
+        public String readable()  {
+            if(time < 0) return "undefined";
+            long ms = time % 1000; time = time / 1000;
+            long sec = time % 60; time = time / 60;
+            long min = time % 60; time = time / 60;
+            long hour = time % 24; time = time / 24;
+            long day = time;
+
+            boolean something = false;
+            StringBuilder sb = new StringBuilder();
+            if((day > 0) || something) {
+                sb.append(something?" ":"").append(day).append('d');
+                something = true;
+            }
+            if((hour > 0) || something) {
+                sb.append(something?" ":"").append(hour).append('h');
+                something = true;
+            }
+            if((min > 0) || something) {
+                sb.append(something?" ":"").append(min).append('m');
+                something = true;
+            }
+            if((!displayMS) || (sec > 0) || something) {
+                sb.append(something?" ":"").append(sec).append('s');
+                something = true;
+            }
+            if(displayMS) {
+                sb.append(something?" ":"").append(ms).append("ms");
+            }
+            return sb.toString();
         }
-        if((hour > 0) || something) {
-            sb.append(something?" ":"").append(hour).append('h');
-            something = true;
+
+        public String toString() {
+            return String.valueOf(time);
         }
-        if((min > 0) || something) {
-            sb.append(something?" ":"").append(min).append('m');
-            something = true;
-        }
-        if((!displayMS) || (sec > 0) || something) {
-            sb.append(something?" ":"").append(sec).append('s');
-            something = true;
-        }
-        if(displayMS) {
-            sb.append(something?" ":"").append(ms).append("ms");
-        }
-        return sb.toString();
+
     }
 
     public static void main(String[] argv) throws Exception {
-        long time = 23;
-        System.out.println(" -- " + readableTime(time, true) + "  " + readableTime(time, false));
-        time = time + 12*1000;
-        System.out.println(" -- " + readableTime(time, true) + "  " + readableTime(time, false));
-        time = time + 4*60*1000;
-        System.out.println(" -- " + readableTime(time, true) + "  " + readableTime(time, false));
-        time = time + 22*60*60*1000;
-        System.out.println(" -- " + readableTime(time, true) + "  " + readableTime(time, false));
-        time = time + 123l*24*60*60*1000;
-        System.out.println(" -- " + readableTime(time, true) + "  " + readableTime(time, false));
-
-        StopWatch sw = StopWatch.instance().iterationCount(100);
+        StopWatch sw = StopWatch.instance().finalRound(100);
         for(int i = 0; i < 100; i++) {
             Thread.sleep(1000);
-            System.out.println(" processed " + i + " remaining time: " + sw.remainingTimeReadable(i));
+            System.out.println(" processed " + i + " remaining time: " + sw.round().remainingTime().readable());
         }
 
     }
