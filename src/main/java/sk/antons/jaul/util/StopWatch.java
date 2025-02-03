@@ -166,7 +166,8 @@ public class StopWatch {
         StopWatch sw = StopWatch.instance().finalRound(100);
         for(int i = 0; i < 100; i++) {
             Thread.sleep(1000);
-            System.out.println(" processed " + i + " remaining time: " + sw.round().remainingTime().readable());
+            sw.round();
+            System.out.println(" processed " + sw.rounds() + " remaining time: " + sw.remainingTime().readable());
         }
 
     }

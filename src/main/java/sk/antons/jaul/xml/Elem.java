@@ -32,6 +32,8 @@ import java.util.Stack;
 import java.util.function.Predicate;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamReader;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -419,6 +421,69 @@ public class Elem {
             Parser parser = new Parser();
             saxParser.parse(is , parser);
             return parser.root;
+        } catch(Exception e) {
+            throw AsRuntimeEx.argument(e);
+        }
+    }
+
+    public static Elem parse(XMLStreamReader reader) {
+        try {
+            while(!reader.isStartElement()) reader.next();
+            String prefix = reader.getPrefix();
+            String name = reader.getLocalName();
+            if(!Is.empty(prefix)) name = prefix + ":" + name;
+            Elem elem = Elem.of(name);
+            {
+                int count = reader.getAttributeCount();
+                for(int i = 0; i < count; i++) {
+                    String pr = reader.getAttributePrefix(i);
+                    String na = reader.getAttributeLocalName(i);
+                    if(!Is.empty(pr)) na = pr + ":" + na;
+                    String va = reader.getAttributeValue(i);
+                    elem.addAttr(na, va);
+                }
+            }
+            {
+                int count = reader.getNamespaceCount();
+                for(int i = 0; i < count; i++) {
+                    String pr = reader.getNamespacePrefix(i);
+                    String na = "xmlns";
+                    if(!Is.empty(pr)) na = na + ":" + pr;
+                    String va = reader.getNamespaceURI(i);
+                    elem.addAttr(na, va);
+                }
+            }
+            StringBuilder text = new StringBuilder();
+            boolean conti = true;
+            while(conti && reader.hasNext()) {
+                int token = reader.next();
+                switch(token) {
+                    case XMLStreamConstants.END_ELEMENT:
+                        conti = false;
+                        break;
+                    case XMLStreamConstants.START_ELEMENT:
+                        Elem e = parse(reader);
+                        elem.addChild(e);
+                        text = null;
+                        break;
+                    case XMLStreamConstants.CDATA:
+                        if(text != null) {
+                            String tt = reader.getText();
+                            //if(!Is.empty(tt)) text.append("<![CDATA[").append(tt).append("]]>");
+                            if(!Is.empty(tt)) text.append(tt);
+                        }
+                        break;
+                    case XMLStreamConstants.CHARACTERS:
+                        if(text != null) {
+                            String tt = reader.getText();
+                            if(!Is.empty(tt)) text.append(tt);
+                        }
+                        break;
+                    default:
+                }
+            }
+            if(text != null) elem.text(text.toString());
+            return elem;
         } catch(Exception e) {
             throw AsRuntimeEx.argument(e);
         }
