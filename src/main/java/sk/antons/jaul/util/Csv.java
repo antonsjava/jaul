@@ -41,6 +41,7 @@ public class Csv {
     private int delimiter = ',';
     private int quote = '"';
     private boolean forceQuotes = false;
+    private String nlreplacer = null;
 
     /**
      * Builder instance.
@@ -65,6 +66,12 @@ public class Csv {
      * @return this
      */
     public Csv encoding(String value) { this.encoding = value; return this; }
+    /**
+     * Value used to replace new lines. Default value is null.
+     * @param value
+     * @return this
+     */
+    public Csv nlreplacer(String value) { this.nlreplacer = value; return this; }
     /**
      * if true all fields in created csv are quoted. Otherwise only necessary quotes
      * are used.
@@ -104,13 +111,13 @@ public class Csv {
      * @param appendable
      * @return appender instance
      */
-    public Appender appender(Appendable appendable) { return Appender.instance(appendable, delimiter, quote, forceQuotes); }
+    public Appender appender(Appendable appendable) { return Appender.instance(appendable, delimiter, quote, forceQuotes, nlreplacer); }
     /**
      * Appender for csv creation.
      * @param os
      * @return appender instance
      */
-    public Appender appender(OutputStream os) { return Appender.instance(toWriter(os), delimiter, quote, forceQuotes); }
+    public Appender appender(OutputStream os) { return Appender.instance(toWriter(os), delimiter, quote, forceQuotes, nlreplacer); }
 
 
     private Reader toReader(InputStream is) {
@@ -374,15 +381,17 @@ public class Csv {
         int delimiter = ',';
         int quote = '"';
         boolean forceQuotes = false;
+        String nlreplacer = null;
         Appendable appendable;
         private boolean firstInRow = true;
         private Appender() {}
-        public static Appender instance(Appendable appendable, int delimiter, int quote, boolean forceQuotes) {
+        public static Appender instance(Appendable appendable, int delimiter, int quote, boolean forceQuotes, String nlreplacer) {
             Appender rv = new Appender();
             rv.appendable = appendable;
             rv.delimiter = delimiter;
             rv.quote = quote;
             rv.forceQuotes = forceQuotes;
+            rv.nlreplacer = nlreplacer;
             return rv;
         }
 
@@ -426,6 +435,11 @@ public class Csv {
                 if(value == null) value = "";
                 if(firstInRow) firstInRow = false;
                 else appendable.append((char)delimiter);
+                if(nlreplacer != null) {
+                    value = value.replace("\r\n", nlreplacer);
+                    value = value.replace("\r", nlreplacer);
+                    value = value.replace("\n", nlreplacer);
+                }
                 if(forceQuotes || shouldBeQuoted(value)) {
                     appendable.append((char)quote);
                     appendable.append(escape(value));
