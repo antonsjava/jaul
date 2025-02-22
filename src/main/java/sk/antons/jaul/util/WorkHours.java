@@ -27,8 +27,28 @@ import sk.antons.jaul.Get;
 import sk.antons.jaul.Is;
 
 /**
- * Eanble to define time interval in format 'HH:mm-HH:mm' and than check if
- * current time is in this interval.
+ * Allow to define time intervals and check if given time is in that intervals.
+ *
+ * It is configured using one string which is parsed in following way.
+ *
+ * <ul>
+ * <li>spring is separated by space and each part is combined using OR</li>
+ * <li>each part is separated by '|' and each part is combined using AND</li>
+ * <li>each part is separated by ',' and each part is combined using OR</li>
+ * <li>if part is number than it is considered to be day of month (negative number is taken from month end - -1 is last day of month)</li>
+ * <li>if part is three letter abbreviation of week day than it is considered to be day of week</li>
+ * <li>if part is three letter abbreviation of month than it is considered to be month</li>
+ * <li>otherwise it shoul be time interval in gorm HH:mm-HH:mm</li>
+ * </ul>
+ *
+ * <ul>
+ * <li>'08:00-16:00' - simple interval</li>
+ * <li>'22:00-06:00' - simple interval</li>
+ * <li>'22:00-06:00,16:00-20:00' - combine two intervals</li>
+ * <li>'SUN|22:00-06:00 1|16:00-20:00' - combine two intervals one for sunday one for first day in month</li>
+ * <li>'1,15,28|16:00-20:00,22:00-04:00' - intervals for three days in month</li>
+ * <li>'MON,TUE,WED,THU,FRI|08:00-16:00 SAT,SUN|08:00-12:00' - intervals for three days in month</li>
+ * </ul>
  *
  * @author antons
  */
@@ -158,6 +178,7 @@ public class WorkHours {
         java.time.DayOfWeek dayOfWeek;
         java.time.Month month;
         int dayOfMonth;
+        int monthDays;
 
         public static Tm instance(LocalDateTime time) {
             if(time == null) return null;
@@ -167,6 +188,40 @@ public class WorkHours {
             tm.month = time.getMonth();
             tm.dayOfWeek = time.getDayOfWeek();
             tm.dayOfMonth = time.getDayOfMonth();
+            switch(tm.month) {
+                case JANUARY:
+                case MARCH:
+                case MAY:
+                case JULY:
+                case AUGUST:
+                case OCTOBER:
+                case DECEMBER:
+                    tm.monthDays = 32;
+                    break;
+                case APRIL:
+                case JUNE:
+                case SEPTEMBER:
+                case NOVEMBER:
+                    tm.monthDays = 31;
+                    break;
+                default:
+                    int year = time.getYear();
+                    if(year % 4 == 0) {
+                        if(year % 100 == 0) {
+                            if(year % 400 == 0) {
+                                tm.monthDays = 30;
+                            } else {
+                                tm.monthDays = 29;
+                            }
+                        } else {
+                            tm.monthDays = 30;
+                        }
+                    } else {
+                        tm.monthDays = 29;
+                    }
+                    break;
+
+            }
             return tm;
         }
     }
@@ -348,7 +403,8 @@ public class WorkHours {
         @Override
         public boolean apply(Tm time) {
             if(time == null) return false;
-            return dayOfMonth == time.dayOfMonth;
+            int day = (dayOfMonth < 0) ? (time.monthDays + dayOfMonth) : dayOfMonth;
+            return day == time.dayOfMonth;
         }
 
         public static DayOfMonthCond instance(int conf) {

@@ -102,6 +102,9 @@ public class WorkDaysTest {
         wh = WorkHours.instance("22");
         System.out.println(" test " + wh);
         Assert.assertTrue(wh.toString(), wh.isWorkTime(time));
+        wh = WorkHours.instance("-7");
+        System.out.println(" test " + wh);
+        Assert.assertTrue(wh.toString(), wh.isWorkTime(time));
     }
 
     @Test
