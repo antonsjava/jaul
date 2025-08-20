@@ -249,7 +249,7 @@ public class AsRuntimeEx {
 
     private static String format(String msg, Object[] params) {
         if(params != null) {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder(1024);
             int pos = 0;
             for(Object param : params) {
                 int newpos = msg.indexOf("{}", pos);

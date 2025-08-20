@@ -353,9 +353,12 @@ public class EW {
         return value;
     }
 
-
     public String toString() {
-        StringBuilder sb = new StringBuilder();
+        return toString(4096);
+    }
+
+    public String toString(int length) {
+        StringBuilder sb = new StringBuilder(length);
         sb.append("<").append(element.getNodeName());
         for(Attr attribute : attributes()) {
             sb.append(" ").append(attribute.fullname).append("=\"").append(attribute.value).append("\"");

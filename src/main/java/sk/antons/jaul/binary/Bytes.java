@@ -24,7 +24,7 @@ import sk.antons.jaul.Is;
 
 /**
  * Transfers bytes from and to stream.
- * 
+ *
  * @author antons
  */
 public class Bytes {
@@ -43,16 +43,25 @@ public class Bytes {
             throw new IllegalArgumentException("Unable to transfer bytes", e);
         }
     }
-    
+
     /**
      * Transfers bytes from stream
      * @param is - stream to be read
      * @return - stream to be read
      */
     public static byte[] fromStream(InputStream is) {
+        return fromStream(is, 4096);
+    }
+    /**
+     * Transfers bytes from stream
+     * @param is - stream to be read
+     * @param lenght - expected length
+     * @return - stream to be read
+     */
+    public static byte[] fromStream(InputStream is, int length) {
         if(Is.empty(is)) return new byte[0];
         try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream(length);
             int num;
             byte[] buff = new byte[1024];
             while ((num = is.read(buff, 0, buff.length)) != -1) {
@@ -65,7 +74,7 @@ public class Bytes {
             throw new IllegalArgumentException("Unable to transfer bytes", e);
         }
     }
-    
+
     /**
      * Transfers bytes from stream to stream
      * @param is - stream to be read
@@ -88,7 +97,7 @@ public class Bytes {
             throw new IllegalArgumentException("Unable to transfer bytes", e);
         }
     }
-    
+
     /**
      * Converts bytes to stream
      * @param bytes - bytes to be transfered

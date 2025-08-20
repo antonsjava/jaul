@@ -42,11 +42,22 @@ public class TextFile {
      * @return String from file
      */
     public static String read(InputStream is, String charset) {
+        return read(is, charset, 4096);
+    }
+
+    /**
+     * Reads text file into string.
+     * @param is - input stream with texts file data
+     * @param charset = charset name
+     * @param length = expected length of file
+     * @return String from file
+     */
+    public static String read(InputStream is, String charset, int length) {
         if(is == null) return null;
         if(Is.empty(charset)) charset = "utf-8";
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(is, charset));
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder(length);
 
             String line = reader.readLine();
             while(line != null) {

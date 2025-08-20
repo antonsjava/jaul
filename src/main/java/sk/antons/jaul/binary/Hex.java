@@ -18,12 +18,12 @@ package sk.antons.jaul.binary;
 
 /**
  * Converts bytes to hex encoded string and vice versa.
- * 
+ *
  * @author antons
  */
 public class Hex {
-    
-    
+
+
     private static char[] hex = new char[]{'0', '1', '2', '3', '4', '5', '6', '7'
                                          , '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
@@ -33,18 +33,18 @@ public class Hex {
         if((c >= 'a') && (c <= 'f')) return c - 'a' + 10;
         throw new IllegalArgumentException("Can't convert char '" + c + "' to hex number");
     }
-                                               
+
 
 
     /**
      * Converts the bytes to the string of the hexadecimal numbers.
-     * 
-     * @param bytes - input bytes 
+     *
+     * @param bytes - input bytes
      * @return bytes converted to hez string
      */
     public static String encode(byte[] bytes) {
         if(bytes == null) return "";
-        StringBuilder buff = new StringBuilder();
+        StringBuilder buff = new StringBuilder(bytes.length*2);
         for(int i = 0; i < bytes.length; i++) {
             byte b = bytes[i];
             int hb = (b >> 4) & 0xF;
@@ -55,14 +55,14 @@ public class Hex {
 
         return buff.toString();
     }
-    
+
     /**
-     * Converts string of the hexadecimal numbers to the array of bytes. The 
-     * string must consists from pairs of the hexadecimal numbers each pair 
+     * Converts string of the hexadecimal numbers to the array of bytes. The
+     * string must consists from pairs of the hexadecimal numbers each pair
      * is than converted to the byte.
-     * 
-     * @param str - hex encoded string 
-     * @return bytes decoded from 
+     *
+     * @param str - hex encoded string
+     * @return bytes decoded from
      */
     public static byte[] decode(String str) {
         if(str == null) return null;
@@ -78,5 +78,5 @@ public class Hex {
         return bytes;
     }
 
-    
+
 }

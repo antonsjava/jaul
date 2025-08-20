@@ -131,7 +131,7 @@ public class Resource {
         // split path to elements
         int len = path.length();
         List<String> list = new ArrayList<>();
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder(300);
         char c = 0;
         for(int i = 0; i < len; i++) {
             c = path.charAt(i);

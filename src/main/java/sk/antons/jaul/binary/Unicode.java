@@ -20,15 +20,15 @@ import sk.antons.jaul.Is;
 
 /**
  * Converts String chars to escaped (\u0000) form string and vice versa.
- * Only visible ASCII chars leave unchanged. 
- * 
+ * Only visible ASCII chars leave unchanged.
+ *
  * @author antons
  */
 public class Unicode {
-    
+
 	/**
 	 * Translates the given String into ASCII chars and others are escaped.
-	 * 
+	 *
 	 * @param input - string to be encoded
 	 * @param ignoreInvisible - chars up to 31 will be not escaped (useful if
      *                          you want to keep new lines and tabs)
@@ -39,7 +39,7 @@ public class Unicode {
 		StringBuilder sb = new StringBuilder(input.length() + 30);
 		for(int i = 0; i < input.length(); i++) {
             char c = input.charAt(i);
-            if((ignoreInvisible || (c > 31)) && (c < 127)) { 
+            if((ignoreInvisible || (c > 31)) && (c < 127)) {
                 sb.append(c);
             } else {
             	sb.append("\\u");
@@ -50,11 +50,11 @@ public class Unicode {
         }
 		return sb.toString();
 	}
-	
-	
+
+
 	/**
 	 * Decodes unicode escaped literal back to real String.
-	 * 
+	 *
 	 * @param input text with escape sequences
 	 * @return String with translated escape sequences
 	 */
@@ -115,11 +115,11 @@ public class Unicode {
         }
 		return sb.toString();
 	}
-    
+
 	/**
 	 * Decodes unicode escaped literal back to real String.
      * unexape also Java special characters like \n \r, ...
-	 * 
+	 *
 	 * @param input text with escape sequences
 	 * @return String with translated escape sequences
 	 */
@@ -158,7 +158,7 @@ public class Unicode {
 	/**
 	 * Translates the given String into ASCII chars and others are escaped.
      * Uses HTML &amp;#XXX; escape form;
-	 * 
+	 *
 	 * @param input - string to be encoded
 	 * @param ignoreInvisible - chars up to 31 will be not escaped (useful if
      *                          you want to keep new lines and tabs)
@@ -166,7 +166,7 @@ public class Unicode {
 	 */
 	public static String escapeHtml( String input, boolean ignoreInvisible) {
 		if(Is.empty(input)) return input;
-        StringBuilder buff = new StringBuilder();
+        StringBuilder buff = new StringBuilder(input.length()*2);
         for(int i = 0; i < input.length(); i++) {
             char c = input.charAt(i);
             if((ignoreInvisible || (c > 31)) && (c < 127)) buff.append(c);
@@ -174,17 +174,17 @@ public class Unicode {
         }
         return buff.toString();
 	}
-	
+
 	/**
 	 * Decodes unicode escaped literal back to real String.
      * Uses HTML &amp;#XXX; escape form;
-	 * 
+	 *
 	 * @param input text with escape sequences
 	 * @return String with translated escape sequences
 	 */
 	public static String unescapeHtml(String input) {
 		if(Is.empty(input)) return input;
-        StringBuilder buff = new StringBuilder();
+        StringBuilder buff = new StringBuilder(input.length()*2);
 /*
 0 - none
 1 - and
@@ -235,10 +235,10 @@ public class Unicode {
                     buff.append(sbuff);
                     state = 0;
                 }
-            } 
+            }
             buff.append(c);
         }
         return buff.toString();
 	}
-    
+
 }

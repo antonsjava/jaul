@@ -64,7 +64,7 @@ public class InputStreamReplicator {
                 FileOutputStream fos = null;
                 File tempfile = null;
                 if(memcache) {
-                    buffer = new ByteArrayOutputStream();
+                    buffer = new ByteArrayOutputStream(4096);
                     os = buffer;
                 } else {
                     tempfile = File.createTempFile("iscache-", ".dat");

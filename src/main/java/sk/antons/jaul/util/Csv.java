@@ -178,7 +178,7 @@ public class Csv {
             return rv;
         }
 
-        StringBuilder buff = new StringBuilder();
+        StringBuilder buff = new StringBuilder(300);
         boolean nextWillBeRecordEnd = false;
         Token lastToken = Token.RECORD_END;
 

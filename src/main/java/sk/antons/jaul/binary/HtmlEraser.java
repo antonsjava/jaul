@@ -1,5 +1,5 @@
 /*
- * 
+ *
  */
 package sk.antons.jaul.binary;
 
@@ -41,14 +41,14 @@ public class HtmlEraser {
      * @return this
      */
     private boolean unescape = true;
-    
+
     /**
      * Set true if unescaped.
      * @param value true if result must be unescaped
      * @return this
      */
     public HtmlEraser unescape(boolean value) { this.unescape = value; return this; }
-    
+
     private int maxlen = 0;
     /**
      * reduce result text to length
@@ -79,10 +79,10 @@ public class HtmlEraser {
     /**
      * Constructs instance of erraser from string with html.
      * @param html input string
-     * @return eraser 
+     * @return eraser
      */
     public static HtmlEraser of(String html) { return new HtmlEraser(html); }
-    
+
 
     /**
      * Returns erased string.
@@ -94,13 +94,13 @@ public class HtmlEraser {
 
     /**
      * Returns erased string.
-     * @param propagateError true if errors should be propagated (othervise 
+     * @param propagateError true if errors should be propagated (othervise
      * ignored)
      * @return erased string
      */
     public String erase(boolean propagateError) {
         if(html == null) return null;
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder(html.length());
         try {
             char previous = '-';
             boolean insidecomm = false;
@@ -129,13 +129,13 @@ public class HtmlEraser {
                         if(token2 == Token.TAG_END_SIMPLE) {
                             if(isStartEraseElem(index)) {
                                 eraseelem = true;
-                            }     
+                            }
                         }
                         index = index2+1;
                         skipnext = true;
                     }
                 }
-                
+
                 if((!insidecomm) && (!skipnext) && (!eraseelem)) {
                     if(tabtospace && (c == '\t')) c = ' ';
                     if(nltospace && (c == '\n')) c = ' ';
@@ -159,7 +159,7 @@ public class HtmlEraser {
                     }
                     previous = c;
                 }
-                
+
                 if(insidecomm) {
                     if(token == Token.COMMENT_END) {
                             insidecomm = false;
@@ -170,7 +170,7 @@ public class HtmlEraser {
                     }
                 }
             }
-                
+
             return sb.toString();
         } catch(Exception e) {
             if(propagateError) throw new IllegalArgumentException("Unable to erace text " + html, e);
@@ -203,13 +203,13 @@ public class HtmlEraser {
                     } else if(c1 == '/') {
                         return Token.TAG_END_SLASH;
                     }
-                    
+
                 }
                 return Token.TAG_END_SIMPLE;
             }
         return null;
     }
-    
+
     private boolean isStartComment(int index) {
         if(index >= length3) return false;
         if(html.charAt(index) != '!') return false;
@@ -217,7 +217,7 @@ public class HtmlEraser {
         if(html.charAt(index+2) != '-') return false;
         return true;
     }
-    
+
     private boolean isEndComment(int index) {
         if(index >= length2) return false;
         if(html.charAt(index) != '-') return false;
@@ -226,7 +226,7 @@ public class HtmlEraser {
     }
 
     private static String[] eraseelems = new String[] {"style", "script", "meta"};
-    
+
     private boolean isStartEraseElem(int index) {
         boolean isok = false;
         for(String eraseelem : eraseelems) {
@@ -269,16 +269,16 @@ public class HtmlEraser {
                 match = false;
                 break;
             }
-            if(match) { 
+            if(match) {
                 isok = true;
                 break;
             }
         }
 
         return isok;
-        
+
     }
-    
+
     private boolean isInsideStartElem(int index) {
         char prev = ' ';
         while(index < length) {
@@ -288,7 +288,7 @@ public class HtmlEraser {
                 else return true;
             }
             index++;
-        } 
+        }
         return false;
     }
     private boolean isNameEnd(int index) {
@@ -300,7 +300,7 @@ public class HtmlEraser {
             case '\n':
             case '\r':
                 return true;
-            default: 
+            default:
                 return false;
         }
     }
@@ -353,7 +353,7 @@ public class HtmlEraser {
 
     private static class NodeResult {
         char c;
-        int len; 
+        int len;
         private static NodeResult of(char c, int len) {
             NodeResult nr = new NodeResult();
             nr.c = c;
@@ -361,20 +361,20 @@ public class HtmlEraser {
             return nr;
         }
     }
-    
+
     private static class Node {
         String name;
         char character;
         Node[] children = new Node[2 + 10 + 26 + 26];
         private int index(char c) {
-            if(c == '&') return 0; 
-            else if(c == ';') return 1; 
+            if(c == '&') return 0;
+            else if(c == ';') return 1;
             else if(('0'<= c) && (c <= '9')) return c - '0' + 2;
             else if(('a'<= c) && (c <= 'z')) return c - 'a' + 10 + 2;
             else if(('A'<= c) && (c <= 'Z')) return c - 'A' + 26 + 10 + 2;
             else return -1;
         }
-        
+
         void add(String name, char character, int index) {
             if(name.length() == index) {
                 this.name = name;
@@ -389,13 +389,13 @@ public class HtmlEraser {
                 n.add(name, character, index+1);
             }
         }
-        
+
         Node get(char c) {
             int index = index(c);
             if(index < 0) return null;
             Node n = children[index];
             return n;
-        }       
+        }
     }
 
     private static Node root = null;
@@ -405,12 +405,12 @@ public class HtmlEraser {
         }
         return root;
     }
-    
+
     private static void addName(String name, char c, Node root, Map<Character, String> names) {
         root.add(name, c, 0);
         names.put(c, name);
     }
-    
+
     private static void init() {
         Node node = new Node();
         Map<Character, String> map = new HashMap<Character, String>();
@@ -673,7 +673,7 @@ public class HtmlEraser {
 		addName("&zwnj;", ' ', node, map);
         root = node;
     }
-    
+
 
     private static enum Token {
         COMMENT_START, COMMENT_END,

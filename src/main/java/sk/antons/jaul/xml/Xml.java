@@ -37,9 +37,9 @@ import sk.antons.jaul.Is;
 import sk.antons.jaul.util.TextFile;
 
 /**
- * Helper class for creating xml document. Simplify document creation and maps 
+ * Helper class for creating xml document. Simplify document creation and maps
  * exceptions to runtime exception.
- * 
+ *
  * @author antons
  */
 public class Xml {
@@ -61,11 +61,11 @@ public class Xml {
             throw new IllegalArgumentException("Unable to parse xml document", e);
         }
     }
-    
+
     public static Document document(InputStream stream) {
         return document(stream, true);
     }
-    
+
     /**
      * Parse xml from input string
      * @param xml - string with xml data
@@ -83,11 +83,11 @@ public class Xml {
             throw new IllegalArgumentException("Unable to parse xml document", e);
         }
     }
-    
+
     public static Document document(String xml) {
         return document(xml, true);
     }
-    
+
     /**
      * Parse xml from file
      * @param filename - name of the file with xml content
@@ -101,11 +101,11 @@ public class Xml {
             throw new IllegalArgumentException("Unable to parse xml document from file " + filename, e);
         }
     }
-    
+
     public static Document documentFromFile(String filename) {
         return documentFromFile(filename, true);
     }
-    
+
     /**
      * Parse xml from file
      * @param file - file with xml content
@@ -119,7 +119,7 @@ public class Xml {
             throw new IllegalArgumentException("Unable to parse xml document from file " + file, e);
         }
     }
-    
+
     public static Document documentFromFile(File file) {
         return documentFromFile(file, true);
     }
@@ -133,7 +133,7 @@ public class Xml {
      */
     public static String escape(String value) {
         if(Is.empty(value)) return value;
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder(value.length()*2);
         int len = value.length();
         for(int i = 0; i < len; i++) {
             char c = value.charAt(i);
@@ -146,7 +146,7 @@ public class Xml {
         }
         return sb.toString();
     }
-    
+
     /**
      * Escapes XML compliant escape sequences into &quot;&apos;&lt;&gt;&amp; characters.
      * If you handle also &amp;000; sequences use also Unicode.unescapeHtml() method.
@@ -174,7 +174,7 @@ public class Xml {
 */
 
         if(Is.empty(value)) return value;
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder(value.length()*2);
         int len = value.length();
         int state = 0;
         for(int i = 0; i < len; i++) {
@@ -229,7 +229,7 @@ public class Xml {
      * @param encoding - encoding (used only in declaration pragma)
      * @param indent - if resulting xml should be indented
      * @param declaration - if declaration pragma should be included
-     * @return xml text generated from document 
+     * @return xml text generated from document
      */
     public static String documentToString(Document doc, String encoding, boolean indent, boolean declaration) {
         if(doc == null) {
@@ -255,14 +255,14 @@ public class Xml {
             throw new IllegalStateException("Error converting to String", ex);
         }
     }
-    
+
     /**
      * Converts Element to string
      * @param element - document to be converted
      * @param encoding - encoding (used only in declaration pragma)
      * @param indent - if resulting xml should be indented
      * @param declaration - if declaration pragma should be included
-     * @return xml text generated from document 
+     * @return xml text generated from document
      */
     public static String elementToString(Element element, String encoding, boolean indent, boolean declaration) {
         if(element == null) {
@@ -288,7 +288,7 @@ public class Xml {
             throw new IllegalStateException("Error converting to String", ex);
         }
     }
-    
+
 
     /**
      * Converts XML document to string and save it to file.
@@ -331,7 +331,7 @@ public class Xml {
     /**
      * Removes unnecessary whitespace nodes from doc tree.
      * Usefull for printing oneline xmls.
-     * @param node 
+     * @param node
      */
     public static void trimWhiteSpaces(Node node) {
         if(node == null) return;
@@ -348,5 +348,5 @@ public class Xml {
             }
         }
     }
-    
+
 }

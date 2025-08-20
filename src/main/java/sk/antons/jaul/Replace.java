@@ -17,19 +17,19 @@
 package sk.antons.jaul;
 
 /**
- * Simple substring replacer. It provides methods to substring by another 
+ * Simple substring replacer. It provides methods to substring by another
  * substring. (No regext replacement - simple text by text)
- * 
+ *
  * @author antons
  */
 public class Replace {
-    
+
     /**
-     * Replaces all occurrences of given substring by another substring. 
+     * Replaces all occurrences of given substring by another substring.
      * @param where Text whee the substrings must be replaced
      * @param what old Substring, which must be replaced
      * @param byWhat new substring, which must replace old one
-     * @return Replaced text 
+     * @return Replaced text
      */
     public static String all(String where, String what, String byWhat) {
         if(where == null) return where;
@@ -38,7 +38,7 @@ public class Replace {
         int last = 0;
         int pos = where.indexOf(what, last);
         if(pos < 0) return where;
-        StringBuilder buff = new StringBuilder();
+        StringBuilder buff = new StringBuilder(where.length()*2);
         while(pos > -1) {
             buff.append(where.substring(last, pos));
             buff.append(byWhat);
@@ -48,14 +48,14 @@ public class Replace {
         buff.append(where.substring(last));
         return buff.toString();
     }
-    
+
 
     /**
-     * Replaces first occurrence of given substring by another substring. 
+     * Replaces first occurrence of given substring by another substring.
      * @param where Text whee the substring must be replaced
      * @param what old Substring, which must be replaced
      * @param byWhat new substring, which must replace old one
-     * @return Replaced text 
+     * @return Replaced text
      */
     public static String first(String where, String what, String byWhat) {
         if(where == null) return where;
@@ -64,7 +64,7 @@ public class Replace {
         int pos = where.indexOf(what);
         if(pos < 0) return where;
         else {
-            StringBuilder buff = new StringBuilder();
+            StringBuilder buff = new StringBuilder(where.length() + 100);
             buff.append(where.substring(0, pos));
             buff.append(byWhat);
             int last = pos + what.length();
@@ -74,11 +74,11 @@ public class Replace {
     }
 
     /**
-     * Replaces last occurrence of given substring by another substring. 
+     * Replaces last occurrence of given substring by another substring.
      * @param where Text whee the substring must be replaced
      * @param what old Substring, which must be replaced
      * @param byWhat new substring, which must replace old one
-     * @return Replaced text 
+     * @return Replaced text
      */
     public static String last(String where, String what, String byWhat) {
         if(where == null) return where;
@@ -87,7 +87,7 @@ public class Replace {
         int pos = where.lastIndexOf(what);
         if(pos < 0) return where;
         else {
-            StringBuilder buff = new StringBuilder();
+            StringBuilder buff = new StringBuilder(where.length() + 100);
             buff.append(where.substring(0, pos));
             buff.append(byWhat);
             int last = pos + what.length();

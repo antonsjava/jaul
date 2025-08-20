@@ -25,13 +25,22 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.Writer;
 import java.util.ArrayList;
+import static java.util.Arrays.stream;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.Stack;
+import java.util.function.BiPredicate;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamReader;
 import org.xml.sax.Attributes;
@@ -362,7 +371,15 @@ public class Elem {
      * @return collected texts
      */
     public String texts() {
-        StringBuilder sb = new StringBuilder();
+        return texts(4096);
+    }
+    /**
+     * Collects all texts from nested elements.
+     * @param length expected length
+     * @return collected texts
+     */
+    public String texts(int length) {
+        StringBuilder sb = new StringBuilder(length);
         texts(Elem.this, sb);
         return sb.toString();
     }
@@ -453,7 +470,7 @@ public class Elem {
                     elem.addAttr(na, va);
                 }
             }
-            StringBuilder text = new StringBuilder();
+            StringBuilder text = new StringBuilder(300);
             boolean conti = true;
             while(conti && reader.hasNext()) {
                 int token = reader.next();
@@ -484,6 +501,25 @@ public class Elem {
             }
             if(text != null) elem.text(text.toString());
             return elem;
+        } catch(Exception e) {
+            throw AsRuntimeEx.argument(e);
+        }
+    }
+
+    /**
+     * Parse xml elem by elem.
+     */
+    public static ElemByElem elemByElem() {
+        return new ElemByElem();
+    }
+
+
+    private static void processElemByElem(InputSource is, BiPredicate<String, Elem> elemChecker, Consumer<Elem> elemConsumer) {
+        try {
+            SAXParserFactory factory = SAXParserFactory.newInstance();
+            SAXParser saxParser = factory.newSAXParser();
+            ElemByElemParser parser = ElemByElemParser.instance().elemChecker(elemChecker).elemConsumer(elemConsumer);
+            saxParser.parse(is , parser);
         } catch(Exception e) {
             throw AsRuntimeEx.argument(e);
         }
@@ -540,7 +576,7 @@ public class Elem {
 
         public String toString() { return toString(null); }
         public String toString(Escaping escaping) {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder(300);
             sb.append(name.prefixedName());
             if(value != null) {
                 sb.append("=\"").append(escape(value, escaping)).append('"');
@@ -679,10 +715,17 @@ public class Elem {
         /**
          * Exports Elem to string.
          */
-        public String toString() {
-            StringBuilder sb = new StringBuilder();
+        public String toString(int expectedLength) {
+            StringBuilder sb = new StringBuilder(expectedLength);
             toString(sb);
             return sb.toString();
+        }
+
+        /**
+         * Exports Elem to string.
+         */
+        public String toString() {
+            return toString(4096);
         }
 
         /**
@@ -752,7 +795,7 @@ public class Elem {
                 if(!Is.empty(elem.attrs)) {
                     boolean first = true;
                     String indentprefix = "";
-                    if(indentAttrs) indentprefix = spacec(elem.name.prefixedName().length()+1);
+                    if(indentAttrs) indentprefix = spaces(elem.name.prefixedName().length()+1);
                     if(sortAttrs) Collections.sort(attrs, AttrByNameComparator.instance());
                     for(Attr attr : elem.attrs) {
                         if(indentAttrs && (!first)) sb.append('\n').append(prefix).append(indentprefix);
@@ -878,7 +921,7 @@ public class Elem {
 
         Elem root = null;
         Stack<Elem> stack = new Stack<Elem>();
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder(4096);
         boolean lastWasStartElelemnt = false;
 
         @Override
@@ -911,6 +954,255 @@ public class Elem {
         public void characters(char[] ch, int start, int length) throws SAXException {
             super.characters(ch, start, length);
             if(lastWasStartElelemnt) sb.append(ch, start, length);
+        }
+
+    }
+
+    private static class ElemByElemParser extends DefaultHandler {
+
+        BiPredicate<String, Elem> elemChecker;
+        Consumer<Elem> elemConsumer;
+
+        Elem root = null;
+        Stack<Elem> stack = new Stack<Elem>();
+        StringBuilder sb = new StringBuilder(4096);
+        boolean lastWasStartElelemnt = false;
+        boolean insideCheckedElem = false;
+        StringBuilder path = new StringBuilder();
+
+        public static ElemByElemParser instance() { return new ElemByElemParser(); }
+        public ElemByElemParser elemChecker(BiPredicate<String, Elem> value) {this.elemChecker = value; return this; }
+        public ElemByElemParser elemConsumer(Consumer<Elem> value) {this.elemConsumer = value; return this; }
+
+        @Override
+        public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+            super.startElement(uri, localName, qName, attributes);
+            sb.setLength(0);
+            if(qName != null) {
+                Elem elem = Elem.of(qName);
+                for(int i = 0; i < attributes.getLength(); i++) {
+                    elem.addAttrRaw(attributes.getQName(i), attributes.getValue(i), -1);
+                }
+                path.append('/').append(elem.name.name());
+
+                if(!insideCheckedElem && (elemChecker != null) && elemChecker.test(path.toString(), elem)) {
+                    insideCheckedElem = true;
+                    stack.clear();
+                }
+                if(insideCheckedElem) {
+                    lastWasStartElelemnt = true;
+                    if(root == null) root = elem;
+                    if(stack.size() > 0) stack.peek().addChild(elem);
+                    stack.add(elem);
+                }
+            }
+        }
+
+        @Override
+        public void endElement(String uri, String localName, String qName) throws SAXException {
+            super.endElement(uri, localName, qName);
+            Elem elem = stack.isEmpty() ? null : stack.pop();
+            if((elem != null) && lastWasStartElelemnt) elem.text(sb.toString());
+            lastWasStartElelemnt = false;
+            if(path.length() > 0) {
+                int pos = path.lastIndexOf("/");
+                if(pos > -1) path.setLength(pos);
+            }
+            if(insideCheckedElem && (stack.isEmpty())) {
+                if(elemConsumer != null) elemConsumer.accept(elem);
+                insideCheckedElem = false;
+            }
+        }
+
+        @Override
+        public void characters(char[] ch, int start, int length) throws SAXException {
+            super.characters(ch, start, length);
+            if(lastWasStartElelemnt) sb.append(ch, start, length);
+        }
+
+    }
+
+    public static class ElemByElem {
+        BiPredicate<String, Elem> checker;
+        Consumer<Elem> consumer;
+        XMLStreamReader reader;
+
+        public static ElemByElem instance() { return new ElemByElem(); }
+        /**
+         * returns true if elemment should be returned. Elem has only attributes and no subelements.
+         * Path is ins form '/name/name/....'.
+         * @param value
+         * @return this
+         */
+        public ElemByElem checker(BiPredicate<String, Elem> value) {this.checker = value; return this; }
+        /**
+         * used in consume() method for consuming selected elements.
+         * @param value
+         * @return this
+         */
+        public ElemByElem consumer(Consumer<Elem> value) {this.consumer = value; return this; }
+        /**
+         * Source for all scanning methods.
+         * @param reader
+         * @return this
+         */
+        public ElemByElem source(XMLStreamReader reader) {this.reader = reader; return this; }
+        /**
+         * Source for all scanning methods.
+         * @param xml
+         * @return
+         */
+        public ElemByElem source(String xml) {
+            try {
+                XMLInputFactory factory = XMLInputFactory.newFactory();
+                reader = factory.createXMLStreamReader(new StringReader(xml));
+            } catch(Exception e) {
+                throw AsRuntimeEx.of(e);
+            }
+            return this;
+        }
+        /**
+         * Source for all scanning methods.
+         * @param xml
+         * @return
+         */
+        public ElemByElem source(InputStream xml) {
+            try {
+                XMLInputFactory factory = XMLInputFactory.newFactory();
+                reader = factory.createXMLStreamReader(xml);
+            } catch(Exception e) {
+                throw AsRuntimeEx.of(e);
+            }
+            return this;
+        }
+        /**
+         * Source for all scanning methods.
+         * @param xml
+         * @return
+         */
+        public ElemByElem source(Reader xml) {
+            try {
+                XMLInputFactory factory = XMLInputFactory.newFactory();
+                reader = factory.createXMLStreamReader(xml);
+            } catch(Exception e) {
+                throw AsRuntimeEx.of(e);
+            }
+            return this;
+        }
+
+        /**
+         * Iterator for all elements choosen by checker.
+         * @return iterator
+         */
+        public Iterator<Elem> iterator() {
+            if(reader == null) throw new IllegalArgumentException("No source specified");
+            return new ElemIterator(reader);
+        }
+        /**
+         * Atream of all elements choosen by checker.
+         * @return
+         */
+        public Stream<Elem> stream() {
+            return StreamSupport.stream(
+                Spliterators.spliteratorUnknownSize(
+                    iterator()
+                    , Spliterator.IMMUTABLE
+                ), false);
+        }
+        /**
+         * Traverse all eleements choosen by checker and consume them by consumer.
+         */
+        public void consume() {
+            if(consumer == null) throw new IllegalArgumentException("No consumer specified");
+            stream().forEach(consumer);
+        }
+
+
+        private class ElemIterator implements Iterator<Elem> {
+            XMLStreamReader reader;
+            StringBuilder path = new StringBuilder();
+
+            Elem elem = null;
+            boolean isEnd = false;
+
+            ElemIterator(XMLStreamReader reader) {
+                this.reader = reader;
+                findnext();
+            }
+
+            @Override
+            public boolean hasNext() {
+                return (elem != null);
+            }
+
+            @Override
+            public Elem next() {
+                Elem rv = elem;
+                findnext();
+                return rv;
+            }
+
+            private void findnext() {
+                if(isEnd) return;
+                elem = nextone();
+                isEnd = elem == null;
+            }
+
+            public Elem nextone() {
+                try {
+                    while(reader.hasNext()) {
+                        int token = reader.next();
+                        switch(token) {
+                            case XMLStreamConstants.END_ELEMENT:
+                                if(path.length()>0) {
+                                    int pos =  path.lastIndexOf("/");
+                                    if(pos  > -1) path.setLength(pos);
+                                }
+                                break;
+                            case XMLStreamConstants.START_ELEMENT:
+                                String prefix = reader.getPrefix();
+                                String name = reader.getLocalName();
+                                if(!Is.empty(prefix)) name = prefix + ":" + name;
+                                Elem elem = Elem.of(name);
+                                {
+                                    int count = reader.getAttributeCount();
+                                    for(int i = 0; i < count; i++) {
+                                        String pr = reader.getAttributePrefix(i);
+                                        String na = reader.getAttributeLocalName(i);
+                                        if(!Is.empty(pr)) na = pr + ":" + na;
+                                        String va = reader.getAttributeValue(i);
+                                        elem.addAttr(na, va);
+                                    }
+                                }
+                                {
+                                    int count = reader.getNamespaceCount();
+                                    for(int i = 0; i < count; i++) {
+                                        String pr = reader.getNamespacePrefix(i);
+                                        String na = "xmlns";
+                                        if(!Is.empty(pr)) na = na + ":" + pr;
+                                        String va = reader.getNamespaceURI(i);
+                                        elem.addAttr(na, va);
+                                    }
+                                }
+
+                                path.append('/').append(elem.name().name());
+
+                                if((checker != null) && checker.test(path.toString(), elem)) {
+                                    Elem el = Elem.parse(reader);
+                                    int pos =  path.lastIndexOf("/");
+                                    if(pos  > -1) path.setLength(pos);
+                                    return el;
+                                }
+                                break;
+                            default:
+                        }
+                    }
+                    return null;
+                } catch(Exception e) {
+                    throw AsRuntimeEx.argument(e);
+                }
+            }
+
         }
 
     }
@@ -982,7 +1274,17 @@ public class Elem {
         }
     }
 
-    private static String spacec(int len) {
+    static String[] prefixes = new String[20];
+    private static String spaces(int len) {
+        if(len < 0) len = 0;
+        if(len >= 20 ) return spacesRaw(len);
+        if(prefixes[len] != null) return prefixes[len];
+        String rv = spacesRaw(len);
+        prefixes[len] = rv;
+        return rv;
+    }
+
+    private static String spacesRaw(int len) {
         StringBuilder sb = new StringBuilder();
         for(int i = 0; i < len; i++) sb.append(' ');
         return sb.toString();

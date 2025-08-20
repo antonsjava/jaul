@@ -25,24 +25,24 @@ import sk.antons.jaul.binary.Base64;
 
 /**
  * Simple StringBuilder wrapper with helper functionality to produce json string
- * Class provides methods for constructing json string. It check validity 
- * of resulted json. 
+ * Class provides methods for constructing json string. It check validity
+ * of resulted json.
  * @author antons
  */
 public class JsonString {
 
     private boolean ignoreNulls = true;
     private String indent = null;
-    private StringBuilder sb = new StringBuilder();
+    private StringBuilder sb = new StringBuilder(4096);
 
     Deque<State> stack = new LinkedList<State>();
-    
+
     /**
      * New instance of JsonString class.
-     * @return 
+     * @return
      */
     public static JsonString instance() { return new JsonString(); }
-    
+
     /**
      * If true it ignores null values in attr() method.
      * @param value new setting (default true)
@@ -60,7 +60,7 @@ public class JsonString {
     public String toString() {
         return sb.toString();
     }
-    
+
     /**
      * Adds '{' to buffer.
      * @return this instance
@@ -94,7 +94,7 @@ public class JsonString {
         stack.pop();
         return this;
     }
-    
+
     /**
      * Adds '[' to buffer.
      * @return this instance
@@ -105,7 +105,7 @@ public class JsonString {
         stack.push(State.instance(Type.ARRAY));
         return this;
     }
-    
+
     /**
      * Adds ']' to buffer.
      * @return this instance
@@ -120,23 +120,23 @@ public class JsonString {
      * Adds value to buffer as array item or parameter value.
      * @return this instance
      */
-    public JsonString value(Object value) { 
+    public JsonString value(Object value) {
         if(isArray()) {
             if(isSomething()) {
                 sb.append(',');
                 if(indent != null) sb.append(' ');
             }
         }
-        appendValue(value); 
+        appendValue(value);
         something();
         return this;
     }
-    
+
     /**
      * Adds attribute name to buffer.
      * @return this instance
      */
-    public JsonString attrName(String name) { 
+    public JsonString attrName(String name) {
         if(isSomething()) sb.append(',');
         if(indent != null) {
             sb.append('\n');
@@ -153,8 +153,8 @@ public class JsonString {
      * Adds attribute name and its value to buffer.
      * @return this instance
      */
-    public JsonString attr(String name, Object value) { 
-        if(ignoreNulls && (value == null)) return this; 
+    public JsonString attr(String name, Object value) {
+        if(ignoreNulls && (value == null)) return this;
         attrName(name);
         value(value);
         return this;
@@ -162,12 +162,12 @@ public class JsonString {
 
 
     private void appendValue(Object o) {
-        
+
         if(o == null) {
             sb.append("null");
             return;
         }
-        
+
         Class clazz = o.getClass();
         if(isNonStringClass(clazz)) {
             sb.append(o);
@@ -190,7 +190,7 @@ public class JsonString {
             arrayEnd();
             return;
         }
-        
+
         if(Collection.class.isAssignableFrom(clazz)) {
             Collection coll = (Collection)o;
             arrayStart();
@@ -202,7 +202,7 @@ public class JsonString {
             arrayEnd();
             return;
         }
-        
+
         if(ToJsonString.class.isAssignableFrom(clazz)) {
             ToJsonString jsso = (ToJsonString)o;
             jsso.toJsonString(this, true);
@@ -211,7 +211,7 @@ public class JsonString {
 
         sb.append('"').append(escape(o.toString())).append('"');
     }
-    
+
     private int arraySize(Class clazz, Object o) {
         Class cl = clazz.getComponentType();
         if(byte.class.equals(cl)) return ((byte[])o).length;
@@ -226,7 +226,7 @@ public class JsonString {
     }
 
     private boolean isNonStringClass(Class clazz) {
-        
+
         if(clazz.equals(int.class)) return true;
         if(clazz.equals(long.class)) return true;
         if(clazz.equals(byte.class)) return true;
@@ -235,7 +235,7 @@ public class JsonString {
         if(clazz.equals(float.class)) return true;
         if(clazz.equals(boolean.class)) return true;
         if(clazz.equals(char.class)) return true;
-        
+
         if(clazz.equals(Integer.class)) return true;
         if(clazz.equals(Long.class)) return true;
         if(clazz.equals(Byte.class)) return true;
@@ -244,7 +244,7 @@ public class JsonString {
         if(clazz.equals(Float.class)) return true;
         if(clazz.equals(Boolean.class)) return true;
         if(clazz.equals(Character.class)) return true;
-        
+
         return false;
     }
 
@@ -271,7 +271,7 @@ public class JsonString {
             sb.append(indent);
         }
     }
-    
+
 
     private static enum Type { ARRAY, OBJECT; }
     private static class State {
@@ -284,12 +284,12 @@ public class JsonString {
         }
     }
 
-    
+
     private static String escape(String value) {
         if(value == null) return null;
         int offset = 0;
         int length = value.length();
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder(value.length()*2);
         int len = offset + length;
         for(int i = offset; i < len; i++) {
             char c = value.charAt(i);
@@ -306,5 +306,5 @@ public class JsonString {
         return sb.toString();
     }
 
-    
+
 }

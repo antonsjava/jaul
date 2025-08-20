@@ -133,7 +133,7 @@ public class StopWatch {
             long day = time;
 
             boolean something = false;
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder(300);
             if((day > 0) || something) {
                 sb.append(something?" ":"").append(day).append('d');
                 something = true;

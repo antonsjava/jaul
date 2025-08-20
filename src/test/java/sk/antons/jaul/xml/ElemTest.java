@@ -18,6 +18,7 @@
 package sk.antons.jaul.xml;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
@@ -27,7 +28,7 @@ import org.junit.Test;
  * @author antons
  */
 public class ElemTest {
-	
+
     @Test
 	public void elemNameTest() throws Exception {
         Elem elem = Elem.of("pokus");
@@ -39,7 +40,7 @@ public class ElemTest {
         Assert.assertEquals("ns:pokus", elem.name().prefixedName());
         Assert.assertEquals("ns", elem.name().prefix());
     }
-    
+
     @Test
 	public void elemChildTest() throws Exception {
         Elem elem = Elem.of("root");
@@ -55,7 +56,7 @@ public class ElemTest {
         Assert.assertEquals(1, elem.childrenSize());
         Assert.assertNotNull(elem.child(0));
     }
-    
+
     @Test
 	public void elemAttrTest() throws Exception {
         Elem elem = Elem.of("root");
@@ -107,7 +108,7 @@ public class ElemTest {
         books = elem.find("book").all();
         Assert.assertEquals("Solaris2", books.get(2).find("title").first().text());
     }
-    
+
     @Test
 	public void elemModStrTest() throws Exception {
         Elem elem = Elem.parse(structuredXml);
@@ -118,6 +119,31 @@ public class ElemTest {
         title.replace(Elem.of("title").text("Solaris3"));
         books = elem.find("book").all();
         Assert.assertEquals("Solaris3", books.get(2).find("title").firstText());
+    }
+
+    private int elemByElemCounter = 0;
+
+    @Test
+	public void elemByElem() throws Exception {
+        elemByElemCounter = 0;
+        Iterator<Elem> iter = Elem.elemByElem()
+            .checker((path, elem) -> {
+                System.out.println("checker path: " + path);
+                System.out.println("checker elem: " + elem);
+                return "/library/book/author".equals(path) || "/library/address".equals(path);
+            })
+            .consumer(elem -> {
+                System.out.println("consumed: " + elem.toString());
+                elemByElemCounter++;
+            })
+            .source(structuredXml)
+            .iterator();
+        while(iter.hasNext()) {
+            Elem next = iter.next();
+            System.out.println(" " + next);
+            elemByElemCounter++;
+        }
+        Assert.assertEquals(5, elemByElemCounter);
     }
 
     private static String structuredXml=
