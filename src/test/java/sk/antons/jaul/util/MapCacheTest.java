@@ -24,7 +24,7 @@ import org.junit.Test;
  * @author antons
  */
 public class MapCacheTest {
-	
+
     @Test
 	public void size() throws Exception {
         Map<Integer, Integer> cache = MapCache.instance(Integer.class, Integer.class)
@@ -39,7 +39,7 @@ public class MapCacheTest {
             else Assert.assertEquals("check " + i, (Integer)i, cache.get(i));
         }
     }
-    
+
     @Test
 	public void expiration() throws Exception {
         Map<Integer, Integer> cache = MapCache.instance(Integer.class, Integer.class)
@@ -48,7 +48,7 @@ public class MapCacheTest {
         for(int i = 0; i < 90; i++) {
             cache.put(i, i);
         }
-        Thread.sleep(1000);
+        Thread.sleep(1001);
         for(int i = 90; i < 100; i++) {
             cache.put(i, i);
         }
@@ -58,7 +58,7 @@ public class MapCacheTest {
             else Assert.assertEquals("check " + i, (Integer)i, cache.get(i));
         }
     }
-    
+
     @Test
 	public void expirationsize() throws Exception {
         Map<Integer, Integer> cache = MapCache.instance(Integer.class, Integer.class)
@@ -105,5 +105,5 @@ public class MapCacheTest {
         Assert.assertEquals("size 0", 0, cache.size());
     }
 
-    
+
 }
