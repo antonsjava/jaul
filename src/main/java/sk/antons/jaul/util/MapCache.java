@@ -25,25 +25,25 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Simple Map cache. It imple,ments fully Map integrace so it can me synchronized. 
- * It is possible to set size limit and expiration in milliseconds. 
- * 
- * It is recommended to use only get and put methods to achieve expected results. 
- * 
+ * Simple Map cache. It imple,ments fully Map integrace so it can me synchronized.
+ * It is possible to set size limit and expiration in milliseconds.
+ *
+ * It is recommended to use only get and put methods to achieve expected results.
+ *
  * @author antons
  */
 public class MapCache<K, V> implements Map<K, V> {
-   
+
     private int limit = -1;
     private long expiration = -1;
     private Map<K, Entry<K, V>> cache = null;
     private Entry<K, V> head = null;
     private Entry<K, V> tail = null;
-    
+
     public MapCache() {
         cache = new HashMap<K, Entry<K, V>>();
     }
-    
+
     public MapCache(int initSize) {
         cache = new HashMap<K, Entry<K, V>>(initSize);
     }
@@ -51,19 +51,19 @@ public class MapCache<K, V> implements Map<K, V> {
     public static <KK, VV> MapCache<KK, VV> instance(Class<KK> keyType, Class<VV> valueType) {
         return new MapCache<KK, VV>();
     }
-    
+
     public static <KK, VV> MapCache<KK, VV> instance(Class<KK> keyType, Class<VV> valueType, int initSize) {
         return new MapCache<KK, VV>(initSize);
     }
-    
+
     public int limit() { return limit; }
     public MapCache<K, V> limit(int limit) { this.limit = limit; return this; }
-    
+
     public long expiration() { return expiration; }
     public MapCache<K, V> expiration(long expiration) { this.expiration = expiration; return this; }
-    
+
     public Map<K, V> synchronize() { return Collections.synchronizedMap(this); }
-    
+
     public int size() {
         return cache.size();
     }
@@ -76,18 +76,20 @@ public class MapCache<K, V> implements Map<K, V> {
         if(entry == null) return null;
         if(expiration < 1) return entry;
         long time = System.currentTimeMillis();
-        if(entry.time >= time) return entry; 
-        tail = entry.prev;
-        if(tail == null) head = null;
-        else tail.next = null;
-        while(entry != null) {
-            cache.remove(entry.key);
-            entry = entry.next;
+        if(entry.time >= time) return entry;
+        synchronized(this) {
+            tail = entry.prev;
+            if(tail == null) head = null;
+            else tail.next = null;
+            while(entry != null) {
+                cache.remove(entry.key);
+                entry = entry.next;
+            }
         }
         return null;
     }
-    
-    private void remove(Entry<K, V> entry) {
+
+    private synchronized void remove(Entry<K, V> entry) {
         if(entry == null) return ;
         cache.remove(entry.key);
         if(entry.prev == null) {
@@ -130,7 +132,7 @@ public class MapCache<K, V> implements Map<K, V> {
         return entry.value;
     }
 
-    public V put(K key, V value) {
+    public synchronized V put(K key, V value) {
         if(key == null) throw new IllegalArgumentException("Null key is not allowed");
         Entry<K, V> entry = cache.get(key);
         if(entry != null) remove(entry);
@@ -187,7 +189,7 @@ public class MapCache<K, V> implements Map<K, V> {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    
+
     private class Entry<K, V> {
         public K key;
         public V value;
@@ -216,5 +218,5 @@ public class MapCache<K, V> implements Map<K, V> {
         return sb.toString();
     }
 
-    
+
 }
