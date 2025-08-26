@@ -140,7 +140,7 @@ public class MapCache<K, V> implements Map<K, V> {
         entry = new Entry();
         entry.key = key;
         entry.value = value;
-        if(tail == null) {
+        if((tail == null) || (head == null)) {
             tail = entry;
             head = entry;
         } else {
