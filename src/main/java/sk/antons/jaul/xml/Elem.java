@@ -25,7 +25,6 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.Writer;
 import java.util.ArrayList;
-import static java.util.Arrays.stream;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -105,6 +104,11 @@ public class Elem {
      * @return
      */
     public Name name() { return name; }
+    /**
+     * Change Name of element
+     * @return
+     */
+    public Elem name(Name value) { this.name = value; return this; }
 
     /**
      * Parent of element
@@ -568,7 +572,11 @@ public class Elem {
          * @return
          */
         public String value() { return value; }
-        private Attr name(Name value) { this.name = value; return this; }
+        /**
+         * Change Name of attribute
+         * @return
+         */
+        public Attr name(Name value) { this.name = value; return this; }
         private Attr parent(Elem value) { this.parent = value; return this; }
         public Attr value(String value) { this.value = value; return this; }
 
@@ -671,7 +679,7 @@ public class Elem {
             return this;
         }
 
-        private static Name of(String name) { return new Name().name(name); }
+        public static Name of(String name) { return new Name().name(name); }
 
     }
 
