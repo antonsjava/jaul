@@ -26,14 +26,15 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import sk.antons.jaul.Is;
 
 /**
- * Text file splitting helper class. It splits file to individual lines. 
- * 
+ * Text file splitting helper class. It splits file to individual lines.
+ *
  * <br/>
- * Implementation hides all io exceptions to runtime exception. Implementation 
- * is not reentrant - use it in one thread only. 
- * 
+ * Implementation hides all io exceptions to runtime exception. Implementation
+ * is not reentrant - use it in one thread only.
+ *
  * @author antons
  */
 public class TextFileSplitter {
@@ -52,7 +53,7 @@ public class TextFileSplitter {
             throw new IllegalArgumentException("Unable to read file '"+filename+"' with charset '"+charset+"'", e);
         }
     }
-    
+
     /**
      * Creates instance of TextFileSplitter.
      * @param file - given text file.
@@ -65,11 +66,11 @@ public class TextFileSplitter {
             throw new IllegalArgumentException("Unable to read file '"+file+"' with charset '"+charset+"'", e);
         }
     }
-    
+
     /**
      * Creates instance of TextFileSplitter.
-     * The instance can be used for splitting only once. The input stream is 
-     * closed on last line. 
+     * The instance can be used for splitting only once. The input stream is
+     * closed on last line.
      * @param is - file input stream.
      * @param charset - name of the charset used in file
      */
@@ -83,16 +84,25 @@ public class TextFileSplitter {
     }
 
     /**
-     * Separates file to lines. 
+     * Separates file by delimiters.
+     * @return Iterator for individual lines
+     */
+    public Iterator<String> byDelimiters(String... delimiters) {
+        if(reader == null) return new EmptyIterator();
+        return new DelimiterIterator(delimiters);
+    }
+
+    /**
+     * Separates file to lines.
      * @return Iterator for individual lines
      */
     public Iterator<String> byLines() {
         if(reader == null) return new EmptyIterator();
         return new LineIterator();
     }
-    
+
     /**
-     * Separates file to lines. 
+     * Separates file to lines.
      * @return List with all lines of provided file.
      */
     public List<String> byLinesToList() {
@@ -109,7 +119,7 @@ public class TextFileSplitter {
         return rv;
     }
 
-        
+
     private static class EmptyIterator implements Iterator<String> {
         public boolean hasNext() {return false; }
         public String next() { throw new NoSuchElementException("Empty iterator"); }
@@ -117,12 +127,12 @@ public class TextFileSplitter {
     }
 
     private class LineIterator implements Iterator<String> {
-        private String line = null;    
-        
+        private String line = null;
+
         public LineIterator() {
             nextLine(true);
         }
-        
+
         private void nextLine(boolean firstLine) {
             if(!firstLine && line == null) return;
             line = null;
@@ -139,11 +149,118 @@ public class TextFileSplitter {
             }
         }
 
-        
+
         public boolean hasNext() {
             return line != null;
         }
-        
+
+        public String next() {
+            if(line == null) throw new NoSuchElementException("No moere elements");
+            String rv = line;
+            nextLine(false);
+            return rv;
+        }
+
+        public void remove() { throw new UnsupportedOperationException(); }
+    }
+
+
+    private class DelimiterIterator implements Iterator<String> {
+        private String[] delimiters;
+
+
+        private String line = null;
+        private int bufferIndex;
+        private int bufferLength;
+        char[] buffer;
+
+        public DelimiterIterator(String... delimiters) {
+            this.delimiters = delimiters;
+            if(Is.empty(delimiters)) throw new IllegalArgumentException("no delimiters");
+            for(int i = 0; i < delimiters.length; i++) {
+                if(Is.empty(delimiters[i])) throw new IllegalArgumentException("empty delimiter " + i);
+                if(delimiters[i].length() > bufferLength) bufferLength = delimiters[i].length();
+            }
+            buffer = new char[bufferLength];
+            nextLine(true);
+        }
+
+        private boolean isDelimiter() {
+            for(int i = 0; i < delimiters.length; i++) {
+                String delimiter = delimiters[i];
+                int len = delimiter.length();
+                if(bufferIndex < len) continue;
+                boolean found = true;
+                for(int j = 0; j < len; j++) {
+                    if(buffer[j] != delimiter.charAt(j)) {
+                        found = false;
+                        break;
+                    }
+                }
+                if(found) {
+                    skip(len);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private void skip(int len) {
+            if(len > bufferIndex) throw new IllegalArgumentException("this is impossible");
+            int l = bufferIndex - len;
+            for(int i = 0; i < l; i++) {
+                buffer[i] = buffer[len+i];
+            }
+            bufferIndex = bufferIndex - len;
+        }
+
+        boolean wasDelimiter = false;
+        StringBuilder sb = new StringBuilder();
+        private void nextLine(boolean firstLine) {
+            if(!firstLine && line == null) return;
+            line = null;
+            sb.setLength(0);
+            try {
+                do {
+                    while(bufferIndex < bufferLength) {
+                        int c = TextFileSplitter.this.reader.read();
+                        if(c == -1) break;
+                        buffer[bufferIndex++] = (char)c;
+                    }
+                    if(isDelimiter()) {
+                        line = sb.toString();
+                        wasDelimiter = true;
+                        break;
+                    } else {
+                        if(bufferIndex > 0) {
+                            sb.append(buffer[0]);
+                            skip(1);
+                        } else {
+                            line = sb.toString();
+                            if(Is.empty(line) && (!wasDelimiter)) line = null;
+                            wasDelimiter = false;
+                            break;
+                        }
+                        wasDelimiter = false;
+                    }
+
+                } while(true);
+            } catch (Exception e) {
+                throw new IllegalArgumentException("Unable to read next line", e);
+            }
+            if((line == null) && closereader) {
+                try {
+                    TextFileSplitter.this.reader.close();
+                } catch (Exception e) {
+                }
+            }
+        }
+
+
+        public boolean hasNext() {
+            return line != null;
+        }
+
         public String next() {
             if(line == null) throw new NoSuchElementException("No moere elements");
             String rv = line;
