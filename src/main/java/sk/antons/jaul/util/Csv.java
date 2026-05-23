@@ -29,6 +29,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import sk.antons.jaul.io.BomSupport;
 import sk.antons.jaul.io.UndoInputStream;
 
 /**
@@ -134,99 +135,9 @@ public class Csv {
      */
     public Appender appender(OutputStream os) { return Appender.instance(toWriter(os), delimiter, quote, forceQuotes, nlreplacer); }
 
-/*
-UTF-8 --- EF BB BF
-UTF-16 (BE) --- FE FF
-UTF-16 (LE) --- FF FE
-UTF-32 (BE) --- 00 00 FE FF
-UTF-32 (LE) --- FF FE 00 00
-*/
     private Reader toReader(InputStream is) {
         try {
-            if(readBom) {
-                UndoInputStream uis = UndoInputStream.instance(is);
-                int b1 = uis.read();
-                int b2 = -1;
-                int b3 = -1;
-                int b4 = -1;
-                if(b1 == 0xEF) { // utf8
-                    b2 = uis.read();
-                    if(b2 == 0xBB) { // utf8
-                        b3 = uis.read();
-                        if(b3 == 0xBF) { // utf8
-                            return new InputStreamReader(uis, "UTF-8");
-                        } else {
-                            uis.undo((byte)b2);
-                            uis.undo((byte)b1);
-                            return new InputStreamReader(uis, encoding);
-                        }
-                    } else {
-                        uis.undo((byte)b2);
-                        uis.undo((byte)b1);
-                        return new InputStreamReader(uis, encoding);
-                    }
-                } else if(b1 == 0xFE) { //utf16BE
-                    b2 = uis.read();
-                    if(b2 == 0xFF) { // utf16BE
-                        return new InputStreamReader(uis, "UTF-16BE");
-                    } else {
-                        uis.undo((byte)b2);
-                        uis.undo((byte)b1);
-                        return new InputStreamReader(uis, encoding);
-                    }
-                } else if(b1 == 0xFF) { //utf16LE utf32LE
-                    b2 = uis.read();
-                    if(b2 == 0xFE) { // utf16LE utf32LE
-                        b3 = uis.read();
-                        if(b3 == 0x00) { // utf16LE utf32LE
-                            b4 = uis.read();
-                            if(b4 == 0x00) { // utf32LE
-                                return new InputStreamReader(uis, "UTF-32LE");
-                            } else {
-                                uis.undo((byte)b4);
-                                uis.undo((byte)b3);
-                                return new InputStreamReader(uis, "UTF-16LE");
-                            }
-                        } else {
-                            uis.undo((byte)b3);
-                            return new InputStreamReader(uis, "UTF-16LE");
-                        }
-                    } else {
-                        uis.undo((byte)b2);
-                        uis.undo((byte)b1);
-                        return new InputStreamReader(uis, encoding);
-                    }
-                } else if(b1 == 0x00) { //utf32BE
-                    b2 = uis.read();
-                    if(b2 == 0x00) { // utf32BE
-                        b3 = uis.read();
-                        if(b3 == 0xFE) { // utf16LE utf32BE
-                            b4 = uis.read();
-                            if(b4 == 0xFF) { // utf32BE
-                                return new InputStreamReader(uis, "UTF-32BE");
-                            } else {
-                                uis.undo((byte)b4);
-                                uis.undo((byte)b3);
-                                uis.undo((byte)b2);
-                                uis.undo((byte)b1);
-                                return new InputStreamReader(uis, encoding);
-                            }
-                        } else {
-                            uis.undo((byte)b3);
-                            uis.undo((byte)b2);
-                            uis.undo((byte)b1);
-                            return new InputStreamReader(uis, encoding);
-                        }
-                    } else {
-                        uis.undo((byte)b2);
-                        uis.undo((byte)b1);
-                        return new InputStreamReader(uis, encoding);
-                    }
-                } else {
-                    uis.undo((byte)b1);
-                    return new InputStreamReader(uis, encoding);
-                }
-            }
+            if(readBom) return BomSupport.reader(is, encoding);
             return new InputStreamReader(is, encoding);
         } catch(Exception e) {
             throw AsRuntimeEx.argument(e);
@@ -237,38 +148,7 @@ UTF-32 (LE) --- FF FE 00 00
         try {
             if(writeBom) {
                 try {
-                    String enc = encoding.toLowerCase();
-                    switch(enc) {
-                        case "utf-8":
-                            os.write(0xEF);
-                            os.write(0xBB);
-                            os.write(0xBF);
-                            break;
-                        case "utf-16":
-                            break; //bom writen by default by OutputStreamWriter
-                        case "utf-16be":
-                            os.write(0xFE);
-                            os.write(0xFF);
-                            break;
-                        case "utf-16le":
-                            os.write(0xFF);
-                            os.write(0xFE);
-                            break;
-                        case "utf-32":
-                        case "utf-32be":
-                            os.write(0x00);
-                            os.write(0x00);
-                            os.write(0xFE);
-                            os.write(0xFF);
-                            break;
-                        case "utf-32le":
-                            os.write(0xFF);
-                            os.write(0xFE);
-                            os.write(0x00);
-                            os.write(0x00);
-                            break;
-                        default:
-                    }
+                    return BomSupport.writer(os, encoding);
                 } catch(Exception e) {
                     throw AsRuntimeEx.of(e);
                 }
